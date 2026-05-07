@@ -6,7 +6,7 @@ import {
 } from '@cyia/external-call';
 import { computed, inject, Injector, signal } from 'static-injector';
 import { path } from '@cyia/vfs2';
-import { LLamaConfigToken, OLLAMA_MODEL_URL_TOKEN } from './token';
+import { LLamaConfigToken } from './token';
 import * as v from 'valibot';
 import {
   DefaultCommonConfig,
@@ -27,9 +27,7 @@ import { downloadFile, DownloadFileOptions } from '@cyia/dl';
 import { getGgufFile } from './download/get-gguf-file';
 import { getOllamaModel } from './ollama-model/ollama-manifests';
 import { dirname } from 'path';
-import { getOllamaGgufFile } from './download/get-ollama-gguf-file';
 import { differenceBy } from 'es-toolkit';
-import { autoCheckVendor } from './download/auto-check-vendor';
 const SysMap = { win32: 'win', linux: 'ubuntu' };
 const LlamaPlatform = (SysMap as any)[process.platform];
 const remoteArgs = ['hf-repo', 'hf-file', 'model-url'];
@@ -51,7 +49,6 @@ export class LlamaSwapService extends ExternalCallBaseService {
     return fullPath;
   });
   llamaSwapDir$$ = computed(() => path.join(this.#config().dir, 'llama-swap'));
-  #ollamaModelUrl$$ = inject(OLLAMA_MODEL_URL_TOKEN);
   #hgModelUrl$$ = inject(HUGGINGFACE_URL_TOKEN);
   #downloadConfig$$ = inject(DownloadConfigToken);
   #hgtoken$$ = inject(HUGGINGFACE_TOKEN_TOKEN);
@@ -289,7 +286,6 @@ export class LlamaSwapService extends ExternalCallBaseService {
       repo?: string;
       token?: string;
       fileName?: string;
-      vendor?: 'ollama';
     },
     options?: { progressMessage?: DownloadFileOptions['message'] },
   ) {
@@ -298,20 +294,11 @@ export class LlamaSwapService extends ExternalCallBaseService {
     let directory;
     const dir = path.join(this.#config().dir, 'models');
     if (modelOptions.repo) {
-      if (modelOptions.vendor) {
-        this.log?.info('使用厂商:', modelOptions.vendor);
-      }
-      const resolveResult = await (modelOptions.vendor === 'ollama'
-        ? getOllamaGgufFile(modelOptions.repo, {
-            ...modelOptions,
-            endpoint: this.#ollamaModelUrl$$(),
-            token: modelOptions.token || this.#hgtoken$$(),
-          })
-        : getGgufFile(modelOptions.repo, {
-            ...modelOptions,
-            endpoint: this.#hgModelUrl$$(),
-            token: modelOptions.token || this.#hgtoken$$(),
-          }));
+      const resolveResult = await getGgufFile(modelOptions.repo, {
+        ...modelOptions,
+        endpoint: this.#hgModelUrl$$(),
+        token: modelOptions.token || this.#hgtoken$$(),
+      });
       this.log?.info('模型文件:', resolveResult);
       const filePath = path.join(dir, resolveResult.fileName);
       if (fs.existsSync(filePath)) {
@@ -378,14 +365,9 @@ export class LlamaSwapService extends ExternalCallBaseService {
     model: string,
     options?: { progressMessage?: DownloadFileOptions['message'] },
   ) {
-    const vendor = await autoCheckVendor(model, {
-      endpoint: `https://${this.#hgModelUrl$$()}/`,
-      token: this.#hgtoken$$(),
-    });
     const downloadFilePath = await this.downloadModel(
       {
         repo: model,
-        vendor: vendor,
       },
       options,
     );

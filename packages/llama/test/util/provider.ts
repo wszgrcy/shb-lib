@@ -4,7 +4,7 @@ import {
   DownloadConfigToken,
 } from '@cyia/external-call';
 import { computed, signal } from 'static-injector';
-import { LLamaConfigToken, OLLAMA_MODEL_URL_TOKEN } from '../../token';
+import { LLamaConfigToken } from '../../token';
 import { path } from '@cyia/vfs2';
 
 export function getCommonProvider() {
@@ -20,10 +20,6 @@ export function getCommonProvider() {
     {
       provide: LLamaConfigToken,
       useValue: signal({ dir: dir, listen: '127.0.0.1:12345' }),
-    },
-    {
-      provide: OLLAMA_MODEL_URL_TOKEN,
-      useValue: computed(() => 'ollama-model.tbontop.top'),
     },
     {
       provide: HUGGINGFACE_URL_TOKEN,

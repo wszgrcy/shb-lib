@@ -9,6 +9,3 @@ export interface LLamaConfig {
 export const LLamaConfigToken = new InjectionToken<Signal<LLamaConfig>>(
   'LLamaConfig',
 );
-export const OLLAMA_MODEL_URL_TOKEN = new InjectionToken<Signal<string>>(
-  'OLLAMA_MODEL_URL',
-);
