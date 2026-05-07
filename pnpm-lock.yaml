@@ -33,11 +33,11 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
       '@piying/valibot-visit':
-        specifier: 1.2.2
-        version: 1.2.2(typescript@6.0.3)
+        specifier: 1.3.11
+        version: 1.3.11(typescript@6.0.3)
       '@piying/view-angular-core':
-        specifier: 1.5.11
-        version: 1.5.11(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))
+        specifier: 1.6.1
+        version: 1.6.1(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))
       '@xyflow/react':
         specifier: ^12.10.2
         version: 12.10.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -293,6 +293,9 @@ importers:
       '@google/generative-ai':
         specifier: ^0.24.1
         version: 0.24.1
+      '@piying/valibot-visit':
+        specifier: 1.3.11
+        version: 1.3.11(typescript@6.0.3)
       '@piying/view-angular-core':
         specifier: 1.6.1
         version: 1.6.1(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))
@@ -1003,16 +1006,8 @@ packages:
   '@oxc-project/types@0.128.0':
     resolution: {integrity: sha512-huv1Y/LzBJkBVHt3OlC7u0zHBW9qXf1FdD7sGmc1rXc2P1mTwHssYv7jyGx5KAACSCH+9B3Bhn6Z9luHRvf7pQ==}
 
-  '@piying/valibot-visit@1.2.2':
-    resolution: {integrity: sha512-zA0i4KJsPYBwHC3mvUxCxVw5r0P1SGHsRVmBF9BAdr28c1spo56ZKmo3MV85u7vQF86U3oDWwMyizd5g76EtpQ==}
-
   '@piying/valibot-visit@1.3.11':
     resolution: {integrity: sha512-mDXudGos8b13C5qNuTrPVwDPpMKPgdEI8xbbQrM7PXGkBxJG90hmTQClXd+aS5wRskQ01Y0c3qlvuXxnny0BHA==}
-
-  '@piying/view-angular-core@1.5.11':
-    resolution: {integrity: sha512-fC3rG1DfMn3XNhFBXcI80lVuG3hLRIcY3I8V5BmF26iYIzpQYthePFpl7dO3Kp8L/EVELMSJDG25/uLjkBK5IQ==}
-    peerDependencies:
-      valibot: ^1.1.0
 
   '@piying/view-angular-core@1.6.1':
     resolution: {integrity: sha512-Q3vCH3qaQrrVYrkHhe7zuA2V/0ENPFO3L5Q9ygltI8ts8qwPNgpmRRxMr+94QOAqDqLvexLAf1qiQtcd3Sy9gg==}
@@ -3506,25 +3501,8 @@ snapshots:
 
   '@oxc-project/types@0.128.0': {}
 
-  '@piying/valibot-visit@1.2.2(typescript@6.0.3)':
-    dependencies:
-      valibot: 1.4.0(typescript@6.0.3)
-    transitivePeerDependencies:
-      - typescript
-
   '@piying/valibot-visit@1.3.11(typescript@6.0.3)':
     dependencies:
-      valibot: 1.4.0(typescript@6.0.3)
-    transitivePeerDependencies:
-      - typescript
-
-  '@piying/view-angular-core@1.5.11(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))':
-    dependencies:
-      '@piying/valibot-visit': 1.2.2(typescript@6.0.3)
-      clsx: 2.1.1
-      fast-equals: 5.4.0
-      rfdc: 1.4.1
-      tslib: 2.8.1
       valibot: 1.4.0(typescript@6.0.3)
     transitivePeerDependencies:
       - typescript
