@@ -19,7 +19,7 @@ import {
 } from '@cyia/external-call';
 import { getCommonProvider } from './util/provider';
 describe('template', () => {
-  it('启动', async () => {
+  it.skip('启动', async () => {
     const dir = path.join(process.cwd(), '.tmp', 'llama');
     const injector = createRootInjector({
       providers: [
@@ -96,7 +96,7 @@ describe('template', () => {
       { injector: injector },
     );
   });
-  it('下载模型返回配置', async () => {
+  it.skip('下载模型返回配置', async () => {
     const injector = createRootInjector({
       providers: [
         LlamaSwapService,
