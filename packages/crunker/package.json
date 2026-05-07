@@ -24,9 +24,9 @@
     },
     "./define": {
       "types": "./define/index.d.ts",
-      "import": "./define/define.mjs",
-      "node": "./define/define.js",
-      "require": "./define/define.js"
+      "import": "./define/index.mjs",
+      "node": "./define/index.js",
+      "require": "./define/index.js"
     }
   },
   "publishConfig": {
