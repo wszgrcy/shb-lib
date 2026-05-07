@@ -114,7 +114,7 @@ export class NodeRunnerBase {
   }
   #modelConfig = inject(ModelOptionsToken);
   mergeChatModel(input?: ModelInputConfig): Partial<ChatModelOptions> {
-    let chatService = this.injector.get(ChatServiceToken);
+    const chatService = this.injector.get(ChatServiceToken);
     let presetConfig = {};
     if (input?.name) {
       presetConfig = chatService.getModelConfig(input.name) ?? {};
@@ -129,7 +129,7 @@ export class NodeRunnerBase {
             isEmptyInput,
           ),
           omitBy(presetConfig, isEmptyInput),
-          omitBy(this.#modelConfig??{}, isEmptyInput),
+          omitBy(this.#modelConfig ?? {}, isEmptyInput),
         )
       : this.#modelConfig;
   }

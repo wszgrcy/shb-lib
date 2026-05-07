@@ -33,7 +33,7 @@ import { ResolvedAudioItemType } from './type/resolved-audio-item.type';
 import { BackendType, TTSBackendImp } from './type/tts-backend.type';
 import { deepClone } from '@cyia/util';
 import { EmoListType, VoiceListType } from './config-manager/type';
-import { cloneDeep, union, uniq } from 'es-toolkit';
+import { cloneDeep, uniq } from 'es-toolkit';
 import Parser from 'srt-parser-2';
 const parser = new Parser();
 
@@ -362,7 +362,7 @@ export class TTSSerivce extends ExternalCallBaseService {
       const srtList = parseSync(data.content);
       for (let i = 0; i < srtList.length; i++) {
         const item = srtList[i];
- 
+
         const defaultLanguage = detectLanguage(item.text);
         fq.push(
           Promise.resolve().then(() => {
@@ -371,8 +371,8 @@ export class TTSSerivce extends ExternalCallBaseService {
               item: {
                 subtitle: {
                   text: text,
-                  start: item.startSeconds ,
-                  end: item.endSeconds ,
+                  start: item.startSeconds,
+                  end: item.endSeconds,
                 },
                 generateOptions: {
                   audioText: htmlToText(text),

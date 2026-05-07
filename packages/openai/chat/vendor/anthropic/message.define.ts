@@ -23,11 +23,11 @@ function baseImageSplit(str: string) {
 
 export const AnthropicSystemMessageDefine = v.pipe(
   SystemChatCompletionContent,
-  v.transform((list) => {
-    return list
+  v.transform((list) =>
+    list
       .map((item) => (item.type === 'text' ? item : undefined))
-      .filter(isTruthy);
-  }),
+      .filter(isTruthy),
+  ),
 );
 function contentConvert(
   part: ChatCompletionContentPartStrType | ChatCompletionContentPartImageType,
@@ -47,21 +47,17 @@ function contentConvert(
 }
 const UserMessageDefine = v.pipe(
   UserChatMessage,
-  v.transform((item) => {
-    return {
-      ...item,
-      content: item.content.map(contentConvert),
-    };
-  }),
+  v.transform((item) => ({
+    ...item,
+    content: item.content.map(contentConvert),
+  })),
 );
 const AssistantMessageDefine = v.pipe(
   AssistantChatMessage,
-  v.transform((item) => {
-    return {
-      ...item,
-      content: item.content.map(contentConvert),
-    };
-  }),
+  v.transform((item) => ({
+    ...item,
+    content: item.content.map(contentConvert),
+  })),
 );
 export const AnthropicChatMessageListDefine = v.array(
   v.union([UserMessageDefine, AssistantMessageDefine]),

@@ -1,7 +1,7 @@
 import { uniq } from 'es-toolkit';
-let arabicDigits = `0123456789`;
-let chineseDigits = `零一二三四五六七八九`;
-let chineseCurrencyDigits = `〇壹贰叁肆伍陆柒捌玖`;
+const arabicDigits = `0123456789`;
+const chineseDigits = `零一二三四五六七八九`;
+const chineseCurrencyDigits = `〇壹贰叁肆伍陆柒捌玖`;
 function strToObj(str: string) {
   return str.split('').reduce(
     (obj, str, i) => {
@@ -19,7 +19,7 @@ function getNumberMap() {
   };
 }
 
-let chineseSUnit = [
+const chineseSUnit = [
   { label: '个', value: 10 ** 0 },
   { label: '十', value: 10 ** 1 },
   { label: '百', value: 10 ** 2 },
@@ -51,8 +51,10 @@ function getUnitMap() {
 }
 
 function getFullMatch() {
-  let numberLike = uniq(`${arabicDigits}${chineseDigits}${chineseCurrencyDigits}`.split('')).join('');
-  let unitLike = uniq(chineseSUnit.map((item) => item.label)).join('');
+  const numberLike = uniq(
+    `${arabicDigits}${chineseDigits}${chineseCurrencyDigits}`.split(''),
+  ).join('');
+  const unitLike = uniq(chineseSUnit.map((item) => item.label)).join('');
   return `([${numberLike}])|([${unitLike}])|(.)`;
 }
 

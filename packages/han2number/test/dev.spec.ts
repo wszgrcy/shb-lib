@@ -4,16 +4,18 @@ import { expect } from 'chai';
 describe('更新纯文本', () => {
   it('万以内', () => {
     for (let i = 0; i < 10000; i++) {
-      let str = numberToChinese(i);
-      let result = han2numberFormat(str);
+      const str = numberToChinese(i);
+      const result = han2numberFormat(str);
       expect(`${i}`).eq(result);
     }
   });
   it('[Intl]zh-Hans-CN-u-nu-hanidec', () => {
-    let nf = new Intl.NumberFormat('zh-Hans-CN-u-nu-hanidec', { useGrouping: false });
+    const nf = new Intl.NumberFormat('zh-Hans-CN-u-nu-hanidec', {
+      useGrouping: false,
+    });
     for (let i = 0; i < 10000; i++) {
-      let str = nf.format(i);
-      let result = han2numberFormat(str);
+      const str = nf.format(i);
+      const result = han2numberFormat(str);
       expect(`${i}`).eq(result);
     }
   });
@@ -37,7 +39,7 @@ describe('更新纯文本', () => {
       ['一亿亿', 10000000000000000],
     ] as const;
     for (const [ch, num] of list) {
-      let result = han2numberFormat(ch);
+      const result = han2numberFormat(ch);
       expect(`${num}`).eq(result, `字符串:${ch},数字:${result},理论上:${num}`);
     }
   });
@@ -60,7 +62,7 @@ describe('更新纯文本', () => {
       ['一百万零五千零五十', 1005050],
     ] as const;
     for (const [ch, num] of list) {
-      let result = han2numberFormat(ch);
+      const result = han2numberFormat(ch);
       expect(`${num}`).eq(result, `字符串:${ch},数字:${result},理论上:${num}`);
     }
   });
@@ -73,7 +75,7 @@ describe('更新纯文本', () => {
       ['十亿零十万', 1000100000],
     ] as const;
     for (const [ch, num] of list) {
-      let result = han2numberFormat(ch);
+      const result = han2numberFormat(ch);
       expect(`${num}`).eq(result, `字符串:${ch},数字:${result},理论上:${num}`);
     }
   });
@@ -88,13 +90,16 @@ describe('更新纯文本', () => {
       ['第一零零一章', `第1001章`],
     ] as const;
     for (const [ch, value] of list) {
-      let result = han2numberFormat(ch);
+      const result = han2numberFormat(ch);
       expect(value).eq(result, `字符串:${ch},数字:${result},理论上:${value}`);
     }
   });
   it('其他', () => {
     const list = [
-      ['九千八百七十六万五千四百三十二亿九千八百七十六万五千四百三十二', `9876543298765432`],
+      [
+        '九千八百七十六万五千四百三十二亿九千八百七十六万五千四百三十二',
+        `9876543298765432`,
+      ],
       ['三千一百万零五十四', `31000054`],
       ['一百万零五十四', `1000054`],
       ['第一二零章', `第120章`],
@@ -131,7 +136,10 @@ describe('更新纯文本', () => {
       ['一十一亿一千一百一十一万一千一百一十一', 1111111111],
       ['一百一十一亿一千一百一十一万一千一百一十一', 11111111111],
       ['一千一百一十一亿一千一百一十一万一千一百一十一', 111111111111],
-      ['一千一百一十一万一千一百一十一亿一千一百一十一万一千一百一十一', 1111111111111111],
+      [
+        '一千一百一十一万一千一百一十一亿一千一百一十一万一千一百一十一',
+        1111111111111111,
+      ],
       ['壹', 1],
       ['拾', 10],
       ['拾壹', 11],
@@ -170,8 +178,11 @@ describe('更新纯文本', () => {
       ['', ''],
     ] as const;
     for (const [ch, value] of list) {
-      let result = han2numberFormat(ch);
-      expect(`${value}`).eq(result, `字符串:${ch},数字:${result},理论上:${value}`);
+      const result = han2numberFormat(ch);
+      expect(`${value}`).eq(
+        result,
+        `字符串:${ch},数字:${result},理论上:${value}`,
+      );
     }
   });
 
@@ -193,7 +204,7 @@ describe('更新纯文本', () => {
       ['无数字', `无数字`],
     ] as const;
     for (const [ch, num] of list) {
-      let result = han2numberFormat(ch);
+      const result = han2numberFormat(ch);
       expect(`${num}`).eq(result, `字符串:${ch},数字:${result},理论上:${num}`);
     }
   });

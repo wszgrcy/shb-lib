@@ -20,12 +20,10 @@ function messageContentTransform(
 }
 export const GenminiSystemMessageDefine = v.pipe(
   SystemChatMessage,
-  v.transform((item) => {
-    return {
-      role: 'system',
-      parts: messageContentTransform(item.content),
-    };
-  }),
+  v.transform((item) => ({
+    role: 'system',
+    parts: messageContentTransform(item.content),
+  })),
 );
 
 export const GenminiChatMessageListDefine = v.pipe(
@@ -33,22 +31,18 @@ export const GenminiChatMessageListDefine = v.pipe(
     v.union([
       v.pipe(
         UserChatMessage,
-        v.transform((item) => {
-          return {
-            role: 'user' as const,
-            parts: messageContentTransform(item.content),
-          };
-        }),
+        v.transform((item) => ({
+          role: 'user' as const,
+          parts: messageContentTransform(item.content),
+        })),
       ),
 
       v.pipe(
         AssistantChatMessage,
-        v.transform((item) => {
-          return {
-            role: 'model' as const,
-            parts: messageContentTransform(item.content),
-          };
-        }),
+        v.transform((item) => ({
+          role: 'model' as const,
+          parts: messageContentTransform(item.content),
+        })),
       ),
     ]),
   ),

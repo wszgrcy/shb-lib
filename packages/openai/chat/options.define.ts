@@ -1,13 +1,10 @@
 import {
   asControl,
   componentClass,
-  hideWhen,
   patchInputs,
-  patchProps,
   patchWrappers,
   setComponent,
 } from '@piying/view-angular-core';
-import { map, of } from 'rxjs';
 import * as v from 'valibot';
 import {
   asVirtualGroup,
@@ -170,19 +167,17 @@ export const ChatItemDefine = v.pipe(
           v.description('大语言模型提供的厂商'),
           v.title('对话厂商'),
           v.metadata({
-            enumOptions: VendorList.map((item) => {
-              return {
-                label: item.label,
-                description: [
-                  (item.options as any).description
-                    ? (item.options as any).description
-                    : '',
-                  item.options.baseURL ? `链接: ${item.options.baseURL}` : '',
-                ]
-                  .filter(Boolean)
-                  .join('\n'),
-              };
-            }),
+            enumOptions: VendorList.map((item) => ({
+              label: item.label,
+              description: [
+                (item.options as any).description
+                  ? (item.options as any).description
+                  : '',
+                item.options.baseURL ? `链接: ${item.options.baseURL}` : '',
+              ]
+                .filter(Boolean)
+                .join('\n'),
+            })),
           }),
           patchInputs({
             options: VendorList,
@@ -346,4 +341,6 @@ export type ChatModelOptionsInput = v.InferInput<typeof ChatParamsItemDefine>;
 export const InputChatOptionsDefine = omitIntersect(ChatParamsItemDefine, [
   'name',
 ]);
-export type CreateChatModelOptions = v.InferInput<typeof InputChatOptionsDefine>;
+export type CreateChatModelOptions = v.InferInput<
+  typeof InputChatOptionsDefine
+>;

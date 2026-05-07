@@ -1,9 +1,4 @@
-import {
-  computed,
-  inject,
-  RootStaticInjectOptions,
-  signal,
-} from 'static-injector';
+import { computed, inject, signal } from 'static-injector';
 
 import { omitBy } from 'es-toolkit';
 import { bufferWhen, debounceTime, filter, Subject } from 'rxjs';

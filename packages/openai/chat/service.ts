@@ -1,4 +1,4 @@
-import { inject, RootStaticInjectOptions } from 'static-injector';
+import { inject } from 'static-injector';
 import { OpenAIChat } from './vendor/openai';
 import { ChatRequestOptions, ChatToolBodyInput } from './type';
 import { createCompatibleFactory } from './vendor/openai-compatible.factory';
@@ -7,7 +7,6 @@ import { AnthropicChat } from './vendor/anthropic/anthropic';
 import { createAssistantMessage } from './util/create';
 import { ThinkList } from './const';
 import {
-  ChatModelOptions,
   CreateChatModelOptions,
   InputChatOptionsDefine,
 } from './options.define';
@@ -38,7 +37,7 @@ export class ChatProviderService {
       instance = createCompatibleFactory(options);
     }
     instance.init();
-    let openAIOptions = this.#config;
+    const openAIOptions = this.#config;
     const chatHistory = this.#chatHistory;
 
     const fn = async function* (...args: Parameters<OpenAIChat['stream']>) {
@@ -110,9 +109,8 @@ export class ChatProviderService {
         }
         return obj!;
       },
-      callTool: (input: ChatToolBodyInput, options?: ChatRequestOptions) => {
-        return instance.callTool(input, options);
-      },
+      callTool: (input: ChatToolBodyInput, options?: ChatRequestOptions) =>
+        instance.callTool(input, options),
     };
   }
 }

@@ -1,6 +1,6 @@
 import hbs1 from 'handlebars';
 import { RootStaticInjectOptions } from 'static-injector';
-import { unionBy, uniqBy } from 'es-toolkit';
+import { uniqBy } from 'es-toolkit';
 import { Liquid } from 'liquidjs';
 import { ChatInput2 } from './share';
 const engine = new Liquid({ jsTruthy: true });
@@ -47,9 +47,8 @@ export class TemplateFormatService extends RootStaticInjectOptions {
   }
   // 只有条件用,没太大用途
   async parserJs(input: string) {
-    const { createCssSelectorForTs } = await import(
-      '@cyia/code-util/selector/ts'
-    );
+    const { createCssSelectorForTs } =
+      await import('@cyia/code-util/selector/ts');
     try {
       const selector = createCssSelectorForTs(input, { scriptKind: 1 });
 

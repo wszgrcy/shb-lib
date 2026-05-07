@@ -3,7 +3,10 @@ import { inject } from 'static-injector';
 import { WorkflowParserService } from './workflow-parser.service';
 import { InlineParametersService } from './preset/inline-runner.service';
 import { WorkflowRunnerService } from './runner/workflow-runner.service';
-import { WorkflowRunnerEnvironmentParams, WorkflowStreamData } from './share/type2';
+import {
+  WorkflowRunnerEnvironmentParams,
+  WorkflowStreamData,
+} from './share/type2';
 import { ChatMessageListInputType, ChatModelOptions } from '@shenghuabi/openai';
 import { Subject } from 'rxjs';
 import { ContextBuildService } from './preset/context-build.service';

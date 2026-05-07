@@ -83,7 +83,7 @@ export class IndexTTSV2Service extends ExternalCallBaseService {
           savePath: filePath,
           headers: {
             token: this.#hgToken$$(),
-            ['software-bbs']: `bbs.shenghuabi.site`,
+            'software-bbs': `bbs.shenghuabi.site`,
           },
         },
       );
@@ -104,7 +104,7 @@ export class IndexTTSV2Service extends ExternalCallBaseService {
           savePath: filePath,
           headers: {
             token: this.#hgToken$$(),
-            ['software-bbs']: `bbs.shenghuabi.site`,
+            'software-bbs': `bbs.shenghuabi.site`,
           },
         },
       );

@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import { createRootInjector } from 'static-injector';
 import { expect } from 'chai';
 import path from 'node:path';
@@ -134,6 +135,7 @@ describe('split', () => {
   it('包含空行', async () => {
     const injector = createRootInjector({ providers: [SplitService] });
     const split = injector.get(SplitService);
+
     const result =
       split.run(`七巷一个漆匠，西巷一个锡匠。　 七巷漆匠用了西巷锡匠的锡，　 西巷锡匠拿了七巷漆匠的漆，　 七巷漆匠气西巷锡匠用了漆，　 西巷锡匠讥七巷漆匠拿了锡。
 　　

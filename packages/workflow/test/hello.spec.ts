@@ -7,7 +7,9 @@ import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 describe('hello', () => {
   it('hello', async () => {
-    const injector = createRootInjector({ providers: [...WORKFLOW_MODULE.provider,] });
+    const injector = createRootInjector({
+      providers: [...WORKFLOW_MODULE.provider],
+    });
     const service = injector.get(WorkflowParserService);
     const textNode = v.parse(TEXT_NODE_DEFINE, {
       id: '1',

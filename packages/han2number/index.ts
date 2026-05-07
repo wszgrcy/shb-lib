@@ -1,4 +1,8 @@
-import { __NUMBER_MAP, __UNIT_MAP, __FULL_REGEXP_STR } from './inline/index' with { type: 'macro' };
+import {
+  __NUMBER_MAP,
+  __UNIT_MAP,
+  __FULL_REGEXP_STR,
+} from './inline/index' with { type: 'macro' };
 const __FULL_REGEXP = new RegExp(__FULL_REGEXP_STR, 'g');
 const enum NumberType {
   number = 0,
@@ -32,7 +36,7 @@ function numberUnitCount(list: NumberTuple) {
   } as NumberTokenItem;
 }
 function numberCount(list: NumberTokenItem[], unit: UnitTokenItem) {
-  let count = list.reduce(
+  const count = list.reduce(
     (item, curr) => {
       item.value += curr.value;
       item.origin += curr.origin;
@@ -50,7 +54,10 @@ function numberCount(list: NumberTokenItem[], unit: UnitTokenItem) {
     origin: count.origin + unit.origin,
   } as NumberTokenItem;
 }
-function itemMerge(list: ResultItem[], cb: (value: string | number, index: number) => string) {
+function itemMerge(
+  list: ResultItem[],
+  cb: (value: string | number, index: number) => string,
+) {
   let count = 0;
   let lastItem = false;
   let content = '';
@@ -96,9 +103,17 @@ function han2number(str: string) {
   while ((match = __FULL_REGEXP.exec(str))) {
     let item: ValueItem;
     if (match[1]) {
-      item = { value: __NUMBER_MAP[match[1]], origin: match[1], type: NumberType.number };
+      item = {
+        value: __NUMBER_MAP[match[1]],
+        origin: match[1],
+        type: NumberType.number,
+      };
     } else if (match[2]) {
-      item = { ratio: __UNIT_MAP[match[2]], origin: match[2], type: NumberType.unit };
+      item = {
+        ratio: __UNIT_MAP[match[2]],
+        origin: match[2],
+        type: NumberType.unit,
+      };
     } else if (match[3]) {
       item = { value: match[3], origin: match[3], type: NumberType.any };
     } else {
@@ -114,7 +129,7 @@ function han2number(str: string) {
       hasUnit = false;
     } else if (item.type === NumberType.number) {
       if (pendingNumberToken) {
-        let index = step[0];
+        const index = step[0];
         list.push(pendingNumberToken);
         if (!hasUnit) {
           for (let i = index; i < list.length; i++) {
@@ -125,10 +140,10 @@ function han2number(str: string) {
       pendingNumberToken = item;
     } else if (item.type === NumberType.unit) {
       hasUnit = true;
-      let level = getLevel(item.ratio);
-      let index = step.at(level)!;
+      const level = getLevel(item.ratio);
+      const index = step.at(level)!;
       if (!pendingNumberToken) {
-        let data = list.slice(index) as NumberTokenItem[];
+        const data = list.slice(index) as NumberTokenItem[];
         list = list.slice(0, index);
         list.push(numberCount(data, item));
         for (let i = 0; i < level; i++) {
@@ -138,7 +153,7 @@ function han2number(str: string) {
       }
 
       if (item.ratio > 1000) {
-        let data = list.slice(index) as NumberTokenItem[];
+        const data = list.slice(index) as NumberTokenItem[];
         list = list.slice(0, index);
         list.push(numberCount([...data, pendingNumberToken], item));
         pendingNumberToken = undefined;
@@ -157,13 +172,16 @@ function han2number(str: string) {
   return list;
 }
 export function han2numberFormat(str: string) {
-  let result = itemMerge(han2number(str), (str) => `${str}`);
+  const result = itemMerge(han2number(str), (str) => `${str}`);
   return result.content;
 }
 export function han2numberParse(str: string) {
   return itemMerge(han2number(str), (str) => `${str}`);
 }
-export function han2numberReChange(str: string, cb: (value: string | number, index: number) => string) {
+export function han2numberReChange(
+  str: string,
+  cb: (value: string | number, index: number) => string,
+) {
   return itemMerge(han2number(str), cb).content;
 }
 

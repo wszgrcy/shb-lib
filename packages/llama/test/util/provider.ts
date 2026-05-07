@@ -2,7 +2,6 @@ import {
   GITHUB_URL_TOKEN,
   HUGGINGFACE_URL_TOKEN,
   DownloadConfigToken,
-  HUGGINGFACE_TOKEN_TOKEN,
 } from '@cyia/external-call';
 import { computed, signal } from 'static-injector';
 import { LLamaConfigToken, OLLAMA_MODEL_URL_TOKEN } from '../../token';

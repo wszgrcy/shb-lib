@@ -66,13 +66,11 @@ export class AnthropicChat extends OpenAIChat {
         top_p: this.options.top_p,
         temperature: this.options.temperature,
         stream: false,
-        tools: input.tools.map((item) => {
-          return {
-            name: item.function.name,
-            description: item.function.description,
-            input_schema: item.function.parameters! as any,
-          };
-        }),
+        tools: input.tools.map((item) => ({
+          name: item.function.name,
+          description: item.function.description,
+          input_schema: item.function.parameters! as any,
+        })),
       },
       {
         signal: options?.signal,

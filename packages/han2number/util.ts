@@ -1,5 +1,16 @@
 export function numberToChinese(num: number): string {
-  const CHINESE_NUMBERS = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  const CHINESE_NUMBERS = [
+    '零',
+    '一',
+    '二',
+    '三',
+    '四',
+    '五',
+    '六',
+    '七',
+    '八',
+    '九',
+  ];
   const UNITS = ['', '十', '百', '千', '万'];
 
   if (num === 0) return CHINESE_NUMBERS[0];
@@ -23,8 +34,10 @@ export function numberToChinese(num: number): string {
     unitPos++;
   }
 
-  result = result.replace(/零+/g, '零').replace(/零+$/, '').replace(/^一十/, '十');
+  result = result
+    .replace(/零+/g, '零')
+    .replace(/零+$/, '')
+    .replace(/^一十/, '十');
 
   return result;
 }
-

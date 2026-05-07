@@ -59,7 +59,7 @@ export class IndexTTSService extends ExternalCallBaseService {
           savePath: filePath,
           headers: {
             token: this.#hgToken$$(),
-            ['software-bbs']: `bbs.shenghuabi.site`,
+            'software-bbs': `bbs.shenghuabi.site`,
           },
         },
       );
@@ -142,7 +142,7 @@ export class IndexTTSService extends ExternalCallBaseService {
     await this.#autoCheckDownloadModel();
 
     if (!this.inited$$) {
-      let params = this.#indexTTSConfig$$().loadModelParams ?? {};
+      const params = this.#indexTTSConfig$$().loadModelParams ?? {};
       delete (params as any)['use_deepspeed'];
       this.inited$$ = this.#request(`tts/IndexTTS/loadModel`, {
         model_dir: this.#indexTTSModelDir$$(),

@@ -1,9 +1,5 @@
 import { ChatModelOptions } from '../options.define';
-import {
-  ChatBodyInput,
-  ChatRequestOptions,
-  ChatToolBodyInput,
-} from '../type';
+import { ChatBodyInput, ChatRequestOptions, ChatToolBodyInput } from '../type';
 export class OpenAITestChat {
   static ChatResult: (
     input: ChatBodyInput,

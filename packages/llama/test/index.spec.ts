@@ -1,22 +1,14 @@
 import {
   ChangeDetectionScheduler,
   ChangeDetectionSchedulerImpl,
-  computed,
   createRootInjector,
   effect,
-  signal,
 } from 'static-injector';
 import { expect } from 'chai';
 import { LlamaSwapService } from '../llama-swap.service';
-import { LLamaConfigToken, OLLAMA_MODEL_URL_TOKEN } from '../token';
 import path from 'path';
 import { existsSync } from 'fs';
-import {
-  DownloadConfigToken,
-  GITHUB_URL_TOKEN,
-  LogFactoryToken,
-  LogService,
-} from '@cyia/external-call';
+import { LogFactoryToken, LogService } from '@cyia/external-call';
 import { getCommonProvider } from './util/provider';
 describe('template', () => {
   it.skip('启动', async () => {
@@ -126,8 +118,6 @@ describe('template', () => {
     const result = await instance.createModelConfig(
       'huggingface.co/unsloth/Qwen3-0.6B-GGUF:UD-IQ1_M',
     );
-    expect(result.model).eq(
-      'huggingface.co/unsloth/Qwen3-0.6B-GGUF:UD-IQ1_M',
-    );
+    expect(result.model).eq('huggingface.co/unsloth/Qwen3-0.6B-GGUF:UD-IQ1_M');
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import { createRootInjector, Injector, Signal, signal } from 'static-injector';
 import { expect } from 'chai';
 import { IndexTTSService } from '../indextts.service';

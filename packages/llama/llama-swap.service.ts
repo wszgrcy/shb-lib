@@ -24,7 +24,6 @@ import {
   llamaSwapFileNameByVersion,
 } from './util/file-name-by-version';
 import { downloadFile, DownloadFileOptions } from '@cyia/dl';
-import { spawnSync } from 'child_process';
 import { getGgufFile } from './download/get-gguf-file';
 import { getOllamaModel } from './ollama-model/ollama-manifests';
 import { dirname } from 'path';
@@ -45,7 +44,7 @@ export class LlamaSwapService extends ExternalCallBaseService {
   );
   start$ = signal(false);
   llamaDir$$ = computed(() => {
-    let fullPath = path.join(this.#config().dir, 'llama');
+    const fullPath = path.join(this.#config().dir, 'llama');
     if (this.#config().useRelConfigPath) {
       return path.relative(this.#config().cwd!, fullPath);
     }
@@ -435,7 +434,7 @@ export class LlamaSwapService extends ExternalCallBaseService {
     return `http://${hostStr}:${portStr}`;
   }
   async getLlamaSwapConfig() {
-    let isExists = fs.existsSync(this.#llamaSwapPath$$());
+    const isExists = fs.existsSync(this.#llamaSwapPath$$());
     if (!isExists) {
       return undefined;
     }
