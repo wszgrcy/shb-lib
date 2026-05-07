@@ -6,20 +6,20 @@
   "sideEffects": false,
   "type": "module",
   "peerDependencies": {
-    "valibot": "^1.1.0",
-    "static-injector": "^6.1.2",
-    "yaml": "^2.8.1",
-    "dayjs": "^1.11.13",
-    "@cyia/vfs2": "^1.5.2",
     "@cyia/util": "^1.5.2",
-    "@piying/view-angular-core": "1.5.7",
-    "rxjs": "^7.8.2"
+    "@cyia/vfs2": "^1.5.2",
+    "@piying/view-angular-core": "1.6.1",
+    "dayjs": "^1.11.13",
+    "rxjs": "^7.8.2",
+    "static-injector": "^6.1.2",
+    "valibot": "^1.1.0",
+    "yaml": "^2.8.1"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.60.0",
     "@google/generative-ai": "^0.24.1",
-    "openai": "^5.15.0",
-    "es-toolkit": "^1.45.1"
+    "es-toolkit": "^1.46.1",
+    "openai": "^5.23.2"
   },
   "overrides": {},
   "exports": {

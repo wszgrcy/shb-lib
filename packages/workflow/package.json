@@ -9,18 +9,18 @@
     "@cyia/bundle-file": "^1.5.2",
     "@cyia/code-util": "^2.8.1",
     "@cyia/external-call": "^1.5.2",
-    "@shenghuabi/openai": "workspace:*",
     "@cyia/util": "^1.5.2",
     "@cyia/vfs2": "^1.5.2",
+    "@shenghuabi/openai": "workspace:*",
     "static-injector": "^6.1.2"
   },
   "dependencies": {
-    "@angular/core": "^20.3.3",
-    "@xyflow/react": "^12.8.6",
+    "@angular/core": "^20.3.20",
+    "@xyflow/react": "^12.10.2",
     "graphology": "^0.26.0",
-    "handlebars": "^4.7.8",
-    "liquidjs": "^10.22.0",
-    "uuid": "^13.0.0"
+    "handlebars": "^4.7.9",
+    "liquidjs": "^10.25.7",
+    "uuid": "^13.0.2"
   },
   "overrides": {},
   "exports": {

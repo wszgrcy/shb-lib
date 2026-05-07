@@ -11,7 +11,7 @@
   "dependencies": {
     "audio-buffer": "5.0.0",
     "audio-decode": "2.2.3",
-    "dayjs": "^1.11.13",
+    "dayjs": "^1.11.20",
     "node-wav": "0.0.2"
   },
   "overrides": {},
