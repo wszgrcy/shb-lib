@@ -1,0 +1,49 @@
+{
+  "name": "@shenghuabi/workflow",
+  "version": "0.0.0",
+  "description": "模板",
+  "author": "wszgrcy",
+  "sideEffects": false,
+  "type": "module",
+  "peerDependencies": {
+    "@cyia/bundle-file": "^1.5.2",
+    "@cyia/code-util": "^2.8.1",
+    "@cyia/external-call": "^1.5.2",
+    "@shenghuabi/openai": "workspace:*",
+    "@cyia/util": "^1.5.2",
+    "@cyia/vfs2": "^1.5.2",
+    "static-injector": "^6.1.2"
+  },
+  "dependencies": {
+    "@angular/core": "^20.3.3",
+    "@xyflow/react": "^12.8.6",
+    "graphology": "^0.26.0",
+    "handlebars": "^4.7.8",
+    "liquidjs": "^10.22.0",
+    "uuid": "^13.0.0"
+  },
+  "overrides": {},
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "node": "./index.js",
+      "require": "./index.js"
+    },
+    "./share": {
+      "types": "./share/index.d.ts",
+      "import": "./share/index.mjs",
+      "node": "./share/index.js",
+      "require": "./share/index.js"
+    },
+    "./webview": {
+      "types": "./webview/index.d.ts",
+      "import": "./webview/index.mjs",
+      "node": "./webview/index.js",
+      "require": "./webview/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

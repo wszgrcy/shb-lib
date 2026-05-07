@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./packages",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+  },
+  "files": [],
+  "include": [
+    "./packages/*/index.ts",
+    "./packages/crunker/*.d.ts",
+    "./packages/workflow/*.d.ts",
+    "./packages/workflow/**/*.ts"
+  ]
+}

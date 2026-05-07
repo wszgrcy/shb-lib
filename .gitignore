@@ -1,0 +1,17 @@
+node_modules
+/node_modules
+/test-dist/packages
+/dist
+/test-dist/**/*.js
+/test-dist/**/*.mjs
+/test-dist/**/*.js.map
+/test-dist/**/*.mjs.map
+/coverage
+/.tmp
+/.temp
+.DS_Store
+*.log
+.env
+.idea/
+.vscode/settings.json
+/.test-dir

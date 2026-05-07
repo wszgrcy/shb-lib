@@ -1,0 +1,40 @@
+{
+  "name": "@shenghuabi/llama",
+  "version": "0.0.0",
+  "description": "llama/ollama",
+  "author": "wszgrcy",
+  "sideEffects": false,
+  "type": "module",
+  "peerDependencies": {
+    "@cyia/external-call": "^1.5.2",
+    "@cyia/vfs2": "^1.5.2",
+    "@cyia/zip": "^1.5.2",
+    "execa": "^9.6.0",
+    "static-injector": ">=6.1.2",
+    "valibot": "^1.1.0"
+  },
+  "dependencies": {
+    "normalize-path": "^3.0.0",
+    "magic-string": "^0.30.18",
+    "yaml": "^2.8.0",
+    "semver": "^7.7.2"
+  },
+  "overrides": {},
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "node": "./index.js",
+      "require": "./index.js"
+    },
+    "./define": {
+      "types": "./define/index.d.ts",
+      "import": "./define/index.mjs",
+      "node": "./define/index.js",
+      "require": "./define/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

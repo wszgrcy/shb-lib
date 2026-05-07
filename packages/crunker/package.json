@@ -1,0 +1,35 @@
+{
+  "name": "@shenghuabi/crunker",
+  "version": "0.0.0",
+  "description": "nodejs上音频工具",
+  "author": "wszgrcy",
+  "sideEffects": false,
+  "type": "module",
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
+  "dependencies": {
+    "audio-buffer": "5.0.0",
+    "audio-decode": "2.2.3",
+    "dayjs": "^1.11.13",
+    "node-wav": "0.0.2"
+  },
+  "overrides": {},
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "node": "./index.js",
+      "require": "./index.js"
+    },
+    "./define": {
+      "types": "./define/index.d.ts",
+      "import": "./define/define.mjs",
+      "node": "./define/define.js",
+      "require": "./define/define.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

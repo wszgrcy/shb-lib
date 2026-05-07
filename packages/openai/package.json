@@ -1,0 +1,42 @@
+{
+  "name": "@shenghuabi/openai",
+  "version": "0.0.0",
+  "description": "模板",
+  "author": "wszgrcy",
+  "sideEffects": false,
+  "type": "module",
+  "peerDependencies": {
+    "valibot": "^1.1.0",
+    "static-injector": "^6.1.2",
+    "yaml": "^2.8.1",
+    "dayjs": "^1.11.13",
+    "@cyia/vfs2": "^1.5.2",
+    "@cyia/util": "^1.5.2",
+    "@piying/view-angular-core": "1.5.7",
+    "rxjs": "^7.8.2"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
+    "@google/generative-ai": "^0.24.1",
+    "openai": "^5.15.0",
+    "es-toolkit": "^1.45.1"
+  },
+  "overrides": {},
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "node": "./index.js",
+      "require": "./index.js"
+    },
+    "./define": {
+      "types": "./define/index.d.ts",
+      "import": "./define/index.mjs",
+      "node": "./define/index.js",
+      "require": "./define/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

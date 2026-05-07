@@ -1,0 +1,20 @@
+{
+  "name": "@shenghuabi/han2number",
+  "version": "0.0.0",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "type": "module",
+  "author": "wszgrcy",
+  "description": "",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "node": "./index.js",
+      "require": "./index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
