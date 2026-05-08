@@ -306,7 +306,10 @@ const GenerateOptionsDefine = v.pipe(
         ),
         emo: v.pipe(EmoDefine, v.title('情绪控制')),
       }),
-      setComponent('tab-group'),
+      setComponent('tabs'),
+      actions.inputs.patch({
+        type: 'lift',
+      }),
     ),
   ]),
 
