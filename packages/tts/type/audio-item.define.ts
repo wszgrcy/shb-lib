@@ -271,11 +271,7 @@ const GenerateOptionsDefine = v.pipe(
         v.optional(v.string()),
         v.title('生成文本'),
         v.description('生成音频时传入的内容,为空时使用字幕文本(非空字符串)'),
-        actions.wrappers.set([
-          'tooltip',
-          'form-field-reset-suffix',
-          'form-field',
-        ]),
+        actions.wrappers.set(['tooltip', 'label']),
       ),
     }),
     v.pipe(

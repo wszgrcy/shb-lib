@@ -150,7 +150,7 @@ const vendorOptionsDescribe = `## 通用参数
 {"厂商名(与vendor字段相同)":{ "extraOptions":{"temperature":0.1,"topP":0.8,"maxTokens":8192,"baseURL":"http://127.0.0.1:11434/v1","apiKey":" "} }
 \`\`\`
 `;
-const InputWrapper = metadataPipe(actions.wrappers.set(['tooltip', 'form-field']));
+const InputWrapper = metadataPipe(actions.wrappers.set(['tooltip', 'label']));
 
 export const ChatItemDefine = v.pipe(
   v.intersect([

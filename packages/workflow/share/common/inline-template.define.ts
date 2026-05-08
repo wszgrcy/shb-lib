@@ -13,7 +13,7 @@ export const INLINE_Template = v.pipe(
       v.optional(v.string(), '{{NODE.description}}'),
       v.title('模板'),
       v.description('允许使用变量:{{NODE.xxx}}(参考节点帮助)'),
-      actions.wrappers.set(['tooltip', 'form-field']),
+      actions.wrappers.set(['tooltip', 'label']),
       actions.class.top('flex-1'),
 
       disableWhen({
@@ -34,7 +34,7 @@ export const INLINE_Template2 = v.pipe(
       v.optional(v.string()),
       v.title('模板'),
       v.description('允许使用变量:{{ENTRY.xxx}}(参考节点帮助)'),
-      actions.wrappers.set(['tooltip', 'form-field']),
+      actions.wrappers.set(['tooltip', 'label']),
 
       actions.class.top('flex-1'),
 
