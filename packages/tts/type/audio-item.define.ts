@@ -1,8 +1,8 @@
 import * as v from 'valibot';
 import {
   _PiResolvedCommonViewFieldConfig,
-  asVirtualGroup,
   actions,
+  asVirtualGroup,
   hideWhen,
   NFCSchema,
   renderConfig,
@@ -216,7 +216,7 @@ const FileConfig = v.pipe(
         __btn1: v.pipe(
           NFCSchema,
           setComponent('button'),
-          actions.inputs.patch({ label: '插件处理' }),
+          actions.inputs.patch({ content: '插件处理' }),
           actions.inputs.patchAsync({
             clicked: (field) => async () => {
               const listFiled = field.get(['#', 'list'])!;
@@ -230,7 +230,7 @@ const FileConfig = v.pipe(
         __btn2: v.pipe(
           NFCSchema,
           setComponent('button'),
-          actions.inputs.patch({ label: '重置', color: 'warn' }),
+          actions.inputs.patch({ content: '重置', color: 'error' }),
           actions.inputs.patchAsync({
             clicked: (field) => async () => {
               const listFiled = field.get(['#', 'list'])!;
@@ -244,7 +244,7 @@ const FileConfig = v.pipe(
         __btn3: v.pipe(
           NFCSchema,
           setComponent('button'),
-          actions.inputs.patch({ label: '文本到语音', type: 'flat' }),
+          actions.inputs.patch({ content: '文本到语音' }),
           actions.inputs.patchAsync({
             clicked: (field) => () => field.context['apply'](),
           }),
@@ -252,7 +252,7 @@ const FileConfig = v.pipe(
         __btn4: v.pipe(
           NFCSchema,
           setComponent('button'),
-          actions.inputs.patch({ label: '查看日志' }),
+          actions.inputs.patch({ content: '查看日志' }),
           actions.inputs.patchAsync({
             clicked: (field) => () => field.context['openLog'](),
           }),
