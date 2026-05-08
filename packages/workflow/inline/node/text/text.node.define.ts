@@ -1,7 +1,7 @@
 import {
+  actions,
   condition,
   setComponent,
-  topClass,
   valueChange,
 } from '@piying/view-angular-core';
 import * as v from 'valibot';
@@ -13,7 +13,7 @@ export const TEXT_NODE_DEFINE = v.looseObject({
         environments: ['display'],
         actions: [
           setComponent('string'),
-          topClass('nodrag'),
+          actions.class.top('nodrag'),
 
           valueChange((fn) => {
             fn({ list: [undefined] }).subscribe(({ list: [value], field }) => {

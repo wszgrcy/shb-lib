@@ -1,6 +1,6 @@
 import {
   asVirtualGroup,
-  patchAsyncInputs,
+  actions,
   setComponent,
 } from '@piying/view-angular-core';
 import { condition } from '@piying/valibot-visit';
@@ -17,7 +17,7 @@ export function llmModelConfig(item?: { label: string }) {
                 v.optional(v.string()),
                 v.title('预定义模型配置'),
                 setComponent('select'),
-                patchAsyncInputs({
+                actions.inputs.patchAsync({
                   options: (field) => field.context!.getModelList(),
                 }),
               ),

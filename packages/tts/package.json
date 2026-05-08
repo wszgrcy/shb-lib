@@ -11,7 +11,9 @@
     "@cyia/vfs2": "^1.5.2",
     "@cyia/zip": "^1.5.2",
     "static-injector": ">=6.1.2",
-    "valibot": "^1.1.0"
+    "valibot": "^1.1.0",
+    "@piying/view-angular-core": "^2.9.3",
+    "@piying/valibot-visit": "^1.3.11"
   },
   "dependencies": {
     "@shenghuabi/crunker": "workspace:*",

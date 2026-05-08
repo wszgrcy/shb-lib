@@ -1,9 +1,8 @@
 import * as v from 'valibot';
 
 import {
-  componentClass,
+  actions,
   condition,
-  patchInputs,
   setComponent,
   valueChange,
 } from '@piying/view-angular-core';
@@ -20,7 +19,7 @@ export const CHAT_NODE_DEFINE = v.looseObject({
         /** 处理时解析 */
         responseFormat: v.pipe(
           v.optional(v.picklist(ResponseFormat)),
-          patchInputs({
+          actions.inputs.patch({
             options: [
               // 有输入json时
               {
@@ -47,7 +46,7 @@ export const CHAT_NODE_DEFINE = v.looseObject({
         /** 处理后解析 */
         parseBy: v.pipe(
           v.optional(v.picklist(ResponseList)),
-          patchInputs({
+          actions.inputs.patch({
             options: [
               { label: '直接返回', value: undefined },
               {
@@ -83,7 +82,7 @@ export const CHAT_NODE_DEFINE = v.looseObject({
         examples: EXAMPLES_DEFINE,
       }),
 
-      componentClass('grid auto-rows-auto gap-2'),
+      actions.class.component('grid auto-rows-auto gap-2'),
     ),
     value: v.pipe(
       v.custom<ChatMessageListInputType>(Boolean),

@@ -1,8 +1,6 @@
 import {
   asControl,
-  componentClass,
-  patchInputs,
-  patchWrappers,
+  actions,
   setComponent,
 } from '@piying/view-angular-core';
 import * as v from 'valibot';
@@ -152,7 +150,7 @@ const vendorOptionsDescribe = `## 通用参数
 {"厂商名(与vendor字段相同)":{ "extraOptions":{"temperature":0.1,"topP":0.8,"maxTokens":8192,"baseURL":"http://127.0.0.1:11434/v1","apiKey":" "} }
 \`\`\`
 `;
-const InputWrapper = metadataPipe(patchWrappers(['tooltip', 'form-field']));
+const InputWrapper = metadataPipe(actions.wrappers.set(['tooltip', 'form-field']));
 
 export const ChatItemDefine = v.pipe(
   v.intersect([
@@ -179,12 +177,12 @@ export const ChatItemDefine = v.pipe(
                 .join('\n'),
             })),
           }),
-          patchInputs({
+          actions.inputs.patch({
             options: VendorList,
           }),
         ),
       }),
-      componentClass('flex *:flex-1 gap-2 items-center'),
+      actions.class.component('flex *:flex-1 gap-2 items-center'),
     ),
     v.pipe(
       v.object({
@@ -203,7 +201,7 @@ export const ChatItemDefine = v.pipe(
           ...InputWrapper,
         ),
       }),
-      componentClass('flex *:flex-1 gap-2 items-center'),
+      actions.class.component('flex *:flex-1 gap-2 items-center'),
     ),
     v.object({
       apiKey: v.pipe(
@@ -258,7 +256,7 @@ export const ChatItemDefine = v.pipe(
           ),
           asControl(),
           setComponent('chip-input-list'),
-          patchInputs({
+          actions.inputs.patch({
             addOnBlur: true,
           }),
           ...InputWrapper,
@@ -283,10 +281,10 @@ export const ChatItemDefine = v.pipe(
         //     ),
         //   ),
       }),
-      componentClass('grid gap-2'),
+      actions.class.component('grid gap-2'),
     ),
   ]),
-  componentClass('grid gap-2'),
+  actions.class.component('grid gap-2'),
   asVirtualGroup(),
 );
 
@@ -304,14 +302,14 @@ export const VendorOptionsDefine = v.pipe(
             ),
           }),
         ]),
-        componentClass('grid gap-2'),
+        actions.class.component('grid gap-2'),
         asVirtualGroup(),
       ),
     ),
   ),
   v.description(vendorOptionsDescribe),
   setComponent('rest-chip-group'),
-  patchInputs({
+  actions.inputs.patch({
     optionalkeyList: VendorList.map((item) => item.value),
     placeholder: '请设置额外配置',
   }),
@@ -323,14 +321,14 @@ export const ChatParamsItemDefine = v.pipe(
     v.object({ vendorOptions: VendorOptionsDefine }),
   ]),
   asVirtualGroup(),
-  componentClass('grid gap-2'),
+  actions.class.component('grid gap-2'),
 );
 
 export const ChatParamsListDefine = v.pipe(
   v.array(ChatParamsItemDefine),
   setComponent('label-chip-array'),
   v.description('对话模型列表,目前用于切换使用'),
-  patchInputs({
+  actions.inputs.patch({
     displayKey: 'name',
     placeholder: '请添加配置',
   }),

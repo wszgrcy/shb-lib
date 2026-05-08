@@ -10,8 +10,7 @@ import {
 import { asColumn } from '../util/define-helper';
 import {
   asControl,
-  patchAsyncInputs,
-  patchInputs,
+  actions,
   setComponent,
 } from '@piying/view-angular-core';
 import { deepEqual } from 'fast-equals';
@@ -25,10 +24,10 @@ const EmoSaveDefine = v.pipe(
           v.custom<RefFindType>((a) => !!a),
           setComponent('picklist'),
           v.title('引用'),
-          patchInputs({
+          actions.inputs.patch({
             compareWith: deepEqual,
           }),
-          patchAsyncInputs({
+          actions.inputs.patchAsync({
             options: (field) => {
               const subject = new BehaviorSubject<any[]>([]);
               field.context['getAudioReferenceList']().then((list: any[]) => {
@@ -58,14 +57,14 @@ export const ReferenceCommonDefine = v.object({
     v.optional(v.string(), 'chinese'),
     v.title('语言'),
     setComponent('picklist'),
-    patchInputs({ options: LanguageList }),
+    actions.inputs.patch({ options: LanguageList }),
   ),
   aliases: v.pipe(
     v.optional(v.array(v.string())),
     v.title('别名'),
     asControl(),
     setComponent('chip-input-list'),
-    patchInputs({ addOnBlur: true }),
+    actions.inputs.patch({ addOnBlur: true }),
   ),
 });
 export type ReferenceCommonType = v.InferInput<typeof ReferenceCommonDefine>;

@@ -2,16 +2,11 @@ import * as v from 'valibot';
 import {
   _PiResolvedCommonViewFieldConfig,
   asVirtualGroup,
-  componentClass,
+  actions,
   hideWhen,
   NFCSchema,
-  patchAsyncInputs,
-  patchInputs,
-  patchProps,
   renderConfig,
   setComponent,
-  setWrappers,
-  topClass,
 } from '@piying/view-angular-core';
 import { BehaviorSubject, from, map } from 'rxjs';
 import { metadataPipe } from '@piying/valibot-visit';
@@ -29,10 +24,10 @@ export const AudioReferenceDefine = v.pipe(
   v.custom<RefFindType>((a) => !!a),
   setComponent('picklist'),
   v.title('使用配音'),
-  patchInputs({
+  actions.inputs.patch({
     compareWith: deepEqual,
   }),
-  patchAsyncInputs({
+  actions.inputs.patchAsync({
     options: (field) => {
       const subject = new BehaviorSubject<any[]>([]);
       field.context['getAudioReferenceList']().then((list: any[]) => {
@@ -48,17 +43,17 @@ export const AudioReferenceDefine = v.pipe(
 const emoVectorItemDefine = v.pipe(
   v.optional(v.number(), 0),
   setComponent('slider'),
-  patchInputs({ min: 0, max: 1, step: 0.05 }),
+  actions.inputs.patch({ min: 0, max: 1, step: 0.05 }),
 );
 const use_randomDefine = v.pipe(
   v.optional(v.boolean(), false),
   v.title('情感随机采样'),
-  setWrappers(['label']),
-  patchProps({ titlePosition: 'right' }),
+  actions.wrappers.set(['label']),
+  actions.props.patch({ titlePosition: 'right' }),
 );
 const TopLabel = metadataPipe(
-  patchProps({ titlePosition: 'top' }),
-  setWrappers([{ type: 'label' }]),
+  actions.props.patch({ titlePosition: 'top' }),
+  actions.wrappers.set([{ type: 'label' }]),
 );
 export const EmoPresetDefine = v.pipe(
   v.strictObject({
@@ -67,10 +62,10 @@ export const EmoPresetDefine = v.pipe(
       v.custom<RefFindType>((a) => !!a),
       setComponent('picklist'),
       v.title('引用'),
-      patchInputs({
+      actions.inputs.patch({
         compareWith: deepEqual,
       }),
-      patchAsyncInputs({
+      actions.inputs.patchAsync({
         options: (field) => {
           const subject = new BehaviorSubject<any[]>([]);
           field.context['getIndexTTSEmoReferenceList']().then((list: any[]) => {
@@ -101,11 +96,11 @@ export const EmoType2Define = v.pipe(
     emo_audio_prompt: v.pipe(AudioReferenceDefine, v.title('情感参考音频')),
     emo_alpha: v.pipe(
       v.optional(v.number(), 1),
-      patchInputs({ min: 0, max: 1, step: 0.01 }),
+      actions.inputs.patch({ min: 0, max: 1, step: 0.01 }),
       v.title('情感权重'),
       setComponent('slider'),
-      setWrappers(['label']),
-      patchProps({ titlePosition: 'top' }),
+      actions.wrappers.set(['label']),
+      actions.props.patch({ titlePosition: 'top' }),
     ),
   }),
   v.title('使用情感参考音频'),
@@ -124,9 +119,9 @@ export const EmoType3Define = v.pipe(
         v.pipe(emoVectorItemDefine, v.title('惊喜'), ...TopLabel),
         v.pipe(emoVectorItemDefine, v.title('平静'), ...TopLabel),
       ]),
-      componentClass('grid gap-4 grid-cols-2'),
-      setWrappers(['alert-valid']),
-      patchProps({
+      actions.class.component('grid gap-4 grid-cols-2'),
+      actions.wrappers.set(['alert-valid']),
+      actions.props.patch({
         validPosition: 'bottom',
       }),
     ),
@@ -148,7 +143,7 @@ export const EmoType4Define = v.pipe(
     ),
   }),
   v.title('使用情感描述文本控制'),
-  componentClass('grid gap-2'),
+  actions.class.component('grid gap-2'),
 );
 export const EmoDefine = v.pipe(
   v.union([
@@ -221,8 +216,8 @@ const FileConfig = v.pipe(
         __btn1: v.pipe(
           NFCSchema,
           setComponent('button'),
-          patchInputs({ label: '插件处理' }),
-          patchAsyncInputs({
+          actions.inputs.patch({ label: '插件处理' }),
+          actions.inputs.patchAsync({
             clicked: (field) => async () => {
               const listFiled = field.get(['#', 'list'])!;
               const result = await field.context['changeAudioList'](
@@ -235,8 +230,8 @@ const FileConfig = v.pipe(
         __btn2: v.pipe(
           NFCSchema,
           setComponent('button'),
-          patchInputs({ label: '重置', color: 'warn' }),
-          patchAsyncInputs({
+          actions.inputs.patch({ label: '重置', color: 'warn' }),
+          actions.inputs.patchAsync({
             clicked: (field) => async () => {
               const listFiled = field.get(['#', 'list'])!;
               const result = await field.context['resetAudioList'](
@@ -249,16 +244,16 @@ const FileConfig = v.pipe(
         __btn3: v.pipe(
           NFCSchema,
           setComponent('button'),
-          patchInputs({ label: '文本到语音', type: 'flat' }),
-          patchAsyncInputs({
+          actions.inputs.patch({ label: '文本到语音', type: 'flat' }),
+          actions.inputs.patchAsync({
             clicked: (field) => () => field.context['apply'](),
           }),
         ),
         __btn4: v.pipe(
           NFCSchema,
           setComponent('button'),
-          patchInputs({ label: '查看日志' }),
-          patchAsyncInputs({
+          actions.inputs.patch({ label: '查看日志' }),
+          actions.inputs.patchAsync({
             clicked: (field) => () => field.context['openLog'](),
           }),
         ),
@@ -266,7 +261,7 @@ const FileConfig = v.pipe(
       asRow(2),
     ),
   ]),
-  componentClass('self-start grid gap-2', true),
+  actions.class.component('self-start grid gap-2', true),
   asVirtualGroup(),
 );
 const GenerateOptionsDefine = v.pipe(
@@ -276,7 +271,11 @@ const GenerateOptionsDefine = v.pipe(
         v.optional(v.string()),
         v.title('生成文本'),
         v.description('生成音频时传入的内容,为空时使用字幕文本(非空字符串)'),
-        setWrappers(['tooltip', 'form-field-reset-suffix', 'form-field']),
+        actions.wrappers.set([
+          'tooltip',
+          'form-field-reset-suffix',
+          'form-field',
+        ]),
       ),
     }),
     v.pipe(
@@ -326,17 +325,17 @@ export const AudioItemDefine = v.pipe(
                 start: v.pipe(v.optional(v.number()), v.title('开始(秒)')),
                 end: v.pipe(v.optional(v.number()), v.title('结束(秒)')),
               }),
-              componentClass('grid grid-cols-2 col-span-1 gap-2'),
+              actions.class.component('grid grid-cols-2 col-span-1 gap-2'),
             ),
             v.pipe(
               v.object({
                 text: v.pipe(v.optional(v.string(), ''), v.title('字幕')),
               }),
-              componentClass('col-span-3'),
+              actions.class.component('col-span-3'),
             ),
           ]),
           asVirtualGroup(),
-          componentClass('grid grid-cols-4 gap-2'),
+          actions.class.component('grid grid-cols-4 gap-2'),
         ),
       }),
     ),
@@ -376,7 +375,7 @@ export const AudioItemDefine = v.pipe(
     ),
   ]),
   asVirtualGroup(),
-  componentClass('grid gap-2'),
+  actions.class.component('grid gap-2'),
 );
 export type AudioItemType = v.InferOutput<typeof AudioItemDefine>;
 export const TTSFileConfigDefine = v.pipe(
@@ -384,7 +383,7 @@ export const TTSFileConfigDefine = v.pipe(
     list: v.pipe(
       v.array(AudioItemDefine),
       setComponent('card-array'),
-      patchInputs({
+      actions.inputs.patch({
         enableLineInsert: true,
         actions: [
           {
@@ -441,9 +440,12 @@ export const TTSFileConfigDefine = v.pipe(
         ],
       }),
 
-      topClass('col-span-3'),
+      actions.class.top('col-span-3'),
     ),
-    fileConfig: v.pipe(FileConfig, topClass('sticky top-4 col-span-2', true)),
+    fileConfig: v.pipe(
+      FileConfig,
+      actions.class.top('sticky top-4 col-span-2', true),
+    ),
     version: v.pipe(
       v.optional(v.literal(1), 1),
       setComponent(''),
@@ -455,7 +457,7 @@ export const TTSFileConfigDefine = v.pipe(
       renderConfig({ hidden: true }),
     ),
   }),
-  componentClass('grid grid-cols-5 gap-2 '),
+  actions.class.component('grid grid-cols-5 gap-2 '),
 );
 
 export type TTSFileConfigType = v.InferOutput<typeof TTSFileConfigDefine>;

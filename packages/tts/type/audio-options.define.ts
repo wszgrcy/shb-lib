@@ -1,17 +1,16 @@
 import { SpeedControlDefine } from '@shenghuabi/crunker/define';
 import {
   asVirtualGroup,
-  patchWrappers,
-  topClass,
+  actions,
 } from '@piying/view-angular-core';
 import * as v from 'valibot';
 import { asColumn, asRow } from '../util/define-helper';
 export const isParagraphDefine = v.pipe(
   v.optional(v.boolean(), false),
-  topClass('!flex-none'),
+  actions.class.top('!flex-none'),
   v.title('段落'),
   v.description('该项是否为段落(影响段落间隔)'),
-  patchWrappers(['tooltip', 'label']),
+  actions.wrappers.set(['tooltip', 'label']),
 );
 
 export const ParagraphIntervalDefine = v.object({

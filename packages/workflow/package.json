@@ -12,7 +12,9 @@
     "@cyia/util": "^1.5.2",
     "@cyia/vfs2": "^1.5.2",
     "@shenghuabi/openai": "workspace:*",
-    "static-injector": "^6.1.2"
+    "static-injector": "^6.1.2",
+    "@piying/view-angular-core": "^2.9.3",
+    "@piying/valibot-visit": "^1.3.11"
   },
   "dependencies": {
     "@angular/core": "^20.3.20",

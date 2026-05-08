@@ -1,8 +1,7 @@
 import {
+  actions,
   condition,
-  patchWrappers,
   renderConfig,
-  topClass,
 } from '@piying/view-angular-core';
 import * as v from 'valibot';
 import { asColumn } from '../util/layout';
@@ -19,12 +18,12 @@ export const EXAMPLES_DEFINE = v.pipe(
                 v.description(
                   '选中后会尝试使用yaml解析为对象,再序列化为对应的响应类型',
                 ),
-                patchWrappers(['tooltip']),
+                actions.wrappers.set(['tooltip']),
               ),
-              value: v.pipe(v.string(), v.title('问题'), topClass('flex-1')),
+              value: v.pipe(v.string(), v.title('问题'), actions.class.top('flex-1')),
             }),
             // todo 待修复
-            topClass('flex gap-2 items-center'),
+            actions.class.top('flex gap-2 items-center'),
           ),
 
           output: v.pipe(
@@ -32,11 +31,11 @@ export const EXAMPLES_DEFINE = v.pipe(
               format: v.pipe(
                 v.optional(v.boolean(), false),
                 v.description('是否需要格式化'),
-                patchWrappers(['tooltip']),
+                actions.wrappers.set(['tooltip']),
               ),
-              value: v.pipe(v.string(), v.title('回答'), topClass('flex-1')),
+              value: v.pipe(v.string(), v.title('回答'), actions.class.top('flex-1')),
             }),
-            topClass('flex gap-2 items-center'),
+            actions.class.top('flex gap-2 items-center'),
           ),
         }),
         asColumn(),

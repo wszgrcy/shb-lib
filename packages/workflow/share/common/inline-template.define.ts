@@ -1,8 +1,6 @@
 import {
-  componentClass,
+  actions,
   disableWhen,
-  setWrappers,
-  topClass,
 } from '@piying/view-angular-core';
 import { map } from 'rxjs';
 import * as v from 'valibot';
@@ -15,8 +13,8 @@ export const INLINE_Template = v.pipe(
       v.optional(v.string(), '{{NODE.description}}'),
       v.title('模板'),
       v.description('允许使用变量:{{NODE.xxx}}(参考节点帮助)'),
-      setWrappers(['tooltip', 'form-field']),
-      topClass('flex-1'),
+      actions.wrappers.set(['tooltip', 'form-field']),
+      actions.class.top('flex-1'),
 
       disableWhen({
         listen: (fn) =>
@@ -26,7 +24,7 @@ export const INLINE_Template = v.pipe(
       }),
     ),
   }),
-  componentClass('flex gap-2'),
+  actions.class.component('flex gap-2'),
 );
 export const INLINE_Template2 = v.pipe(
   v.object({
@@ -36,9 +34,9 @@ export const INLINE_Template2 = v.pipe(
       v.optional(v.string()),
       v.title('模板'),
       v.description('允许使用变量:{{ENTRY.xxx}}(参考节点帮助)'),
-      setWrappers(['tooltip', 'form-field']),
+      actions.wrappers.set(['tooltip', 'form-field']),
 
-      topClass('flex-1'),
+      actions.class.top('flex-1'),
 
       disableWhen({
         listen: (fn) =>
@@ -48,5 +46,5 @@ export const INLINE_Template2 = v.pipe(
       }),
     ),
   }),
-  componentClass('flex gap-2 items-center'),
+  actions.class.component('flex gap-2 items-center'),
 );
