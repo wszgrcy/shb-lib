@@ -81,8 +81,8 @@ export const CHAT_NODE_DEFINE = v.looseObject({
         ),
         examples: EXAMPLES_DEFINE,
       }),
-
-      actions.class.component('grid auto-rows-auto gap-2'),
+      actions.wrappers.patch(['div']),
+      actions.class.top('grid auto-rows-auto gap-2'),
     ),
     value: v.pipe(
       v.custom<ChatMessageListInputType>(Boolean),

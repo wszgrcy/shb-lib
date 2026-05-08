@@ -119,7 +119,8 @@ export const EmoType3Define = v.pipe(
         v.pipe(emoVectorItemDefine, v.title('惊喜'), ...TopLabel),
         v.pipe(emoVectorItemDefine, v.title('平静'), ...TopLabel),
       ]),
-      actions.class.component('grid gap-4 grid-cols-2'),
+      actions.wrappers.patch(['div']),
+      actions.class.top('grid gap-4 grid-cols-2'),
       actions.wrappers.set(['alert-valid']),
       actions.props.patch({
         validPosition: 'bottom',
@@ -143,7 +144,8 @@ export const EmoType4Define = v.pipe(
     ),
   }),
   v.title('使用情感描述文本控制'),
-  actions.class.component('grid gap-2'),
+  actions.wrappers.patch(['div']),
+  actions.class.top('grid gap-2'),
 );
 export const EmoDefine = v.pipe(
   v.union([
@@ -261,7 +263,8 @@ const FileConfig = v.pipe(
       asRow(2),
     ),
   ]),
-  actions.class.component('self-start grid gap-2', true),
+  actions.wrappers.patch(['div']),
+  actions.class.top('self-start grid gap-2', true),
   asVirtualGroup(),
 );
 const GenerateOptionsDefine = v.pipe(
@@ -321,17 +324,20 @@ export const AudioItemDefine = v.pipe(
                 start: v.pipe(v.optional(v.number()), v.title('开始(秒)')),
                 end: v.pipe(v.optional(v.number()), v.title('结束(秒)')),
               }),
-              actions.class.component('grid grid-cols-2 col-span-1 gap-2'),
+              actions.wrappers.patch(['div']),
+              actions.class.top('grid grid-cols-2 col-span-1 gap-2'),
             ),
             v.pipe(
               v.object({
                 text: v.pipe(v.optional(v.string(), ''), v.title('字幕')),
               }),
-              actions.class.component('col-span-3'),
+              actions.wrappers.patch(['div']),
+              actions.class.top('col-span-3'),
             ),
           ]),
           asVirtualGroup(),
-          actions.class.component('grid grid-cols-4 gap-2'),
+          actions.wrappers.patch(['div']),
+          actions.class.top('grid grid-cols-4 gap-2'),
         ),
       }),
     ),
@@ -371,7 +377,8 @@ export const AudioItemDefine = v.pipe(
     ),
   ]),
   asVirtualGroup(),
-  actions.class.component('grid gap-2'),
+  actions.wrappers.patch(['div']),
+  actions.class.top('grid gap-2'),
 );
 export type AudioItemType = v.InferOutput<typeof AudioItemDefine>;
 export const TTSFileConfigDefine = v.pipe(
@@ -453,7 +460,8 @@ export const TTSFileConfigDefine = v.pipe(
       renderConfig({ hidden: true }),
     ),
   }),
-  actions.class.component('grid grid-cols-5 gap-2 '),
+  actions.wrappers.patch(['div']),
+  actions.class.top('grid grid-cols-5 gap-2 '),
 );
 
 export type TTSFileConfigType = v.InferOutput<typeof TTSFileConfigDefine>;

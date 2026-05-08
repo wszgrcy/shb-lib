@@ -1,7 +1,4 @@
-import {
-  actions,
-  disableWhen,
-} from '@piying/view-angular-core';
+import { actions, disableWhen } from '@piying/view-angular-core';
 import { map } from 'rxjs';
 import * as v from 'valibot';
 
@@ -24,7 +21,8 @@ export const INLINE_Template = v.pipe(
       }),
     ),
   }),
-  actions.class.component('flex gap-2'),
+  actions.wrappers.patch(['div']),
+  actions.class.top('flex gap-2'),
 );
 export const INLINE_Template2 = v.pipe(
   v.object({
@@ -46,5 +44,6 @@ export const INLINE_Template2 = v.pipe(
       }),
     ),
   }),
-  actions.class.component('flex gap-2 items-center'),
+  actions.wrappers.patch(['div']),
+  actions.class.top('flex gap-2 items-center'),
 );

@@ -1,8 +1,4 @@
-import {
-  asControl,
-  actions,
-  setComponent,
-} from '@piying/view-angular-core';
+import { asControl, actions, setComponent } from '@piying/view-angular-core';
 import * as v from 'valibot';
 import {
   asVirtualGroup,
@@ -182,7 +178,8 @@ export const ChatItemDefine = v.pipe(
           }),
         ),
       }),
-      actions.class.component('flex *:flex-1 gap-2 items-center'),
+      actions.wrappers.patch(['div']),
+      actions.class.top('flex *:flex-1 gap-2 items-center'),
     ),
     v.pipe(
       v.object({
@@ -201,17 +198,23 @@ export const ChatItemDefine = v.pipe(
           ...InputWrapper,
         ),
       }),
-      actions.class.component('flex *:flex-1 gap-2 items-center'),
+      actions.wrappers.patch([
+        {
+          type: 'div',
+          attributes: { class: 'flex *:flex-1 gap-2 items-center' },
+        },
+      ]),
     ),
     v.object({
       apiKey: v.pipe(
         v.optional(v.string()),
         v.description('本地部署默认可以不填'),
+        v.title('apiKey')
       ),
     }),
     v.pipe(
       v.object({
-        max_tokens: v.pipe(v.optional(v.number(), 8192)),
+        max_tokens: v.pipe(v.optional(v.number(), 8192), v.title('max_tokens')),
         top_p: v.pipe(
           v.optional(v.number(), 0.8),
           v.minValue(0),
@@ -220,6 +223,7 @@ export const ChatItemDefine = v.pipe(
 
 我们通常建议调整 top_p 或温度参数，但不要同时调整两者。`),
           ...InputWrapper,
+          v.title('top_p'),
         ),
         temperature: v.pipe(
           v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(2)), 0.1),
@@ -227,6 +231,7 @@ export const ChatItemDefine = v.pipe(
             '采样温度应设置在0到2之间。较高的值（如0.8）会使输出更随机，而较低的值（如0.2）则会使输出更集中且确定。我们通常建议仅调整此参数或top_p，而不同时调整两者。',
           ),
           ...InputWrapper,
+          v.title('temperature'),
         ),
         frequency_penalty: v.pipe(
           v.optional(v.pipe(v.number(), v.minValue(-2), v.maxValue(2))),
@@ -234,6 +239,7 @@ export const ChatItemDefine = v.pipe(
             '取值范围为-2.0至2.0。正值会根据当前文本中已有标记的频率对新标记进行惩罚，从而降低模型逐字重复相同内容的概率。',
           ),
           ...InputWrapper,
+          v.title('frequency_penalty'),
         ),
         presence_penalty: v.pipe(
           v.optional(v.pipe(v.number(), v.minValue(-2), v.maxValue(2))),
@@ -241,6 +247,7 @@ export const ChatItemDefine = v.pipe(
             '数值介于-2.0至2.0之间。正值会基于新标记是否已在当前文本中出现，对新标记施加惩罚，从而提升模型讨论新话题的可能性。',
           ),
           ...InputWrapper,
+          v.title('presence_penalty'),
         ),
         seed: v.pipe(
           v.optional(v.pipe(v.number())),
@@ -248,6 +255,7 @@ export const ChatItemDefine = v.pipe(
             '若已指定，系统将尽力确保采样具有确定性，即使用相同种子和参数的重复请求将返回相同结果。确定性无法保证，请通过 system_fingerprint 响应参数监控后端变化。',
           ),
           ...InputWrapper,
+          v.title('seed'),
         ),
         stop: v.pipe(
           v.optional(v.pipe(v.array(v.pipe(v.string())), v.maxLength(4))),
@@ -260,6 +268,7 @@ export const ChatItemDefine = v.pipe(
             addOnBlur: true,
           }),
           ...InputWrapper,
+          v.title('stop'),
         ),
         //   top_logprobs: v.pipe(
         //     v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(20))),
@@ -281,10 +290,12 @@ export const ChatItemDefine = v.pipe(
         //     ),
         //   ),
       }),
-      actions.class.component('grid gap-2'),
+      actions.wrappers.patch(['div']),
+      actions.class.top('grid gap-2'),
     ),
   ]),
-  actions.class.component('grid gap-2'),
+  actions.wrappers.patch(['div']),
+  actions.class.top('grid gap-2'),
   asVirtualGroup(),
 );
 
@@ -302,7 +313,8 @@ export const VendorOptionsDefine = v.pipe(
             ),
           }),
         ]),
-        actions.class.component('grid gap-2'),
+        actions.wrappers.patch(['div']),
+        actions.class.top('grid gap-2'),
         asVirtualGroup(),
       ),
     ),
@@ -321,7 +333,8 @@ export const ChatParamsItemDefine = v.pipe(
     v.object({ vendorOptions: VendorOptionsDefine }),
   ]),
   asVirtualGroup(),
-  actions.class.component('grid gap-2'),
+  actions.wrappers.patch(['div']),
+  actions.class.top('grid gap-2'),
 );
 
 export const ChatParamsListDefine = v.pipe(
