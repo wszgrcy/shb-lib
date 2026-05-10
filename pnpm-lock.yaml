@@ -105,8 +105,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       openai:
-        specifier: ^5.23.2
-        version: 5.23.2
+        specifier: 6.37.0
+        version: 6.37.0
       rfdc:
         specifier: ^1.4.1
         version: 1.4.1
@@ -2371,6 +2371,18 @@ packages:
     peerDependencies:
       ws: ^8.18.0
       zod: ^3.23.8
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+
+  openai@6.37.0:
+    resolution: {integrity: sha512-0H5dEGFmmLv6KSd0W1w2nyL8WsLkX6yoLeQpU+dZAOuGcany5qkYQMmj35ZrKgb6yiyYqpUzFOpR8mZQkgqeEQ==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
     peerDependenciesMeta:
       ws:
         optional: true
@@ -4916,6 +4928,8 @@ snapshots:
       mimic-fn: 2.1.0
 
   openai@5.23.2: {}
+
+  openai@6.37.0: {}
 
   optionator@0.9.4:
     dependencies:

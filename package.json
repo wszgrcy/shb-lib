@@ -1,6 +1,6 @@
 {
   "name": "cyia-template",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "private": true,
   "packageManager": "pnpm@10.4.1",
   "repository": {
@@ -83,7 +83,7 @@
     "marked": "^18.0.3",
     "node-wav": "0.0.2",
     "normalize-path": "^3.0.0",
-    "openai": "^5.23.2",
+    "openai": "6.37.0",
     "rfdc": "^1.4.1",
     "rxjs": "^7.8.2",
     "semver": "^7.7.4",
