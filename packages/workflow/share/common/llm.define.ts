@@ -2,6 +2,7 @@ import {
   asVirtualGroup,
   actions,
   setComponent,
+  renderConfig,
 } from '@piying/view-angular-core';
 import { condition } from '@piying/valibot-visit';
 import * as v from 'valibot';
@@ -39,6 +40,14 @@ export function llmModelConfig(item?: { label: string }) {
     condition({
       environments: ['display', 'config'],
       actions: [asVirtualGroup()],
+    }),
+    condition({
+      environments: ['display'],
+      actions: [
+        renderConfig({
+          hidden: true,
+        }),
+      ],
     }),
     setComponent('accordion'),
   );
