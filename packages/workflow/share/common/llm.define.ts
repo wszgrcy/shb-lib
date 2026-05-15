@@ -2,9 +2,7 @@ import {
   asVirtualGroup,
   actions,
   setComponent,
-  renderConfig,
 } from '@piying/view-angular-core';
-import { condition } from '@piying/valibot-visit';
 import * as v from 'valibot';
 import { asColumn } from '../util/layout';
 export function llmModelConfig(item?: { label: string }) {
@@ -31,24 +29,10 @@ export function llmModelConfig(item?: { label: string }) {
           ),
         ]),
         v.title(item?.label ?? '对话模型'),
-        condition({
-          environments: ['display', 'config'],
-          actions: [asVirtualGroup()],
-        }),
+        asVirtualGroup(),
       ),
     ]),
-    condition({
-      environments: ['display', 'config'],
-      actions: [asVirtualGroup()],
-    }),
-    condition({
-      environments: ['display'],
-      actions: [
-        renderConfig({
-          hidden: true,
-        }),
-      ],
-    }),
+    asVirtualGroup(),
     setComponent('accordion'),
   );
 }
