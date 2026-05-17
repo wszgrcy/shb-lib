@@ -42,17 +42,18 @@ describe('chat', () => {
       ],
     });
     const service = injector.get(WorkflowParserService);
-    const textNode = v.parse(CHAT_NODE_DEFINE, {
+    const textNode = {
       id: '1',
       data: {
-        config: {},
-        value: [
-          { role: 'system', content: [{ type: 'text', text: 'systemP' }] },
-          {
-            role: 'user',
-            content: [{ type: 'text', text: 'userP{{userInput}}' }],
-          },
-        ],
+        config: v.parse(CHAT_NODE_DEFINE, {
+          value: [
+            { role: 'system', content: [{ type: 'text', text: 'systemP' }] },
+            {
+              role: 'user',
+              content: [{ type: 'text', text: 'userP{{userInput}}' }],
+            },
+          ],
+        }),
         handle: {
           input: [[{ id: 'x', label: '输入', value: 'userInput' }]],
           output: [
@@ -68,7 +69,7 @@ describe('chat', () => {
       },
       position: { x: 0, y: 0 },
       type: 'chat',
-    });
+    };
     const result = service.parse({
       flow: {
         nodes: [textNode as any],

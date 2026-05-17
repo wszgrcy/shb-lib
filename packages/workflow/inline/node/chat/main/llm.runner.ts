@@ -30,10 +30,10 @@ export class LlmRunner extends NodeRunnerBase {
     const { metadataList, obj } = await this.getInputChat();
     const inputJsonSchema = this.inputParams.get(DEFAULT_CHAT_SCHEMA_KEY);
     const nodeResult = this.getParsedNode(CHAT_NODE_DEFINE);
-    const config = nodeResult.data.config;
+    const config = nodeResult;
 
     const examples = config.examples;
-    const list = nodeResult.data.value;
+    const list = nodeResult.value;
     const historyList = list.map((item) => {
       const content = this.#format.interpolate(
         item.content

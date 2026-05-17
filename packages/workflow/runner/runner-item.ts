@@ -135,11 +135,11 @@ export class NodeRunnerBase {
   }
 
   getParsedNode<T extends v.BaseSchema<any, any, any>>(schema: T) {
-    const result = v.safeParse(schema, this.node);
+    const result = v.safeParse(schema, this.node.data.config);
     if (result.success) {
       return result.output;
     }
-    if (!PROD_ENV) {
+    if (typeof PROD_ENV === 'undefined' || !PROD_ENV) {
       console.log(result.issues);
     }
     throw new Error(JSON.stringify(result.issues));
