@@ -95,10 +95,8 @@ export type NodeComponentType = {
 // 单列?
 export type WebviewNodeConfig = NodeComponentType & {
   displayConfig?: v.BaseSchema<any, any, any>;
-  config?: v.BaseSchema<any, any, any>;
   initData: InitDataFunction;
   //   config: NodeComponentType;
-  /** 非工作流中,模板上下文中使用 */
-  templateConfig?: v.BaseSchema<any, any, any>;
+
   component?: any;
 };
