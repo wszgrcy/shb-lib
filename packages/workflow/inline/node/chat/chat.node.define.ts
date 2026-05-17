@@ -86,42 +86,42 @@ export const CHAT_NODE_DEFINE = v.looseObject({
     value: v.pipe(
       v.custom<ChatMessageListInputType>(Boolean),
       setComponent('prompt-list'),
-      valueChange((fn) => {
-        fn({ list: [undefined] }).subscribe(({ list: [value], field }) => {
-          if (!Array.isArray(value)) {
-            return;
-          }
-          const inputValue: ChatMessageListInputType = value ?? [];
-          field.context
-            .parseTemplate(
-              inputValue.flatMap((item) =>
-                item.content.map((item) =>
-                  item.type === 'text' ? item.text : '',
-                ),
-              ),
-            )
-            .then((value: any) => {
-              if (!value) {
-                return;
-              }
-              field.context.changeHandleData(field, 'input', 1, value);
-            });
+      // valueChange((fn) => {
+      //   fn({ list: [undefined] }).subscribe(({ list: [value], field }) => {
+      //     if (!Array.isArray(value)) {
+      //       return;
+      //     }
+      //     const inputValue: ChatMessageListInputType = value ?? [];
+      //     // field.context
+      //     //   .parseTemplate(
+      //     //     inputValue.flatMap((item) =>
+      //     //       item.content.map((item) =>
+      //     //         item.type === 'text' ? item.text : '',
+      //     //       ),
+      //     //     ),
+      //     //   )
+      //     //   .then((value: any) => {
+      //     //     if (!value) {
+      //     //       return;
+      //     //     }
+      //     //     field.context.changeHandleData(field, 'input', 1, value);
+      //     //   });
 
-          const list = inputValue
-            .flatMap((item) =>
-              item.content.map((item) =>
-                item.type === 'image_url' ? item.image_url.url : undefined,
-              ),
-            )
-            .filter(Boolean)
-            .map((item) => ({
-              value: `${item}`,
-              label: `${item}`,
-              inputType: `image` as const,
-            }));
-          field.context.changeHandleData(field, 'input', 3, list ?? []);
-        });
-      }),
+      //     // const list = inputValue
+      //     //   .flatMap((item) =>
+      //     //     item.content.map((item) =>
+      //     //       item.type === 'image_url' ? item.image_url.url : undefined,
+      //     //     ),
+      //     //   )
+      //     //   .filter(Boolean)
+      //     //   .map((item) => ({
+      //     //     value: `${item}`,
+      //     //     label: `${item}`,
+      //     //     inputType: `image` as const,
+      //     //   }));
+      //     // field.context.changeHandleData(field, 'input', 3, list ?? []);
+      //   });
+      // }),
     ),
   }),
 });
