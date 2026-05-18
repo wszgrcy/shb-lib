@@ -1,17 +1,13 @@
 import { v4 } from 'uuid';
 import type { ChatMessageListOutputType } from '@shenghuabi/openai';
-import type { ChatModelOptions } from '@shenghuabi/openai';
 import * as v from 'valibot';
 import { ChatMetadata } from './type';
-export type WorkflowRunnerInputs = Map<
-  string | symbol,
-  { value: any; extra?: any }
->;
+import { InputInvalidItem } from './handle-node';
+
 export type WorkflowRunnerEnvironmentParams = Record<string, any>;
 export type WorkflowRunnerInputsWithContext = {
-  input: WorkflowRunnerInputs;
+  inputs: InputInvalidItem[];
   environmentParameters?: WorkflowRunnerEnvironmentParams;
-  modelOptions?: ChatModelOptions;
 };
 
 export interface WorkflowExtraMetadata {
@@ -66,3 +62,7 @@ export function isChatStream(
     !!data.extra && 'content' in data.extra && 'thinkContent' in data.extra
   );
 }
+
+export type InputOptions = {
+  [id: string]: [{ key: (string | number)[]; value: any }];
+};

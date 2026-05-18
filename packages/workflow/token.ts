@@ -1,14 +1,11 @@
 import { InjectionToken, Signal } from 'static-injector';
 import { WorkflowRunnerContext } from './runner/workflow-runner.service';
-import {
-  WorkflowRunnerEnvironmentParams,
-  WorkflowRunnerInputs,
-} from './share/type2';
+import { WorkflowRunnerEnvironmentParams } from './share/type2';
 
 import { ChatModelOptions, ChatParamsListDefine } from '@shenghuabi/openai';
 import {
+  InputInvalidItem,
   ParsedNode,
-  ResolvedInputNode,
   ResolvedWorkflow,
 } from './share/handle-node';
 import { ChatProviderService } from '@shenghuabi/openai';
@@ -18,7 +15,12 @@ import * as v from 'valibot';
 export const CurrentWorkflowToken = new InjectionToken<ResolvedWorkflow>(
   'CurrentWorkflow',
 );
-export const InputsToken = new InjectionToken<WorkflowRunnerInputs>('Input');
+export const InputsToken = new InjectionToken<InputInvalidItem[]>('Inputs');
+export const NodeInputsToken = new InjectionToken<any>('NodeInputs');
+export const NodeContextToken = new InjectionToken<any>('NodeContext');
+export const NodeParentMapToken = new InjectionToken<
+  Map<string, Record<string, any>>
+>('NodeParentMap');
 export const CurrentNodeToken = new InjectionToken<ParsedNode>('CurrentNode');
 export const CurrentCallNodeToken = new InjectionToken<ParsedNode>(
   'CurrentCallNode',
@@ -26,14 +28,11 @@ export const CurrentCallNodeToken = new InjectionToken<ParsedNode>(
 export const CurrentContextToken = new InjectionToken<WorkflowRunnerContext>(
   'CurrentContext',
 );
-export const InputParamsToken = new InjectionToken<WorkflowRunnerInputs>(
-  'InputParams',
-);
+
 export const ParentContextToken = new InjectionToken<
   WorkflowRunnerContext | undefined
 >('ParentContext');
-/** 把输出当作什么来用， */
-export const UseInputToken = new InjectionToken<ResolvedInputNode>('UseInput');
+
 export const AbortSignalToken = new InjectionToken<AbortSignal | undefined>(
   'AbortSignal',
 );

@@ -1,4 +1,4 @@
-import { createInjector, inject, Injector } from 'static-injector';
+import { createInjector, inject, Injector, Provider } from 'static-injector';
 
 import {
   AbortSignalToken,
@@ -6,17 +6,16 @@ import {
   CurrentContextToken,
   CurrentNodeToken,
   CurrentWorkflowToken,
-  InputParamsToken,
-  ModelOptionsToken,
   ParentContextToken,
   EnviromentParametersToken,
-  UseInputToken,
   InputsToken,
+  NodeInputsToken,
+  NodeContextToken,
+  NodeParentMapToken,
 } from '../token';
 import { ItemRunnerObject } from './define';
 import {
   createResultData,
-  WorkflowRunnerInputs,
   WorkflowRunnerInputsWithContext,
 } from '../share/type2';
 import { WorkflowEmitter } from '../share/workflow.emit';
@@ -25,17 +24,15 @@ import { AbortSignalError, RunnerError } from './runner-error';
 
 // 内联
 
-import {
-  ParsedNode,
-  ResolvedInputNode,
-  ResolvedWorkflow,
-} from '../share/handle-node';
+import { ParsedNode, ResolvedWorkflow } from '../share/handle-node';
 import { LogService, LogType } from '@cyia/external-call';
 import { Observer } from '../share';
 import { WorkflowPluginService } from '../plugin/plugin.service';
 import { InlineNodeService } from '../inline/inline.service';
+import { set } from 'es-toolkit/compat';
+import * as v from 'valibot';
+import { deepClone } from '@cyia/util';
 /** 用于上下文start */
-export const ITERATION_ITEM_SYMBOL = Symbol('ITERATION_ITEM');
 export class WorkflowRunnerContext {
   #injector = inject(Injector);
   data = inject(CurrentWorkflowToken);
@@ -52,6 +49,12 @@ export class WorkflowRunnerContext {
       this.#inlineNode.getNodeRunner(type) ??
       (ItemRunnerObject as any)[type] ??
       (await this.#plugin.getNodeRunner(type))
+    );
+  }
+  async #getNodeDefine(type: string) {
+    return (
+      this.#inlineNode.getNodeDefine(type) ??
+      (await this.#plugin.getNodeDefine(type))
     );
   }
   getNodeById(id: string): ParsedNode {
@@ -77,7 +80,6 @@ export class WorkflowRunnerContext {
   async startRun() {
     // 从最后一个节点开始,反向查询
     const node = this.getNodeById(this.data.end);
-
     return this.#runItem(node);
   }
   async run() {
@@ -88,19 +90,23 @@ export class WorkflowRunnerContext {
   // 当前node 调用 node context
   async #createNodeRunner(
     item: ParsedNode,
-    inputParams: WorkflowRunnerInputs,
+    inputParams: Record<string, any>,
+    contextData?: Record<string, any>,
     callNode?: ParsedNode,
-    input?: ResolvedInputNode,
   ) {
     const define = await this.#getNodeRunner(item.type);
     return createInjector({
       providers: [
         define,
         { provide: CurrentNodeToken, useValue: item },
-        { provide: CurrentCallNodeToken, useValue: callNode },
+        [
+          callNode
+            ? { provide: CurrentCallNodeToken, useValue: callNode }
+            : undefined,
+        ].filter(Boolean),
         { provide: CurrentContextToken, useValue: this },
-        { provide: UseInputToken, useValue: input },
-        { provide: InputParamsToken, useValue: inputParams },
+        { provide: NodeInputsToken, useValue: inputParams },
+        { provide: NodeContextToken, useValue: contextData },
       ],
       parent: this.#injector,
     }).get(define as any as typeof NodeRunnerBase);
@@ -109,7 +115,7 @@ export class WorkflowRunnerContext {
   async #runItem(
     node: ParsedNode,
     callNode?: ParsedNode,
-    input?: ResolvedInputNode,
+    input?: { outputName?: string },
   ): OutputResult {
     try {
       if (this.#abort?.aborted) {
@@ -119,48 +125,83 @@ export class WorkflowRunnerContext {
        * 手动输入的一般都是对话传递，使用label
        * 非手动的一般都是基于节点传递
        */
-      const inputParams: WorkflowRunnerInputs = new Map<any, any>(this.inputs);
-      for (const input of node.inputs) {
-        if (input.nodeId) {
-          const inputNode = this.getNodeById(input.nodeId!);
-          // 如果是分类器的起点那么跳过，因为是分类器调用的
-          if (
-            inputNode.subFlowList?.some(
-              (subItem) => subItem.startId === node.id,
-            )
-          ) {
-            // 如果未来要使用,那么就在上下文中加一个symbol,提前传入,在这里get
-            continue;
-          }
-          const result = await this.#runItem(inputNode, node, input);
+      let inputObjResoved;
+      const config = node.data.config;
+      const supportList = new Set();
+      const config2 = await this.#getNodeDefine(node.type);
 
-          inputParams.set(input.value, result);
+      // 配置
+      if (config2.configDefine) {
+        const inputObj = deepClone(config?.value ?? {});
+
+        if (config?.refList) {
+          for (const input of config.refList) {
+            const inputNode = this.getNodeById(input.value);
+            // 如果是分类器的起点那么跳过，因为是分类器调用的
+            if (
+              inputNode.subFlowList?.some(
+                (subItem) => subItem.startId === node.id,
+              )
+            ) {
+              // 如果未来要使用,那么就在上下文中加一个symbol,提前传入,在这里get
+              continue;
+            }
+            // todo指定出口
+            const result = await this.#runItem(inputNode, node);
+            set(inputObj, input.key, result);
+            supportList.add(input.key.join('|'));
+          }
+        }
+        if (config?.invalidList) {
+          for (const input of config.invalidList) {
+            const keyStr = input.key.join('|');
+            if (!supportList.has(keyStr)) {
+              continue;
+            }
+            set(inputObj, input.key, this.inputs);
+            // todo 读取输入
+          }
+        }
+        const result = v.safeParse(config2.configDefine, inputObj);
+        if (result.success) {
+          inputObjResoved = result.output;
+        } else {
+          if (typeof PROD_ENV === 'undefined' || !PROD_ENV) {
+            console.error(result.issues);
+          }
+          throw new Error(v.summarize(result.issues));
         }
       }
+      let contextData;
+      if (node.context) {
+        const inputNode = this.getNodeById(node.context.id);
+        contextData = await this.#runItem(inputNode, node, {
+          outputName: node.context.output,
+        });
+      }
+
       const nodeRunner = await this.#createNodeRunner(
         node,
-        inputParams,
+        inputObjResoved,
+        contextData,
         callNode,
-        input,
       );
       const outputList = node.outputs;
       const outputName =
         input?.outputName ?? node.data.outputName ?? outputList[0].value;
       let dataResult = this.#getCallCache(node.id);
       if (dataResult === undefined) {
-        {
-          const res = await nodeRunner.run();
-          dataResult = { result: res };
-          this.#callCache.set(node.id, res);
-        }
+        const res = await nodeRunner.run();
+        dataResult = { result: res };
+        this.#callCache.set(node.id, res);
       }
       const outputKey = `${node.id}|${outputName}`;
       const outputResult = this.#getOuputCache(outputKey);
       let returnData;
       if (outputResult === undefined) {
-        const res = await dataResult.result(outputName);
-        this.#outputCache.set(outputKey, res);
-        returnData = res;
+        const outputValue = await dataResult.result(outputName);
+        this.#outputCache.set(outputKey, outputValue);
+        returnData = outputValue;
       } else {
         returnData = outputResult.result;
       }
@@ -203,7 +244,6 @@ export class WorkflowRunnerService {
    */
   createContext(
     data: ResolvedWorkflow,
-    inputs: WorkflowRunnerInputs,
     parent?: WorkflowRunnerContext,
     parentInjector?: Injector,
   ) {
@@ -211,7 +251,6 @@ export class WorkflowRunnerService {
       providers: [
         WorkflowRunnerContext,
         { provide: CurrentWorkflowToken, useValue: data },
-        { provide: InputsToken, useValue: inputs },
         { provide: ParentContextToken, useValue: parent },
       ],
       parent: parentInjector ?? this.#injector,
@@ -229,12 +268,12 @@ export class WorkflowRunnerService {
 
   /** 入口 */
   run(
-    data: ResolvedWorkflow,
+    wofkflowData: ResolvedWorkflow,
     input: WorkflowRunnerInputsWithContext,
     ob?: Observer<any, any>,
     signal?: AbortSignal,
+    providers?: Provider[],
   ) {
-    this.log?.info('工作流默认对话配置', input.modelOptions);
     const injector = createInjector({
       providers: [
         WorkflowEmitter,
@@ -243,12 +282,15 @@ export class WorkflowRunnerService {
           provide: EnviromentParametersToken,
           useValue: input.environmentParameters,
         },
-        { provide: ModelOptionsToken, useValue: input.modelOptions },
+        { provide: InputsToken, useValue: input.inputs },
+        { provide: NodeParentMapToken, useValue: new Map() },
+
+        ...(providers ?? []),
       ],
       parent: this.#injector,
     });
 
-    const runner = this.createContext(data, input.input, undefined, injector);
+    const runner = this.createContext(wofkflowData, undefined, injector);
     if (ob) {
       injector.get(WorkflowEmitter).setObserver(ob);
     }

@@ -42,7 +42,6 @@ export const NodeDefine = v.object({
   icon: v.optional(v.union([IconStr, IconSet])),
   color: v.optional(v.picklist(['primary', 'accent', 'warn'])),
   help: v.optional(v.string()),
-  inputs: v.optional(v.array(v.array(InputHandleDefine))),
   outputs: v.optional(v.array(v.array(HandleDefine))),
   disableHead: v.optional(v.boolean(), false),
   disableConnect: v.optional(v.boolean(), false),

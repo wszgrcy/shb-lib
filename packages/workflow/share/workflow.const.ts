@@ -4,5 +4,4 @@ export const enum WorkflowNodeType {
   'inputParams' = 'input-params',
   'serialize' = 'serialize',
   parameters = 'parameters',
-  inlineInputItem = 'inlineInputItem',
 }

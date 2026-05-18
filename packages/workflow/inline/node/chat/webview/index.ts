@@ -5,7 +5,7 @@ import { getSystemTemplate } from '../util';
 
 export const ChatWebviewConfig: WebviewNodeConfig = {
   ...NODE_COMMON,
-  displayConfig: CHAT_NODE_DEFINE,
+  configDefine: CHAT_NODE_DEFINE,
   initData: () => ({
     data: {
       transform: {

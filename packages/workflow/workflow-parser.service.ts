@@ -19,7 +19,6 @@ import { uniqBy } from 'es-toolkit';
 
 import {
   flatFilterHandleList,
-  HandleNode,
   ResolvedWorkflow,
   WorkflowData,
   WorkflowNodeData,
@@ -34,7 +33,6 @@ export interface ResolvedWorkflowResult {
     message?: string;
     nodeId?: string;
   };
-  manualInput?: boolean;
 }
 type SubGroupList = Record<
   string,
@@ -51,8 +49,6 @@ class WorkflowParserContext {
     private data: Pick<WorkflowData, 'flow'>,
     /** 父级节点 */
     private parentNode?: Node<WorkflowNodeData>,
-    /** inputList 使用,全局统计 */
-    private userInputParams: HandleNode[] = [],
     /** 父级上下文 */
     private parent?: WorkflowParserContext,
   ) {}
@@ -77,10 +73,9 @@ class WorkflowParserContext {
     const graph = new Graph({ multi: true });
     const { nodes, edges } = this.data.flow;
     const nodeData: ResolvedWorkflow = { nodes: {}, end: undefined } as any;
-    this.list.forEach((node) => {
-      graph.addNode(node.id);
-    });
+
     for (const node of this.list) {
+      graph.addNode(node.id);
       const handle = {
         output: flatFilterHandleList(node.data.handle?.output),
       };
@@ -88,73 +83,43 @@ class WorkflowParserContext {
       const cEdges = getConnectedEdges([node], edges);
       /** 输入连接点,可以理解为参数 */
       const inputNodes = getIncomers(node, nodes, cEdges);
-      /** 定义输入，大于等于边，因为可能有没连接的 */
-      const inputHandleList = flatFilterHandleList(node.data.handle?.input);
-      /** 保存的是handle和对应的nodeid? */
-      const inputParams = [];
-      // 其实就是找依赖,以及确定输入
-      for (const item of inputHandleList) {
-        const targetHandle = item.id;
-        /** 连接到当前节点的边 */
-        const linkedEdges = cEdges.filter(
-          (item) =>
-            item.targetHandle === targetHandle && item.target === node.id,
-        );
-        // 未来可以改成多个节点就变成数组?
-        if (linkedEdges.length > 1) {
-          return {
-            error: {
-              message: `${node.id}:不支持多个节点连接一个输入点`,
-              nodeId: node.id,
-            },
+      let contextData;
+      for (const linkedEdge of cEdges) {
+        if (linkedEdge.target !== node.id) {
+          continue;
+        }
+        if (!contextData && linkedEdge.targetHandle === 'context') {
+          contextData = {
+            id: linkedEdge.source,
+            output: linkedEdge.sourceHandle!,
           };
         }
-        if (linkedEdges.length === 1) {
-          const linkedEdge = linkedEdges[0];
-          /** 找到连接的输入节点 */
-          const linkedNode = inputNodes.find(
-            (item) => item.id === linkedEdge.source,
-          )!;
-          const linkedOuput = flatFilterHandleList(
-            linkedNode.data.handle?.output,
-          ).find((item) => item.id === linkedEdge.sourceHandle);
+        /** 找到连接的输入节点 */
+        const linkedNode = inputNodes.find(
+          (item) => item.id === linkedEdge.source,
+        )!;
 
-          inputParams.push({
-            ...item,
-            nodeId: linkedNode.id,
-            outputName: linkedOuput!.value,
-          });
-          //这个节点只能是当前或者说是它的祖先提供,不能是其他的地方的
-          if (!graph.hasNode(linkedNode.id)) {
-            // 只允许在父级查找
-            if (!this.#getParentNodeDefine(linkedNode.id)) {
-              return {
-                error: {
-                  message: `${linkedNode.id}:未找到连接节点,只能读取到当前及祖先范围内的节点`,
-                  nodeId: linkedNode.id,
-                },
-              };
-            }
-            graph.addNode(linkedNode.id);
+        //这个节点只能是当前或者说是它的祖先提供,不能是其他的地方的
+        if (!graph.hasNode(linkedNode.id)) {
+          // 只允许在父级查找
+          if (!this.#getParentNodeDefine(linkedNode.id)) {
+            return {
+              error: {
+                message: `${linkedNode.id}:未找到连接节点,只能读取到当前及祖先范围内的节点`,
+                nodeId: linkedNode.id,
+              },
+            };
           }
-          graph.addEdge(linkedNode.id, node.id);
-        } else {
-          // 没有输入节点就需要统计
-          inputParams.push({ ...item });
-          // 过滤连接点
-          if (item.type) {
-            continue;
-          }
-          this.userInputParams.push(item);
+          graph.addNode(linkedNode.id);
         }
+        graph.addEdge(linkedNode.id, node.id);
       }
       nodeData.nodes[node.id] = {
         data: node.data,
-        //输入用
-        inputs: inputParams,
         outputs: handle.output,
         type: node.type! as any,
         id: node.id,
+        context: contextData,
       };
       // 如果这个节点是一个块级节点
       if (this.subObject[node.id]) {
@@ -166,7 +131,6 @@ class WorkflowParserContext {
             this.subObject,
             this.data,
             node,
-            this.userInputParams,
             this,
           );
           const result = instance.parseItem();
@@ -196,15 +160,7 @@ class WorkflowParserContext {
       return { error: { message: `可能出现循环依赖,没有出口` } };
     } else {
       nodeData.end = outList[0];
-      nodeData.inputList = uniqBy(
-        this.userInputParams,
-        (item) => `${item.inputType || 'string'}|${item.value}`,
-      ).map((item) => ({
-        inputType: item.inputType || 'string',
-        value: item.value,
-        label: item.label || item.value,
-        optional: item.optional,
-      }));
+
       return { data: nodeData };
     }
   }
@@ -284,7 +240,6 @@ class WorkflowPreParser {
         });
       }
     };
-    let manualInput = false;
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       if (node.data.excludeUsage) {
@@ -294,7 +249,6 @@ class WorkflowPreParser {
         continue;
       }
       if (node.type === 'input-params') {
-        manualInput ||= !!node.data.config?.['manualInput'];
       } else if (isBlock(node)) {
         this.#nodeGroup.add(node);
       } else if (node.type === WorkflowNodeType.iterationStart) {
@@ -359,7 +313,6 @@ class WorkflowPreParser {
     return {
       list: mainList,
       subObjectGroup,
-      manualInput,
       edges: edges.filter(
         (edge) =>
           !removedList.has(edge.source) && !removedList.has(edge.target),
@@ -372,7 +325,7 @@ export class WorkflowParserService {
   #injector = inject(Injector);
   #inlineNode = inject(InlineNodeService);
   constructor() {
-    this.#inlineNode.register(InlineNodeObj);
+    this.#inlineNode.register(InlineNodeObj as any);
   }
   /**
    * 1.如果出现孤立节点，那么需要判断是不是子级引用
@@ -405,7 +358,7 @@ export class WorkflowParserService {
       result.subObjectGroup,
       { ...data, flow: { ...data.flow, edges: result.edges } },
     );
-    return { ...instance.parseItem(), manualInput: result.manualInput };
+    return { ...instance.parseItem() };
   }
 }
 // 改成多出口,但是需要看看多出口有什么隐藏的问题

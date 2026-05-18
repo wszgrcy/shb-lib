@@ -36,6 +36,12 @@ export interface ChatMetadata {
   tooltip?: string;
   reference?: ChatMetadataReference;
 }
+export type ChatDataRef = {
+  toString(): string;
+  ref: ChatMetadata;
+};
+/** 对话插入数据 */
+export type ChatInsertData = string | ChatDataRef;
 export type ChatInputType = 'object' | 'string' | 'image' | 'schema';
 /** 准备 context/workflow 通用 */
 export type ChatInput2 = {
@@ -89,11 +95,12 @@ export type InitDataFunction = () => Partial<CustomNode>;
 export type NodeComponentType = {
   afterAdd?: (node: CustomNode, injector: Injector) => any;
   priority?: number;
+  configDefine?: v.BaseSchema<any, any, any>;
 } & WorkflowNodeConfigOutputType;
 
 // 单列?
 export type WebviewNodeConfig = NodeComponentType & {
-  displayConfig?: v.BaseSchema<any, any, any>;
+  configDefine?: v.BaseSchema<any, any, any>;
   initData: InitDataFunction;
   //   config: NodeComponentType;
 

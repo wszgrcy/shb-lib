@@ -3,6 +3,7 @@ import * as v from 'valibot';
 import { actions, setComponent, valueChange } from '@piying/view-angular-core';
 import { ChatMessageListInputType } from '@shenghuabi/openai';
 import { EXAMPLES_DEFINE, llmModelConfig } from '../../../share/common';
+import { isChatSchema } from '@cyia/util';
 export const ResponseList = ['json', 'markdown', 'yaml'] as const;
 export const ResponseFormat = ['text', 'json_object', 'json_schema'] as const;
 export type ResponseType = (typeof ResponseList)[number];
@@ -76,6 +77,18 @@ export const CHAT_NODE_DEFINE = v.pipe(
     value: v.pipe(
       v.custom<ChatMessageListInputType>(Boolean),
       setComponent('prompt-list'),
+    ),
+    jsonSchema: v.pipe(
+      v.optional(
+        v.pipe(
+          v.any(),
+          v.check(
+            (value) => isChatSchema(value),
+            (issue) => `jsonSchema 格式异常:输入 ${issue.input};需要类型 {name:string,schema:object}`,
+          ),
+        ),
+        setComponent('jsonSchema'),
+      ),
     ),
   }),
   actions.wrappers.patch(['div']),

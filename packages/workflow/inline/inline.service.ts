@@ -25,4 +25,7 @@ export class InlineNodeService {
   getNodeRunner(type: string) {
     return this.inlineList.find((item) => item.type === type)?.runner;
   }
+  getNodeDefine(type: string) {
+    return this.inlineList.find((item) => item.type === type);
+  }
 }

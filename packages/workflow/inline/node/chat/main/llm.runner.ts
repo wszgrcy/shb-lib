@@ -14,57 +14,24 @@ import { NodeRunnerBase } from '../../../../runner/runner-item';
 import { TemplateFormatService } from '../../../../template-format.service';
 import { AbortSignalToken, ChatServiceToken } from '../../../../token';
 import { createLLMData } from '../../../../share/type2';
-import {
-  DEFAULT_CHAT_SCHEMA_KEY,
-  RUNNER_ORIGIN_OUTPUT_KEY,
-} from '../../../../share/common/const';
-import { jsonParse, yamlParse, markdownParse, isChatSchema } from '@cyia/util';
+import { RUNNER_ORIGIN_OUTPUT_KEY } from '../../../../share/common/const';
+import { jsonParse, yamlParse, markdownParse } from '@cyia/util';
+import { useChat } from '../util/useChat';
 
-export class LlmRunner extends NodeRunnerBase {
+export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
   #format = inject(TemplateFormatService);
   #chatService = inject(ChatServiceToken);
   #abort = inject(AbortSignalToken);
   #channel = inject(LogService).getToken('chat');
-
+  chatParse = useChat();
   override async run() {
-    const { metadataList, obj } = await this.getInputChat();
-    const inputJsonSchema = this.inputParams.get(DEFAULT_CHAT_SCHEMA_KEY);
-    const nodeResult = this.getParsedNode(CHAT_NODE_DEFINE);
+    const nodeResult = this.inputs;
     const config = nodeResult;
-
     const examples = config.examples;
     const list = nodeResult.value;
-    const historyList = list.map((item) => {
-      const content = this.#format.interpolate(
-        item.content
-          .map((item) => (item.type === 'text' ? item.text : ''))
-          .join('\n'),
-        obj,
-      );
-      return {
-        role: item.role,
-        content: [
-          { type: 'text', text: content },
-          ...item.content
-            .filter((item) => item.type === 'image_url')
-            .flatMap((item) => {
-              if (item.type === 'image_url') {
-                return obj[item.image_url.url].map((item: any) => ({
-                  type: 'image_url',
-                  image_url: { url: item.data },
-                }));
-              }
-              return item;
-            }),
-        ],
-      };
-    }) as ChatMessageListOutputType;
-    const schema = isChatSchema(inputJsonSchema?.value);
-    if (inputJsonSchema?.value && !schema) {
-      throw new Error(
-        `JsonSchema传入格式异常,需要: {name:string,schema:object},传入: ${JSON.stringify(inputJsonSchema.value)}`,
-      );
-    } else if (schema) {
+    const { list: historyList, metadataList } = this.chatParse(list);
+    const schema = config.jsonSchema;
+    if (schema) {
       config.parseBy ??= 'json';
       config.responseFormat ??= 'json_schema';
     }
@@ -106,7 +73,7 @@ export class LlmRunner extends NodeRunnerBase {
         messages: historyList,
         response_format:
           config.responseFormat === 'json_schema'
-            ? { type: 'json_schema', json_schema: inputJsonSchema?.value }
+            ? { type: 'json_schema', json_schema: config.jsonSchema }
             : config.responseFormat === 'json_object'
               ? { type: 'json_object' }
               : undefined,

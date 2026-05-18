@@ -1,7 +1,26 @@
 import { ChatInput2, ChatInputType } from './type';
 import { WorkflowNodeType } from './workflow.const';
 import type { Node, ReactFlowJsonObject } from '@xyflow/react';
+export type InputInvalidItem = { key: (string | number)[] };
 
+export type InputRefItem = {
+  /** 上游节点 id */
+  value: string;
+  /** 出口名 */
+  outlet?: string;
+  /** 键 */
+  key: (string | number)[];
+};
+export type InputContextItem = {
+  /** 容器节点 id */
+  value: string;
+  /** 上下文中提供的 */
+  contextKey: string;
+  /** 键 */
+  key: (string | number)[];
+};
+
+export type InputItem = InputRefItem | InputInvalidItem | InputContextItem;
 export interface HandleNode {
   id: string;
   /** 真正赋值使用 */
@@ -30,10 +49,14 @@ export interface WorkflowNodeData {
   value?: any;
 
   handle?: {
-    input: HandleNode[][];
     output: HandleNode[][];
   };
-  config?: Record<string, any>;
+  config?: {
+    refList?: InputRefItem[];
+    invalidList?: InputInvalidItem[];
+    contextList?: InputContextItem[];
+    value?: Record<string, any>;
+  };
   title?: string;
   outputName?: string;
   /** 在工作流中禁止使用 @internal */
@@ -51,8 +74,7 @@ export interface ParsedNode {
   type: WorkflowNodeType;
   // todo 因为加上Omit会导致类型不识别
   data: WorkflowNodeData;
-  /** 所有输入是都是需要节点连接的，如果没有节点连接会酌情处理 handleinput过来的 */
-  inputs: ResolvedInputNode[];
+  context?: { id: string; output: string };
   /** 可能是多出口 */
   outputs: HandleNode[];
   subFlowList?: { key: any; flow: ResolvedWorkflow; startId?: string }[];

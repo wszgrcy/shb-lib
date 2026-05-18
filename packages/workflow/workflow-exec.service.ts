@@ -1,7 +1,6 @@
 import { inject } from 'static-injector';
 
 import { WorkflowParserService } from './workflow-parser.service';
-import { InlineParametersService } from './preset/inline-runner.service';
 import { WorkflowRunnerService } from './runner/workflow-runner.service';
 import {
   WorkflowRunnerEnvironmentParams,
@@ -11,7 +10,7 @@ import { ChatMessageListInputType, ChatModelOptions } from '@shenghuabi/openai';
 import { Subject } from 'rxjs';
 import { ContextBuildService } from './preset/context-build.service';
 import {
-  RawWorkflowNode,
+  InputInvalidItem,
   ResolvedWorkflow,
   WorkflowData,
 } from './share/handle-node';
@@ -19,7 +18,6 @@ import { Observer } from './share/type';
 
 export class WorkflowExecService {
   #parser = inject(WorkflowParserService);
-  #parameterResolve = inject(InlineParametersService);
   #runner = inject(WorkflowRunnerService);
   parse(data: WorkflowData) {
     return this.#parser.parse(data);
@@ -28,23 +26,17 @@ export class WorkflowExecService {
   async runParse(
     define: ResolvedWorkflow,
     input: {
-      input?: Record<string, any>;
-      context?: Record<string, any>;
-      modelOptions?: ChatModelOptions;
+      input?: InputInvalidItem[];
       environmentParameters?: WorkflowRunnerEnvironmentParams;
     },
     ob?: Observer<any, any>,
     abortSignal?: AbortSignal,
   ) {
-    const parameters = await this.#parameterResolve.run(input);
     return this.#runner.run(
       define!,
       {
-        input: new Map(
-          Object.entries(parameters.value).map(([key, value]) => [key, value]),
-        ),
+        inputs: input.input ?? [],
         environmentParameters: input.environmentParameters,
-        modelOptions: input.modelOptions,
       },
       ob,
       abortSignal,
@@ -53,9 +45,7 @@ export class WorkflowExecService {
   async exec(
     data: Pick<WorkflowData, 'flow'> & { define?: ResolvedWorkflow },
     input: {
-      input?: Record<string, any>;
-      context?: Record<string, any>;
-      modelOptions?: ChatModelOptions;
+      input?: InputInvalidItem[];
       environmentParameters?: WorkflowRunnerEnvironmentParams;
     },
     options: { showError?: boolean },
@@ -86,17 +76,15 @@ export class WorkflowExecService {
   #contextBuild = inject(ContextBuildService);
   async agentChat(
     input: {
-      input: Record<string, any>;
-      context: Record<string, RawWorkflowNode>;
+      input: InputInvalidItem[];
       template: ChatMessageListInputType;
       modelOptions?: ChatModelOptions;
       environmentParameters?: WorkflowRunnerEnvironmentParams;
-      inlineMode: boolean;
     },
     fn: (item: WorkflowStreamData) => any,
     abort?: AbortSignal,
   ) {
-    const workflow = this.#contextBuild.createWorkflow(input, input.inlineMode);
+    const workflow = this.#contextBuild.createWorkflow(input);
     const subject = new Subject();
     subject.subscribe({
       next: (value) => {

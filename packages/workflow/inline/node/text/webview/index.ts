@@ -4,7 +4,7 @@ import { TEXT_NODE_DEFINE } from '../text.node.define';
 
 export const TextWebviewConfig: WebviewNodeConfig = {
   ...NODE_COMMON,
-  displayConfig: TEXT_NODE_DEFINE,
+  configDefine: TEXT_NODE_DEFINE,
   initData: () => ({
     data: {
       transform: {
