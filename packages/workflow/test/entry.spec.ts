@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 import { TEXT_NODE_DEFINE } from '../inline/node/text/text.node.define';
+import { CustomNode } from '../share';
 
 const textNodeValue = {
   root: {
@@ -54,7 +55,7 @@ describe('entry', () => {
     });
     const service = injector.get(WorkflowParserService);
 
-    const entryNode = {
+    const entryNode: CustomNode = {
       id: '1',
       data: {
         config: {
@@ -87,11 +88,11 @@ describe('entry', () => {
       type: 'input-params',
     };
 
-    const textNode = {
+    const textNode: CustomNode = {
       id: '2',
       data: {
         config: { value: v.parse(TEXT_NODE_DEFINE, { value: textNodeValue }) },
-        handle: {},
+        handle: { output: [] },
       },
       position: { x: 0, y: 0 },
       type: 'textarea',

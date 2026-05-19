@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 import { TEXT_NODE_DEFINE } from '../inline/node/text/text.node.define';
+import { CustomNode } from '../share/type';
 
 const textNodeValue = {
   root: {
@@ -52,28 +53,38 @@ describe('iteration', () => {
     });
     const service = injector.get(WorkflowParserService);
 
-    const iterationNode = {
+    const iterationNode: CustomNode = {
       id: '3',
       data: {
         config: { value: {}, invalidList: [{ key: ['list'] }] },
-        handle: {},
+        handle: { output: [] },
       },
       position: { x: 0, y: 0 },
       type: 'iteration',
     };
-    const iterationStartNode = {
+    const iterationStartNode: CustomNode = {
       id: '4',
       data: {
         config: { value: {} },
         handle: {
           output: [
             [
-              { id: 'item[default]', value: 'item', type: 'default' },
-              { id: 'item[rest]', value: 'item', type: 'rest' },
+              {
+                id: 'item[default]',
+                value: 'item',
+                type: 'default',
+                label: '',
+              },
+              { id: 'item[rest]', value: 'item', type: 'rest', label: '' },
             ],
             [
-              { id: 'index[default]', type: 'default', value: 'index' },
-              { id: 'index[rest]', type: 'rest', value: 'index' },
+              {
+                id: 'index[default]',
+                type: 'default',
+                value: 'index',
+                label: '',
+              },
+              { id: 'index[rest]', type: 'rest', value: 'index', label: '' },
             ],
           ],
         },
@@ -83,7 +94,7 @@ describe('iteration', () => {
       parentId: '3',
     };
 
-    const textNode2 = {
+    const textNode2: CustomNode = {
       id: '5',
       data: {
         config: { value: v.parse(TEXT_NODE_DEFINE, { value: textNodeValue }) },
@@ -97,7 +108,7 @@ describe('iteration', () => {
 
     const result = service.parse({
       flow: {
-        nodes: [iterationNode as any, iterationStartNode, textNode2],
+        nodes: [iterationNode , iterationStartNode, textNode2],
         edges: [
           // iteration-start → textNode2: 传递 context (list 参数)
           {
