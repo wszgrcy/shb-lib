@@ -14,9 +14,9 @@ import { NodeRunnerBase } from '../../../../runner/runner-item';
 import { TemplateFormatService } from '../../../../template-format.service';
 import { AbortSignalToken, ChatServiceToken } from '../../../../token';
 import { createLLMData } from '../../../../share/type2';
-import { RUNNER_ORIGIN_OUTPUT_KEY } from '../../../../share/common/const';
 import { jsonParse, yamlParse, markdownParse } from '@cyia/util';
 import { useChat } from '../util/useChat';
+import { RUNNER_ORIGIN_OUTPUT } from '../../../../share/common/const';
 
 export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
   #format = inject(TemplateFormatService);
@@ -110,7 +110,7 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     streamData.extra.historyList = historyList;
     this.emitter.send(streamData);
     return async (outputName: string) => {
-      if (outputName === RUNNER_ORIGIN_OUTPUT_KEY) {
+      if (outputName === RUNNER_ORIGIN_OUTPUT[0].value) {
         return {
           value: streamData.value,
           dataId: streamData.dataId,
