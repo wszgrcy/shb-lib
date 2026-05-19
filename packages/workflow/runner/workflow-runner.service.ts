@@ -197,6 +197,7 @@ export class WorkflowRunnerContext {
         callNode,
       );
       const outputList = node.outputs;
+      /** 指定出口/最后一个指定/默认第一个 */
       const outputName =
         input?.outputName ?? node.data.outputName ?? outputList[0]?.name;
       let dataResult = this.#getCallCache(node.id);
@@ -209,7 +210,7 @@ export class WorkflowRunnerContext {
       const outputResult = this.#getOuputCache(outputKey);
       let returnData;
       if (outputResult === undefined) {
-        const outputValue = await dataResult.result(outputName);
+        const outputValue = await dataResult.result(outputName!);
         this.#outputCache.set(outputKey, outputValue);
         returnData = outputValue;
       } else {
