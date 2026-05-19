@@ -1,5 +1,5 @@
 import { inject } from 'static-injector';
-import { NodeContextToken } from '../../../../token';
+import { EnviromentParametersToken, NodeContextToken } from '../../../../token';
 import type {
   ChatMessageListInputType,
   ChatMessageListOutputType,
@@ -10,15 +10,17 @@ import { serializeTemplate } from '@shenghuabi/lexical-textarea/variable-seriali
 import { get } from 'es-toolkit/compat';
 export function useChat() {
   const context = inject(NodeContextToken);
-
+  const environmentInjector = inject(EnviromentParametersToken);
   return (list: ChatMessageListInputType) => {
     const metadataList: ChatMetadata[] = [];
     const list2 = list.map((item) => {
       // ChatData 类型,分为字符串和带引用的
       const contentList = item.content.map((contentChild) => {
-        const itemList = [];
         if (contentChild.type === 'text') {
           const text = serializeTemplate(contentChild.text as any, (item) => {
+            if (item.type === 'custom') {
+              return get(environmentInjector, item.value);
+            }
             const result = get(context, item.value);
             if (typeof result === 'string') {
               return result;
@@ -32,12 +34,15 @@ export function useChat() {
             }
             return `${result}`;
           });
-          itemList.push({ type: contentChild.type, text: text });
+          return { type: contentChild.type, text: text.trim() };
         } else if (contentChild.type === 'image_url') {
           const url = serializeTemplate(
             contentChild.image_url.url as any,
             (item) => {
               const result = get(context, item.value);
+              if (item.type === 'custom') {
+                return get(environmentInjector, item.value);
+              }
               if (typeof result === 'string') {
                 return result;
               }
@@ -51,12 +56,11 @@ export function useChat() {
               return `${result}`;
             },
           );
-          itemList.push({
+          return {
             type: contentChild.type,
-            text: { image_url: { url: url } },
-          });
+            text: { image_url: { url: url.trim() } },
+          };
         }
-        return itemList;
       });
       return {
         role: item.role,

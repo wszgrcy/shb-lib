@@ -6,6 +6,6 @@ export class IterationStartRunner extends NodeRunnerBase {
 
   override async run() {
     return async (name: string) =>
-      this.#nodeParentMap.get(this.callNode.id)![name];
+      this.#nodeParentMap.get(this.callNode!.id)![name];
   }
 }

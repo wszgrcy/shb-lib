@@ -7,13 +7,86 @@ import { CHAT_NODE_DEFINE } from '../inline/node/chat/chat.node.define';
 import { ChatServiceToken } from '../token';
 import { LogFactoryToken, LogService } from '@cyia/external-call';
 import { WORKFLOW_MODULE } from '../module';
+const systemP = {
+  root: {
+    children: [
+      {
+        children: [
+          {
+            detail: 0,
+            format: 0,
+            mode: 'normal',
+            style: '',
+            text: 'systemP',
+            type: 'text',
+            version: 1,
+          },
+        ],
+        direction: null,
+        format: '',
+        indent: 0,
+        type: 'paragraph',
+        version: 1,
+        textFormat: 0,
+        textStyle: '',
+      },
+    ],
+    direction: null,
+    format: '',
+    indent: 0,
+    type: 'root',
+    version: 1,
+  },
+};
+const userP = {
+  root: {
+    children: [
+      {
+        children: [
+          {
+            detail: 0,
+            format: 0,
+            mode: 'normal',
+            style: '',
+            text: 'userP',
+            type: 'text',
+            version: 1,
+          },
+          {
+            type: 'variable',
+            version: 1,
+            item: {
+              label: 'userInput',
+              value: ['userInput'],
+              type: 'custom',
+            },
+          },
+        ],
+        direction: null,
+        format: '',
+        indent: 0,
+        type: 'paragraph',
+        version: 1,
+        textFormat: 0,
+        textStyle: '',
+      },
+    ],
+    direction: null,
+    format: '',
+    indent: 0,
+    type: 'root',
+    version: 1,
+  },
+};
 describe('chat', () => {
-  it('hello', async () => {
+  it.only('hello', async () => {
     class ChatService {
       chat(config: any) {
         return {
           stream: async function* (data: any) {
-            expect(data.messages[1].content[0].text).eq(`userPinputValue`);
+            expect(data.messages[1].content[0].text).eq(
+              `userPinputValue`,
+            );
             let content = '';
             for (let i = 0; i < 10; i++) {
               content += `${i}`;
@@ -45,17 +118,18 @@ describe('chat', () => {
     const textNode = {
       id: '1',
       data: {
-        config: v.parse(CHAT_NODE_DEFINE, {
-          value: [
-            { role: 'system', content: [{ type: 'text', text: 'systemP' }] },
-            {
-              role: 'user',
-              content: [{ type: 'text', text: 'userP{{userInput}}' }],
-            },
-          ],
-        }),
+        config: {
+          value: v.parse(CHAT_NODE_DEFINE, {
+            value: [
+              { role: 'system', content: [{ type: 'text', text: systemP }] },
+              {
+                role: 'user',
+                content: [{ type: 'text', text: userP }],
+              },
+            ],
+          }),
+        },
         handle: {
-          input: [[{ id: 'x', label: '输入', value: 'userInput' }]],
           output: [
             [
               {
@@ -80,7 +154,9 @@ describe('chat', () => {
     expect(result.data?.end).eq('1');
     const result2 = await injector
       .get(WorkflowExecService)
-      .runParse(result.data!, { input: { userInput: 'inputValue' } });
+      .runParse(result.data!, {
+        environmentParameters: { userInput: 'inputValue' },
+      });
     expect(result2.value).eq('0123456789');
     expect(result2.extra.historyList.slice(-1)[0].content[0].text).eq(
       '0123456789',

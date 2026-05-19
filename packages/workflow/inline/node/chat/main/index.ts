@@ -5,5 +5,5 @@ import { LlmRunner } from './llm.runner';
 export const ChatMainConfig = {
   ...NODE_COMMON,
   runner: LlmRunner,
-  define: CHAT_NODE_DEFINE,
+  configDefine: CHAT_NODE_DEFINE,
 } as const;

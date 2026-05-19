@@ -84,11 +84,12 @@ export const CHAT_NODE_DEFINE = v.pipe(
           v.any(),
           v.check(
             (value) => isChatSchema(value),
-            (issue) => `jsonSchema 格式异常:输入 ${issue.input};需要类型 {name:string,schema:object}`,
+            (issue) =>
+              `jsonSchema 格式异常:输入 ${issue.input};需要类型 {name:string,schema:object}`,
           ),
         ),
-        setComponent('jsonSchema'),
       ),
+      setComponent('jsonSchema'),
     ),
   }),
   actions.wrappers.patch(['div']),

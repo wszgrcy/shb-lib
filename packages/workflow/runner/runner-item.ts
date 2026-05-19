@@ -23,7 +23,8 @@ export class NodeRunnerBase<
   TSchema extends v.BaseSchema<any, any, any> | undefined = undefined,
 > {
   protected node = inject(CurrentNodeToken);
-  protected callNode = inject(CurrentCallNodeToken);
+  protected callNode =
+    inject(CurrentCallNodeToken, { optional: true }) ?? undefined;
   protected context = inject(CurrentContextToken);
   protected injector = inject(Injector);
   protected emitter = inject(WorkflowEmitter);
@@ -38,9 +39,9 @@ export class NodeRunnerBase<
     throw new Error('待实现');
   }
 
-  #modelConfig = inject(ModelOptionsToken);
-  getContext(){
-    return this.injector.get(NodeContextToken)
+  #modelConfig = inject(ModelOptionsToken, { optional: true }) ?? undefined;
+  getContext() {
+    return this.injector.get(NodeContextToken);
   }
   mergeChatModel(input?: ModelInputConfig): Partial<ChatModelOptions> {
     const chatService = this.injector.get(ChatServiceToken);
@@ -60,6 +61,6 @@ export class NodeRunnerBase<
           omitBy(presetConfig, isEmptyInput),
           omitBy(this.#modelConfig ?? {}, isEmptyInput),
         )
-      : this.#modelConfig;
+      : (this.#modelConfig ?? {});
   }
 }
