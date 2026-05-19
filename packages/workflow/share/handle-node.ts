@@ -41,22 +41,24 @@ export function flatFilterHandleList(list: HandleNode[][] | undefined) {
   }
   return list.flat().filter(Boolean) as HandleNode[];
 }
-/** 继承 handleNode */
-export type ResolvedInputNode = Omit<HandleNode, 'label'> & {
-  nodeId?: string;
-  outputName?: string;
-};
-export interface WorkflowNodeData {
-  value?: any;
 
-  handle?: {
-    output: HandleNode[][];
-  };
+export interface WorkflowNodeData {
   config?: {
     refList?: InputRefItem[];
     invalidList?: InputInvalidItem[];
     contextList?: InputContextItem[];
     value?: Record<string, any>;
+  };
+  style?: Record<string, any>;
+  handle?: {
+    output: HandleNode[][];
+  };
+  minSize?: {
+    height: number;
+    width: number;
+  };
+  transform?: {
+    resizable?: boolean;
   };
   title?: string;
   outputName?: string;
@@ -69,7 +71,8 @@ export interface WorkflowData {
   flow: ReactFlowJsonObject<Node<WorkflowNodeData>>;
   version: number;
 }
-export type RawWorkflowNode = Omit<Node<WorkflowNodeData>, 'position'>;
+
+/** 解析后runner使用 */
 export interface ParsedNode {
   id: string;
   parentId?: string;

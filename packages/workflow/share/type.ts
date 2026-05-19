@@ -1,5 +1,7 @@
 import type { Node } from '@xyflow/react';
-import type { HandleNode, InputContextItem, InputInvalidItem, InputRefItem } from './handle-node';
+import type {
+  WorkflowNodeData,
+} from './handle-node';
 import type { Injector } from 'static-injector';
 import type * as v from 'valibot';
 import { WorkflowNodeConfigOutputType } from './common/define';
@@ -61,38 +63,7 @@ export interface Observer<TValue, TError> {
 }
 
 export type CustomNode<T extends Record<string, any> = Record<string, any>> =
-  Node<
-    {
-      config?: {
-        refList?: InputRefItem[];
-        invalidList?: InputInvalidItem[];
-        contextList?: InputContextItem[];
-        value?: Record<string, any>;
-      };
-      style?: Record<string, any>;
-      handle?: {
-        /** 0 必须是连接点，否则空掉，1必须是value,否则空掉，之后随意 */
-        output: HandleNode[][];
-      };
-      minSize?: {
-        height: number;
-        width: number;
-      };
-      transform?: {
-        resizable?: boolean;
-      };
-      title?: string;
-      /** 默认输出 */
-      outputName?: string;
-      /** 在工作流中禁止使用 */
-      excludeUsage?: boolean;
-      /** 用于前端部分 */
-      options?: {
-        /** 禁止自动打开配置 */
-        disableOpenConfig?: boolean;
-      };
-    } & T
-  >;
+  Node<WorkflowNodeData & T>;
 
 export type InitDataFunction = () => Partial<CustomNode>;
 export type NodeComponentType = {
@@ -105,7 +76,5 @@ export type NodeComponentType = {
 export type WebviewNodeConfig = NodeComponentType & {
   configDefine?: v.BaseSchema<any, any, any>;
   initData?: InitDataFunction;
-  //   config: NodeComponentType;
-
   component?: any;
 };
