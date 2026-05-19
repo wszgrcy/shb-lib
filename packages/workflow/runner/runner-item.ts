@@ -9,7 +9,7 @@ import {
   NodeContextToken,
   NodeInputsToken,
 } from '../token';
-export type RunnerResult = Promise<(output: string) => Promise<any>>;
+export type RunnerResult = Promise<(id: string) => Promise<any>>;
 export type OutputResult = ReturnType<Awaited<RunnerResult>>;
 import * as v from 'valibot';
 import { WorkflowEmitter } from '../share';

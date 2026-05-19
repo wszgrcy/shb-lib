@@ -40,8 +40,8 @@ export class IterationRunner extends NodeRunnerBase<
       index++;
     }
 
-    return async (outputName: string) => {
-      if (outputName === 'flat') {
+    return async (id: string) => {
+      if (id === 'flat') {
         return resultList.flat(999);
       }
       return resultList;
