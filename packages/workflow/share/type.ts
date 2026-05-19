@@ -38,7 +38,7 @@ export interface ChatMetadata {
 }
 export type ChatDataRef = {
   toString(): string;
-  ref: ChatMetadata;
+  ref: ChatMetadata | ChatMetadata[];
 };
 /** 对话插入数据 */
 export type ChatInsertData = string | ChatDataRef;

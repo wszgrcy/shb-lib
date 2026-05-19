@@ -5,11 +5,11 @@ import type {
   ChatMessageListOutputType,
 } from '@shenghuabi/openai';
 import { ChatMetadata } from '../../../../share/type';
-import { TemplateFormatService } from '../../../../template-format.service';
 // todo 开发中
+import { serializeTemplate } from '@shenghuabi/lexical-textarea/variable-serialization';
+import { get } from 'es-toolkit/compat';
 export function useChat() {
   const context = inject(NodeContextToken);
-  const format = inject(TemplateFormatService);
 
   return (list: ChatMessageListInputType) => {
     const metadataList: ChatMetadata[] = [];
@@ -18,13 +18,42 @@ export function useChat() {
       const contentList = item.content.map((contentChild) => {
         const itemList = [];
         if (contentChild.type === 'text') {
-          // todo 需要专门的解析,获得contex
-          contentChild.text;
-          itemList.push({ type: contentChild.type, text: '' });
+          const text = serializeTemplate(contentChild.text as any, (item) => {
+            const result = get(context, item.value);
+            if (typeof result === 'string') {
+              return result;
+            }
+            if ('ref' in result) {
+              if (Array.isArray(result.ref)) {
+                metadataList.push(...result.ref);
+              } else {
+                metadataList.push(result.ref);
+              }
+            }
+            return `${result}`;
+          });
+          itemList.push({ type: contentChild.type, text: text });
         } else if (contentChild.type === 'image_url') {
+          const url = serializeTemplate(
+            contentChild.image_url.url as any,
+            (item) => {
+              const result = get(context, item.value);
+              if (typeof result === 'string') {
+                return result;
+              }
+              if ('ref' in result) {
+                if (Array.isArray(result.ref)) {
+                  metadataList.push(...result.ref);
+                } else {
+                  metadataList.push(result.ref);
+                }
+              }
+              return `${result}`;
+            },
+          );
           itemList.push({
             type: contentChild.type,
-            text: { image_url: { url: '' } },
+            text: { image_url: { url: url } },
           });
         }
         return itemList;

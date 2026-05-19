@@ -1,7 +1,5 @@
-import { HelpObj } from '../../../share';
-import {
-  RUNNER_ORIGIN_OUTPUT_KEY,
-} from '../../../share';
+import { HelpObj, RUNNER_ORIGIN_OUTPUT } from '../../../share';
+
 import { NodeComponentType } from '../../../share';
 
 export const NODE_COMMON: NodeComponentType = {
@@ -40,5 +38,5 @@ export const NODE_COMMON: NodeComponentType = {
   //     },
   //   ],
   // ],
-  outputs: [[{ label: '原始输出', value: RUNNER_ORIGIN_OUTPUT_KEY }]],
+  outputs: [RUNNER_ORIGIN_OUTPUT],
 };

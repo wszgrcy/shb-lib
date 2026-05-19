@@ -14,10 +14,7 @@ export class IterationRunner extends NodeRunnerBase<
     if (!isIterable(value)) {
       throw new Error(`输入值不是可迭代(数组)类型: ${JSON.stringify(value)}`);
     }
-    const resultList: {
-      extra?: any;
-      value: any;
-    }[] = [];
+    const resultList: any[] = [];
     let index = 0;
     const injector = createInjector({
       providers: [{ provide: CurrentCallNodeToken, useValue: this.node }],

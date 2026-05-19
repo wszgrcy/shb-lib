@@ -55,14 +55,6 @@ export type WorkflowStreamData =
   | v.InferOutput<typeof CommonDataDefine>
   | v.InferOutput<typeof LLMDataDefine>;
 
-export function isChatStream(
-  data: WorkflowStreamData,
-): data is LLMWorkflowData {
-  return (
-    !!data.extra && 'content' in data.extra && 'thinkContent' in data.extra
-  );
-}
-
 export type InputOptions = {
   [id: string]: [{ key: (string | number)[]; value: any }];
 };
