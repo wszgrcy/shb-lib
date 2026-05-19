@@ -79,7 +79,7 @@ const userP = {
   },
 };
 describe('chat', () => {
-  it.only('hello', async () => {
+  it('hello', async () => {
     class ChatService {
       chat(config: any) {
         return {

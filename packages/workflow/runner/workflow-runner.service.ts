@@ -208,7 +208,7 @@ export class WorkflowRunnerContext {
       // todo 发射
       this.#emitter.send(
         createResultData({
-          ...returnData,
+          value: returnData,
           node: node,
         }),
       );

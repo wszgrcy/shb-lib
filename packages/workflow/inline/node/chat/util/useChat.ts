@@ -5,60 +5,37 @@ import type {
   ChatMessageListOutputType,
 } from '@shenghuabi/openai';
 import { ChatMetadata } from '../../../../share/type';
-// todo 开发中
-import { serializeTemplate } from '@shenghuabi/lexical-textarea/variable-serialization';
-import { get } from 'es-toolkit/compat';
+import { SerializeContextOptions, serializeWithContext } from '../../../../util/serialize-text-template';
+
 export function useChat() {
   const context = inject(NodeContextToken);
-  const environmentInjector = inject(EnviromentParametersToken);
+  const environmentContext = inject(EnviromentParametersToken)!;
   return (list: ChatMessageListInputType) => {
     const metadataList: ChatMetadata[] = [];
+    const serializeOptions:SerializeContextOptions = {
+      context,
+      environmentContext,
+      onMetadata: (metadata) => {
+        metadataList.push(...metadata);
+      },
+    };
     const list2 = list.map((item) => {
       // ChatData 类型,分为字符串和带引用的
       const contentList = item.content.map((contentChild) => {
         if (contentChild.type === 'text') {
-          const text = serializeTemplate(contentChild.text as any, (item) => {
-            if (item.type === 'custom') {
-              return get(environmentInjector, item.value);
-            }
-            const result = get(context, item.value);
-            if (typeof result === 'string') {
-              return result;
-            }
-            if ('ref' in result) {
-              if (Array.isArray(result.ref)) {
-                metadataList.push(...result.ref);
-              } else {
-                metadataList.push(result.ref);
-              }
-            }
-            return `${result}`;
-          });
-          return { type: contentChild.type, text: text.trim() };
+          const text = serializeWithContext(
+            contentChild.text as any,
+            serializeOptions,
+          );
+          return { type: contentChild.type, text };
         } else if (contentChild.type === 'image_url') {
-          const url = serializeTemplate(
+          const url = serializeWithContext(
             contentChild.image_url.url as any,
-            (item) => {
-              const result = get(context, item.value);
-              if (item.type === 'custom') {
-                return get(environmentInjector, item.value);
-              }
-              if (typeof result === 'string') {
-                return result;
-              }
-              if ('ref' in result) {
-                if (Array.isArray(result.ref)) {
-                  metadataList.push(...result.ref);
-                } else {
-                  metadataList.push(result.ref);
-                }
-              }
-              return `${result}`;
-            },
+            serializeOptions,
           );
           return {
             type: contentChild.type,
-            text: { image_url: { url: url.trim() } },
+            text: { image_url: { url } },
           };
         }
       });
