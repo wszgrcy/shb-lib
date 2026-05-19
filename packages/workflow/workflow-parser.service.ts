@@ -83,16 +83,17 @@ class WorkflowParserContext {
       const cEdges = getConnectedEdges([node], edges);
       /** 输入连接点,可以理解为参数 */
       const inputNodes = getIncomers(node, nodes, cEdges);
-      let contextData;
+      const contextData = [];
       for (const linkedEdge of cEdges) {
         if (linkedEdge.target !== node.id) {
           continue;
         }
-        if (!contextData && linkedEdge.targetHandle === 'context') {
-          contextData = {
+        if (linkedEdge.targetHandle === 'context') {
+          contextData.push({
             id: linkedEdge.source,
             output: linkedEdge.sourceHandle!,
-          };
+            rest: linkedEdge.sourceHandle === '[rest]',
+          });
         }
         /** 找到连接的输入节点 */
         const linkedNode = inputNodes.find(

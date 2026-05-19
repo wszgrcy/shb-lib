@@ -1,5 +1,5 @@
 import type { Node } from '@xyflow/react';
-import type { HandleNode } from './handle-node';
+import type { HandleNode, InputContextItem, InputInvalidItem, InputRefItem } from './handle-node';
 import type { Injector } from 'static-injector';
 import type * as v from 'valibot';
 import { WorkflowNodeConfigOutputType } from './common/define';
@@ -63,13 +63,17 @@ export interface Observer<TValue, TError> {
 export type CustomNode<T extends Record<string, any> = Record<string, any>> =
   Node<
     {
-      value?: any;
+      config?: {
+        refList?: InputRefItem[];
+        invalidList?: InputInvalidItem[];
+        contextList?: InputContextItem[];
+        value?: Record<string, any>;
+      };
       style?: Record<string, any>;
       handle?: {
         /** 0 必须是连接点，否则空掉，1必须是value,否则空掉，之后随意 */
         output: HandleNode[][];
       };
-
       minSize?: {
         height: number;
         width: number;
@@ -78,7 +82,6 @@ export type CustomNode<T extends Record<string, any> = Record<string, any>> =
         resizable?: boolean;
       };
       title?: string;
-      config?: Record<string, any>;
       /** 默认输出 */
       outputName?: string;
       /** 在工作流中禁止使用 */

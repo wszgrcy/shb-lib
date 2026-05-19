@@ -74,7 +74,7 @@ export interface ParsedNode {
   type: WorkflowNodeType;
   // todo 因为加上Omit会导致类型不识别
   data: WorkflowNodeData;
-  context?: { id: string; output: string };
+  context: { id: string; output: string; rest: boolean }[];
   /** 可能是多出口 */
   outputs: HandleNode[];
   subFlowList?: { key: any; flow: ResolvedWorkflow; startId?: string }[];

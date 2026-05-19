@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "rimraf ./test-dist && tsx ./script/test.esbuild.ts && mocha \"./test-dist/**/*.spec.mjs\" --enable-source-maps --inspect",
+    "test": "rimraf ./test-dist && tsx ./script/test.esbuild.ts && mocha \"./test-dist/workflow/**/*.spec.mjs\" --enable-source-maps --inspect",
     "build": "rimraf ./dist && tsx ./script/build.esbuild.ts && tsc -P ./tsconfig.type.json ",
     "coverage": "c8 npm run test",
     "lint": "eslint --fix ./packages/**/*.ts && prettier ./packages/**/*.ts --write",

@@ -172,12 +172,19 @@ export class WorkflowRunnerContext {
           throw new Error(v.summarize(result.issues));
         }
       }
-      let contextData;
-      if (node.context) {
-        const inputNode = this.getNodeById(node.context.id);
-        contextData = await this.#runItem(inputNode, node, {
-          outputName: node.context.output,
-        });
+      let contextData: Record<string, any> = {};
+      if (node.context.length) {
+        for (const contextItem of node.context) {
+          const inputNode = this.getNodeById(contextItem.id);
+          const result = await this.#runItem(inputNode, node, {
+            outputName: contextItem.output,
+          });
+          if (contextItem.rest) {
+            contextData = { ...contextData, ...result };
+          } else {
+            contextData[contextItem.output] = result;
+          }
+        }
       }
 
       const nodeRunner = await this.#createNodeRunner(
@@ -188,7 +195,7 @@ export class WorkflowRunnerContext {
       );
       const outputList = node.outputs;
       const outputName =
-        input?.outputName ?? node.data.outputName ?? outputList[0].value;
+        input?.outputName ?? node.data.outputName ?? outputList[0]?.value;
       let dataResult = this.#getCallCache(node.id);
       if (dataResult === undefined) {
         const res = await nodeRunner.run();
