@@ -54,7 +54,3 @@ export function createResultData(data: v.InferInput<typeof CommonDataDefine>) {
 export type WorkflowStreamData =
   | v.InferOutput<typeof CommonDataDefine>
   | v.InferOutput<typeof LLMDataDefine>;
-
-export type InputOptions = {
-  [id: string]: [{ key: (string | number)[]; value: any }];
-};
