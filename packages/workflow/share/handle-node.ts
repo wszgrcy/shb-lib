@@ -26,7 +26,7 @@ export interface HandleNode {
   /** 唯一,用来查询 */
   id: string;
   /** 一般表示key */
-  name: string;
+  name?: string;
   /** 应该应用于tooltip显示,不应该被其他显示 */
   label?: string;
   type?: 'connect' | (string & {});
