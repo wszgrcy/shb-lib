@@ -66,19 +66,19 @@ describe('entry', () => {
         handle: {
           output: [
             [
-              { id: '[default]', label: '[default]', value: '[default]' },
-              { id: '[rest]', label: '[rest]', value: '[rest]' },
+              { id: '[default]', label: '[default]', name: '[default]' },
+              { id: '[rest]', label: '[rest]', name: '[rest]' },
             ],
             [
               {
                 id: '1',
                 label: '输出1',
-                value: 'default1',
+                name: 'default1',
               },
               {
                 id: '2',
                 label: '输出2',
-                value: 'default2',
+                name: 'default2',
               },
             ],
           ],

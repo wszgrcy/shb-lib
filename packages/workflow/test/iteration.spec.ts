@@ -71,20 +71,20 @@ describe('iteration', () => {
             [
               {
                 id: 'item[default]',
-                value: 'item',
+                name: 'item',
                 type: 'default',
                 label: '',
               },
-              { id: 'item[rest]', value: 'item', type: 'rest', label: '' },
+              { id: 'item[rest]', name: 'item', type: 'rest', label: '' },
             ],
             [
               {
                 id: 'index[default]',
                 type: 'default',
-                value: 'index',
+                name: 'index',
                 label: '',
               },
-              { id: 'index[rest]', type: 'rest', value: 'index', label: '' },
+              { id: 'index[rest]', type: 'rest', name: 'index', label: '' },
             ],
           ],
         },

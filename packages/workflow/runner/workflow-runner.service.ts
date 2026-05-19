@@ -198,7 +198,7 @@ export class WorkflowRunnerContext {
       );
       const outputList = node.outputs;
       const outputName =
-        input?.outputName ?? node.data.outputName ?? outputList[0]?.value;
+        input?.outputName ?? node.data.outputName ?? outputList[0]?.name;
       let dataResult = this.#getCallCache(node.id);
       if (dataResult === undefined) {
         const res = await nodeRunner.run();

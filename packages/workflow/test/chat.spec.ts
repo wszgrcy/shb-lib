@@ -134,7 +134,7 @@ describe('chat', () => {
               {
                 id: '2',
                 label: '输出',
-                value: 'default',
+                name: 'default',
               },
             ],
           ],

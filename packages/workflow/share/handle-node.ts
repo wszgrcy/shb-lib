@@ -23,16 +23,15 @@ export type InputContextItem = {
 export type InputItem = InputRefItem | InputInvalidItem | InputContextItem;
 // todo 优化
 export interface HandleNode {
+  /** 唯一,用来查询 */
   id: string;
-  /** 真正赋值使用 */
-  value: string;
+  /** 一般表示key */
+  name: string;
   /** 应该应用于tooltip显示,不应该被其他显示 */
-  label: string;
+  label?: string;
   type?: 'connect' | (string & {});
-
-  inputType?: ChatInputType;
-  /** 是否可选,用于某些不用传入的参数 */
-  optional?: boolean;
+  /** todo */
+  validateType?: ChatInputType[];
 }
 /** 将handle节点全部拍平 */
 export function flatFilterHandleList(list: HandleNode[][] | undefined) {

@@ -298,7 +298,7 @@ class WorkflowPreParser {
               outputList.push({
                 nodeList: uniqBy(subNodeList, (item) => item.id),
                 startId: childNode.id,
-                key: outputHandle.value,
+                key: outputHandle.name,
               });
             }
           }
