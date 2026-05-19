@@ -38,5 +38,8 @@ export const NODE_COMMON: NodeComponentType = {
   //     },
   //   ],
   // ],
-  outputs: [RUNNER_ORIGIN_OUTPUT],
+  outputs: [
+    RUNNER_ORIGIN_OUTPUT,
+    [{ id: 'format', label: '格式化', name: 'format' }],
+  ],
 };

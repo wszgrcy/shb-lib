@@ -6,7 +6,7 @@ import { ChatMessageListOutputType } from '@shenghuabi/openai';
 
 import { uniqBy } from 'es-toolkit';
 
-import { CHAT_NODE_DEFINE, ResponseType } from '../chat.node.define';
+import { CHAT_NODE_DEFINE, ResponseType } from '../node.define';
 import { createAssistantMessage } from '@shenghuabi/openai';
 
 import { LogService } from '@cyia/external-call';
@@ -109,33 +109,31 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     historyList.push(createAssistantMessage(resultContent));
     streamData.extra.historyList = historyList;
     this.emitter.send(streamData);
-    return async (outputName: string) => {
-      if (outputName === RUNNER_ORIGIN_OUTPUT[0].value) {
-        return {
-          value: streamData.value,
-          dataId: streamData.dataId,
-          extra: streamData.extra,
-        };
+    return async (id: string) => {
+      if (id === RUNNER_ORIGIN_OUTPUT[0].id) {
+        return streamData.value;
       }
-      let value: any;
-      switch (config.parseBy) {
-        case 'markdown':
-          value = markdownParse(resultContent);
-          break;
-        case 'json':
-          value = jsonParse(resultContent);
-          break;
-        case 'yaml':
-          value = yamlParse(resultContent);
-          break;
-        default:
-          value = resultContent;
-          break;
+      if (id === 'format') {
+        let value: any;
+        switch (config.parseBy) {
+          case 'markdown':
+            value = markdownParse(resultContent);
+            break;
+          case 'json':
+            value = jsonParse(resultContent);
+            break;
+          case 'yaml':
+            value = yamlParse(resultContent);
+            break;
+          default:
+            value = resultContent;
+            break;
+        }
+        if (typeof value === 'undefined') {
+          throw new Error(`解析${config.parseBy}失败`);
+        }
+        return value;
       }
-      if (typeof value === 'undefined') {
-        throw new Error(`解析${config.parseBy}失败`);
-      }
-      return { value, dataId: streamData.dataId, extra: streamData.extra };
     };
   }
   #exampleFormat(

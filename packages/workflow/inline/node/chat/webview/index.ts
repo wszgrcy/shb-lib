@@ -1,5 +1,5 @@
 import { WebviewNodeConfig } from '../../../../share/type';
-import { CHAT_NODE_DEFINE } from '../chat.node.define';
+import { CHAT_NODE_DEFINE } from '../node.define';
 import { NODE_COMMON } from '../common';
 import { getSystemTemplate } from '../util';
 
