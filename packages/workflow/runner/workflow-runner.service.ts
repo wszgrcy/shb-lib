@@ -32,6 +32,7 @@ import { InlineNodeService } from '../inline/inline.service';
 import { set } from 'es-toolkit/compat';
 import * as v from 'valibot';
 import { deepClone } from '@cyia/util';
+import { deepEqual } from 'fast-equals';
 /** 用于上下文start */
 export class WorkflowRunnerContext {
   #injector = inject(Injector);
@@ -131,7 +132,7 @@ export class WorkflowRunnerContext {
       const config2 = await this.#getNodeDefine(node.type);
 
       // 配置
-      if (config2.configDefine) {
+      if (config2?.configDefine) {
         const inputObj = deepClone(config?.value ?? {});
 
         if (config?.refList) {
@@ -155,10 +156,12 @@ export class WorkflowRunnerContext {
         if (config?.invalidList) {
           for (const input of config.invalidList) {
             const keyStr = input.key.join('|');
-            if (!supportList.has(keyStr)) {
+            if (supportList.has(keyStr)) {
               continue;
             }
-            set(inputObj, input.key, this.inputs);
+            const data = this.inputs[node.id];
+            const item = data.find((item) => deepEqual(item.key, input.key))!;
+            set(inputObj, input.key, item.value);
             // todo 读取输入
           }
         }

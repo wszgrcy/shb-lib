@@ -15,7 +15,7 @@ import * as v from 'valibot';
 export const CurrentWorkflowToken = new InjectionToken<ResolvedWorkflow>(
   'CurrentWorkflow',
 );
-export const InputsToken = new InjectionToken<InputInvalidItem[]>('Inputs');
+export const InputsToken = new InjectionToken<Record<string, (InputInvalidItem & { value: any })[]>>('Inputs');
 export const NodeInputsToken = new InjectionToken<any>('NodeInputs');
 export const NodeContextToken = new InjectionToken<any>('NodeContext');
 export const NodeParentMapToken = new InjectionToken<

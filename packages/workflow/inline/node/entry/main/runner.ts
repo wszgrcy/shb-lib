@@ -4,14 +4,15 @@ import { EnviromentParametersToken } from '../../../../token';
 export class InputParamsRunner extends NodeRunnerBase {
   #env = inject(EnviromentParametersToken);
   override async run() {
+    const data = this.#env!;
     return async (name?: string) => {
       if (!name || name === '[default]') {
-        return this.#env;
+        return data;
       }
       if (name === '[rest]') {
-        return this.#env;
+        return data;
       }
-      return this.#env![name];
+      return data![name];
     };
   }
 }

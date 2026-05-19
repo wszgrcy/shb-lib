@@ -6,7 +6,7 @@ import { InputInvalidItem } from './handle-node';
 
 export type WorkflowRunnerEnvironmentParams = Record<string, any>;
 export type WorkflowRunnerInputsWithContext = {
-  inputs: InputInvalidItem[];
+  inputs: Record<string, (InputInvalidItem & { value: any })[]>;
   environmentParameters?: WorkflowRunnerEnvironmentParams;
 };
 

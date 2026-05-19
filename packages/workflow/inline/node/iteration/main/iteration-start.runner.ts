@@ -5,7 +5,11 @@ export class IterationStartRunner extends NodeRunnerBase {
   #nodeParentMap = inject(NodeParentMapToken);
 
   override async run() {
-    return async (name: string) =>
-      this.#nodeParentMap.get(this.callNode!.id)![name];
+    const data = this.#nodeParentMap.get(this.node.parentId!)!;
+    return async (name?: string) => {
+      const list = this.node.outputs;
+      const result = list.find((item) => item.id === name)!;
+      return data[result.value];
+    };
   }
 }

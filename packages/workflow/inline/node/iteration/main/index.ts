@@ -1,7 +1,9 @@
-import { CHAT_NODE_DEFINE } from '../../chat/chat.node.define';
-import { LlmRunner } from '../../chat/main/llm.runner';
+import { NODE_COMMON } from '../common';
+import { ITERATION_NODE_DEFINE } from '../node.define';
+import { IterationRunner } from './runner';
 
 export const IterationMainConfig = {
-  runner: LlmRunner,
-  configDefine: CHAT_NODE_DEFINE,
+  ...NODE_COMMON,
+  runner: IterationRunner,
+  configDefine: ITERATION_NODE_DEFINE,
 } as const;

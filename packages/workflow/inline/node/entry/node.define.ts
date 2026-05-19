@@ -1,6 +1,7 @@
 import * as v from 'valibot';
 
 import { actions, setComponent, valueChange } from '@piying/view-angular-core';
+import { filter } from 'rxjs';
 
 export const ENTRY_NODE_DEFINE = v.pipe(
   v.object({
@@ -12,13 +13,18 @@ export const ENTRY_NODE_DEFINE = v.pipe(
         options: (field) => field.context['getEntryType'](),
       }),
       valueChange((fn) => {
-        fn().subscribe(({ list: [value], field }) => {
-          field.context['getEntryOutputs'](value).then((list: any[]) => {
-            field.context.setOutputHandle(1, list);
+        fn()
+          .pipe(filter(Boolean))
+          .subscribe(({ list: [value], field }) => {
+            field.context['getEntryOutputs'](value).then((list: any[]) => {
+              field.context.setOutputHandle(1, list);
+            });
           });
-        });
       }),
+      v.title('输入类型'),
     ),
+
+    editorInput: v.pipe(v.optional(v.boolean(), false), v.title('编辑器输入')),
   }),
   actions.wrappers.patch(['div']),
   actions.class.top('grid auto-rows-auto gap-2'),

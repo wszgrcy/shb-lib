@@ -6,7 +6,7 @@ import {
   WorkflowRunnerEnvironmentParams,
   WorkflowStreamData,
 } from './share/type2';
-import { ChatMessageListInputType, ChatModelOptions } from '@shenghuabi/openai';
+import { ChatMessageListInputType } from '@shenghuabi/openai';
 import { Subject } from 'rxjs';
 import { ContextBuildService } from './preset/context-build.service';
 import {
@@ -26,7 +26,7 @@ export class WorkflowExecService {
   async runParse(
     define: ResolvedWorkflow,
     input: {
-      input?: InputInvalidItem[];
+      input?: Record<string, (InputInvalidItem & { value: any })[]>;
       environmentParameters?: WorkflowRunnerEnvironmentParams;
     },
     ob?: Observer<any, any>,
@@ -35,7 +35,7 @@ export class WorkflowExecService {
     return this.#runner.run(
       define!,
       {
-        inputs: input.input ?? [],
+        inputs: input.input ?? {},
         environmentParameters: input.environmentParameters,
       },
       ob,
@@ -45,7 +45,7 @@ export class WorkflowExecService {
   async exec(
     data: Pick<WorkflowData, 'flow'> & { define?: ResolvedWorkflow },
     input: {
-      input?: InputInvalidItem[];
+      input?: Record<string, (InputInvalidItem & { value: any })[]>;
       environmentParameters?: WorkflowRunnerEnvironmentParams;
     },
     options: { showError?: boolean },
@@ -76,9 +76,8 @@ export class WorkflowExecService {
   #contextBuild = inject(ContextBuildService);
   async agentChat(
     input: {
-      input: InputInvalidItem[];
+      input: Record<string, (InputInvalidItem & { value: any })[]>;
       template: ChatMessageListInputType;
-      modelOptions?: ChatModelOptions;
       environmentParameters?: WorkflowRunnerEnvironmentParams;
     },
     fn: (item: WorkflowStreamData) => any,
@@ -94,7 +93,8 @@ export class WorkflowExecService {
     const result2 = await this.exec(
       { flow: workflow as any },
       {
-        ...input,
+        input: input.input,
+        environmentParameters: input.environmentParameters,
       },
       { showError: true },
       subject,

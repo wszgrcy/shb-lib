@@ -92,7 +92,7 @@ class WorkflowParserContext {
           contextData.push({
             id: linkedEdge.source,
             output: linkedEdge.sourceHandle!,
-            rest: linkedEdge.sourceHandle === '[rest]',
+            rest: linkedEdge.sourceHandle!.includes('[rest]'),
           });
         }
         /** 找到连接的输入节点 */
@@ -121,6 +121,7 @@ class WorkflowParserContext {
         type: node.type! as any,
         id: node.id,
         context: contextData,
+        parentId: node.parentId,
       };
       // 如果这个节点是一个块级节点
       if (this.subObject[node.id]) {

@@ -21,13 +21,14 @@ export type InputContextItem = {
 };
 
 export type InputItem = InputRefItem | InputInvalidItem | InputContextItem;
+// todo 优化
 export interface HandleNode {
   id: string;
   /** 真正赋值使用 */
   value: string;
   /** 应该应用于tooltip显示,不应该被其他显示 */
   label: string;
-  type?: 'connect';
+  type?: 'connect' | (string & {});
 
   inputType?: ChatInputType;
   /** 是否可选,用于某些不用传入的参数 */
@@ -71,6 +72,7 @@ export interface WorkflowData {
 export type RawWorkflowNode = Omit<Node<WorkflowNodeData>, 'position'>;
 export interface ParsedNode {
   id: string;
+  parentId?: string;
   type: WorkflowNodeType;
   // todo 因为加上Omit会导致类型不识别
   data: WorkflowNodeData;
