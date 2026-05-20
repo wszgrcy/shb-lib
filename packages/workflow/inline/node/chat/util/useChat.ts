@@ -7,7 +7,7 @@ import type {
 import { ChatMetadata } from '../../../../share/type';
 import {
   SerializeContextOptions,
-  serializeWithContext,
+  serializeLexicalTextarea,
 } from '../../../../util/serialize-text-template';
 
 export function useChat() {
@@ -27,13 +27,13 @@ export function useChat() {
       // ChatData 类型,分为字符串和带引用的
       const contentList = item.content.map((contentChild) => {
         if (contentChild.type === 'text') {
-          const text = serializeWithContext(
+          const text = serializeLexicalTextarea(
             contentChild.text as any,
             serializeOptions,
           );
           return { type: contentChild.type, text };
         } else if (contentChild.type === 'image_url') {
-          const url = serializeWithContext(
+          const url = serializeLexicalTextarea(
             contentChild.image_url.url as any,
             serializeOptions,
           );

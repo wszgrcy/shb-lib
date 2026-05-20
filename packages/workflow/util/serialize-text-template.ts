@@ -17,7 +17,7 @@ export interface SerializeContextOptions {
  * @param options - 上下文选项
  * @returns 序列化后的字符串
  */
-export function serializeWithContext(
+export function serializeLexicalTextarea(
   input: unknown,
   options: SerializeContextOptions,
 ): string {
