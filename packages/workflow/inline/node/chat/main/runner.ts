@@ -15,7 +15,7 @@ import { TemplateFormatService } from '../../../../template-format.service';
 import { AbortSignalToken, ChatServiceToken } from '../../../../token';
 import { createLLMData } from '../../../../share/type2';
 import { jsonParse, yamlParse, markdownParse } from '@cyia/util';
-import { useChat } from '../util/useChat';
+import { useChat } from '../../../../util/useChat';
 import { RUNNER_ORIGIN_OUTPUT } from '../../../../share/common/const';
 
 export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {

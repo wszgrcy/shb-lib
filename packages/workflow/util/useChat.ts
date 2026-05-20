@@ -1,14 +1,14 @@
 import { inject } from 'static-injector';
-import { EnviromentParametersToken, NodeContextToken } from '../../../../token';
+import { EnviromentParametersToken, NodeContextToken } from '../token';
 import type {
   ChatMessageListInputType,
   ChatMessageListOutputType,
 } from '@shenghuabi/openai';
-import { ChatMetadata } from '../../../../share/type';
+import { ChatMetadata } from '../share/type';
 import {
   SerializeContextOptions,
   serializeLexicalTextarea,
-} from '../../../../util/serialize-text-template';
+} from './serialize-text-template';
 
 export function useChat() {
   const contextProvider = inject(NodeContextToken);
@@ -16,7 +16,7 @@ export function useChat() {
   return async (list: ChatMessageListInputType) => {
     const metadataList: ChatMetadata[] = [];
     const context = await contextProvider();
-    const serializeOptions:SerializeContextOptions = {
+    const serializeOptions: SerializeContextOptions = {
       context,
       environmentContext,
       onMetadata: (metadata) => {
