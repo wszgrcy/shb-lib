@@ -88,7 +88,7 @@ class WorkflowParserContext {
         if (linkedEdge.target !== node.id) {
           continue;
         }
-        if (linkedEdge.targetHandle === 'context') {
+        if (linkedEdge.targetHandle === '[context]') {
           contextData.push({
             id: linkedEdge.source,
             output: linkedEdge.sourceHandle!,

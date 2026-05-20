@@ -74,7 +74,7 @@ describe('entry', () => {
             source: '1',
             target: '2',
             sourceHandle: '[rest]',
-            targetHandle: 'context',
+            targetHandle: '[context]',
           },
         ],
         viewport: { x: 0, y: 0, zoom: 0 },

@@ -85,7 +85,7 @@ describe('iteration', () => {
             source: '4',
             target: '5',
             sourceHandle: 'item[rest]',
-            targetHandle: 'context',
+            targetHandle: '[context]',
           },
         ],
         viewport: { x: 0, y: 0, zoom: 0 },
