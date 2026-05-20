@@ -89,7 +89,9 @@ export const CHAT_NODE_DEFINE = v.pipe(
           ),
         ),
       ),
-      setComponent('jsonSchema'),
+      setComponent('div'),
+      actions.wrappers.patch(['use-ref']),
+      v.title('JsonSchema')
     ),
   }),
   actions.wrappers.patch(['div']),
