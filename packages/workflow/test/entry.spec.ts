@@ -28,6 +28,7 @@ describe('entry', () => {
         config: {
           value: {
             type: 'input-params',
+            editorInput: true,
           },
         },
         handle: {
@@ -79,8 +80,11 @@ describe('entry', () => {
         ],
         viewport: { x: 0, y: 0, zoom: 0 },
       },
+      options: {
+        editorInput: true,
+      },
     });
-
+    expect(result.editorInput).eq(true);
     expect(result.data?.end).eq('2');
     const result2 = await injector
       .get(WorkflowExecService)

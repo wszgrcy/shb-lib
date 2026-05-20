@@ -89,6 +89,7 @@ describe('chat', () => {
         viewport: { x: 0, y: 0, zoom: 0 },
       },
     });
+    expect(result.editorInput).not.ok
     expect(result.data?.end).eq('1');
     const result2 = await injector
       .get(WorkflowExecService)

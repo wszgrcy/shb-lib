@@ -33,6 +33,7 @@ export interface ResolvedWorkflowResult {
     message?: string;
     nodeId?: string;
   };
+  editorInput?: boolean;
 }
 type SubGroupList = Record<
   string,
@@ -337,7 +338,7 @@ export class WorkflowParserService {
    * 边有id,通过source 找到连接的节点
    *
    */
-  parse(data: Pick<WorkflowData, 'flow'>): ResolvedWorkflowResult {
+  parse(data: Pick<WorkflowData, 'flow' | 'options'>): ResolvedWorkflowResult {
     const injector = createInjector({
       providers: [
         WorkflowPreParser,
@@ -360,7 +361,7 @@ export class WorkflowParserService {
       result.subObjectGroup,
       { ...data, flow: { ...data.flow, edges: result.edges } },
     );
-    return { ...instance.parseItem() };
+    return { ...instance.parseItem(), editorInput: data.options?.editorInput };
   }
 }
 // 改成多出口,但是需要看看多出口有什么隐藏的问题
