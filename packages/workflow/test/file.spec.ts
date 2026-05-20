@@ -60,7 +60,7 @@ describe('workflow-file', () => {
     const result2 = await injector
       .get(WorkflowExecService)
       .runParse(result.data!, {
-        input: { target_language: 'english', source_text: '中文' },
+        inputs: { target_language: 'english', source_text: '中文' },
       });
     expect(result2.value).eq('0123456789');
   });

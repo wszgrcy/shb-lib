@@ -96,7 +96,7 @@ describe('iteration', () => {
     const result2 = await injector
       .get(WorkflowExecService)
       .runParse(result.data!, {
-        input: {
+        inputs: {
           '3': [
             {
               key: ['list'],

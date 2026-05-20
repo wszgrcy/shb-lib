@@ -110,7 +110,7 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     streamData.extra.historyList = historyList;
     this.emitter.send(streamData);
     return async (id: string) => {
-      if (id === RUNNER_ORIGIN_OUTPUT[0].id) {
+      if (id === undefined || id === RUNNER_ORIGIN_OUTPUT[0].id) {
         return streamData.value;
       } else if (id === 'historyList') {
         return historyList;

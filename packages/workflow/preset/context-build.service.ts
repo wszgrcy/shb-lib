@@ -6,24 +6,7 @@ import { ChatMessageListInputType } from '@shenghuabi/openai/define';
 export class ContextBuildService {
   template = inject(TemplateFormatService);
   parser = inject(WorkflowParserService);
-  createWorkflow(
-    input: {
-      template: ChatMessageListInputType;
-      input: Record<string, any>;
-    },
-  ) {
-    // 每一个输入都变成一个节点
-    const result = this.template
-      .parse(
-        input.template
-          .flatMap((item) =>
-            item.content.map((item) => (item.type === 'text' ? item.text : '')),
-          )
-          .join('\n'),
-      )
-      .list.map((item) => item.value);
-    // 改成一个input(所有的进入)输入
-
+  createWorkflow(input: { template: ChatMessageListInputType }) {
     /** 自建出口 */
     const chatNode = {
       id: '2',
@@ -40,14 +23,14 @@ export class ContextBuildService {
             ],
           ],
         },
-        value: input.template,
-        config: {},
+        config: { value: { value: input.template } },
       },
       type: 'chat',
     };
 
     return {
       nodes: [chatNode],
+      edges: [],
     };
   }
 }

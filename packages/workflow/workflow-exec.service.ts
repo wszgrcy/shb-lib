@@ -1,16 +1,16 @@
-import { inject } from 'static-injector';
+import { inject, Provider } from 'static-injector';
 
 import { WorkflowParserService } from './workflow-parser.service';
 import { WorkflowRunnerService } from './runner/workflow-runner.service';
 import {
   WorkflowRunnerEnvironmentParams,
+  WorkflowRunnerInputsWithContext,
   WorkflowStreamData,
 } from './share/type2';
 import { ChatMessageListInputType } from '@shenghuabi/openai';
 import { Subject } from 'rxjs';
 import { ContextBuildService } from './preset/context-build.service';
 import {
-  InputInvalidItem,
   ResolvedWorkflow,
   WorkflowData,
 } from './share/handle-node';
@@ -23,34 +23,16 @@ export class WorkflowExecService {
     return this.#parser.parse(data);
   }
 
-  async runParse(
-    define: ResolvedWorkflow,
-    input: {
-      input?: Record<string, (InputInvalidItem & { value: any })[]>;
-      environmentParameters?: WorkflowRunnerEnvironmentParams;
-    },
-    ob?: Observer<any, any>,
-    abortSignal?: AbortSignal,
-  ) {
-    return this.#runner.run(
-      define!,
-      {
-        inputs: input.input ?? {},
-        environmentParameters: input.environmentParameters,
-      },
-      ob,
-      abortSignal,
-    );
+  async runParse(...args: Parameters<WorkflowRunnerService['run']>) {
+    return this.#runner.run(...args);
   }
   async exec(
     data: Pick<WorkflowData, 'flow'> & { define?: ResolvedWorkflow },
-    input: {
-      input?: Record<string, (InputInvalidItem & { value: any })[]>;
-      environmentParameters?: WorkflowRunnerEnvironmentParams;
-    },
+    input: WorkflowRunnerInputsWithContext,
     options: { showError?: boolean },
     ob?: Observer<any, any>,
     abortSignal?: AbortSignal,
+    providers?: Provider[],
   ) {
     let define;
     if (data.define) {
@@ -64,7 +46,7 @@ export class WorkflowExecService {
     }
 
     try {
-      return await this.runParse(define!, input, ob, abortSignal);
+      return await this.runParse(define!, input, ob, abortSignal, providers);
     } catch (error) {
       if (options.showError) {
         // vscode.window.showErrorMessage(errorFormatByNode(error));
@@ -76,12 +58,13 @@ export class WorkflowExecService {
   #contextBuild = inject(ContextBuildService);
   async agentChat(
     input: {
-      input: Record<string, (InputInvalidItem & { value: any })[]>;
+      // inputs: Record<string, (InputInvalidItem & { value: any })[]>;
       template: ChatMessageListInputType;
       environmentParameters?: WorkflowRunnerEnvironmentParams;
     },
     fn: (item: WorkflowStreamData) => any,
     abort?: AbortSignal,
+    providers?: Provider[],
   ) {
     const workflow = this.#contextBuild.createWorkflow(input);
     const subject = new Subject();
@@ -93,12 +76,13 @@ export class WorkflowExecService {
     const result2 = await this.exec(
       { flow: workflow as any },
       {
-        input: input.input,
+        // inputs: input.inputs,
         environmentParameters: input.environmentParameters,
       },
       { showError: true },
       subject,
       abort,
+      providers,
     );
 
     return result2;

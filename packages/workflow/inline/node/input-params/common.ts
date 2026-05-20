@@ -1,15 +1,11 @@
-import { RUNNER_ORIGIN_OUTPUT } from '../../../share';
-
 import { NodeComponentType } from '../../../share';
 
 export const NODE_COMMON: NodeComponentType = {
-  priority: -100,
+  priority: -999,
   type: 'input-params',
-  label: `入口`,
-  icon: { fontIcon: 'chat' },
-  disableHead: false,
-  disableConnect: false,
-  color: 'accent',
-  help: [`- 入口`].join('\n'),
-  outputs: [RUNNER_ORIGIN_OUTPUT],
+  label: `外界输入`,
+  icon: { fontIcon: 'input' },
+  disableHead: true,
+  disableConnect: true,
+  color: 'primary',
 };

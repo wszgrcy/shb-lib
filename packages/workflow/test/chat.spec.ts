@@ -19,7 +19,7 @@ const userP = createTextTemplate([
   ],
 ]);
 describe('chat', () => {
-  it('hello', async () => {
+  it.only('hello', async () => {
     class ChatService {
       chat(config: any) {
         return {
@@ -95,6 +95,63 @@ describe('chat', () => {
       .runParse(result.data!, {
         environmentParameters: { userInput: 'inputValue' },
       });
+    expect(result2).eq('0123456789');
+    textNode.data.outputName = 'historyList';
+    const result3 = await injector
+      .get(WorkflowExecService)
+      .runParse(result.data!, {
+        environmentParameters: { userInput: 'inputValue' },
+      });
+    expect(result3.length).eq(3);
+    expect(result3[2].content[0].text).eq('0123456789');
+  });
+  it('agentChat', async () => {
+    class ChatService {
+      chat(config: any) {
+        return {
+          stream: async function* (data: any) {
+            expect(data.messages[1].content[0].text).eq(`userPinputValue`);
+            let content = '';
+            for (let i = 0; i < 10; i++) {
+              content += `${i}`;
+              yield { content: content };
+            }
+          },
+        };
+      }
+      getMetadataEndRef() {
+        return '';
+      }
+    }
+    const injector = createRootInjector({
+      providers: [
+        ...WORKFLOW_MODULE.provider,
+        { provide: ChatServiceToken, useClass: ChatService },
+        {
+          provide: LogFactoryToken,
+          useValue: (value: string) => ({
+            info: console.info,
+            warn: console.warn,
+            error: console.error,
+          }),
+        },
+        LogService,
+      ],
+    });
+
+    const result2 = await injector.get(WorkflowExecService).agentChat(
+      {
+        environmentParameters: { userInput: 'inputValue' },
+        template: [
+          { role: 'system', content: [{ type: 'text', text: systemP as any }] },
+          {
+            role: 'user',
+            content: [{ type: 'text', text: userP as any }],
+          },
+        ],
+      },
+      () => {},
+    );
     expect(result2).eq('0123456789');
     // expect(result2.extra.historyList.slice(-1)[0].content[0].text).eq(
     //   '0123456789',
