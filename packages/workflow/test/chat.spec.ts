@@ -8,77 +8,16 @@ import { ChatServiceToken } from '../token';
 import { LogFactoryToken, LogService } from '@cyia/external-call';
 import { WORKFLOW_MODULE } from '../module';
 import { CustomNode } from '../share';
-const systemP = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            detail: 0,
-            format: 0,
-            mode: 'normal',
-            style: '',
-            text: 'systemP',
-            type: 'text',
-            version: 1,
-          },
-        ],
-        direction: null,
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-        textFormat: 0,
-        textStyle: '',
-      },
-    ],
-    direction: null,
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
-const userP = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            detail: 0,
-            format: 0,
-            mode: 'normal',
-            style: '',
-            text: 'userP',
-            type: 'text',
-            version: 1,
-          },
-          {
-            type: 'variable',
-            version: 1,
-            item: {
-              label: 'userInput',
-              value: ['userInput'],
-              type: 'custom',
-            },
-          },
-        ],
-        direction: null,
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-        textFormat: 0,
-        textStyle: '',
-      },
-    ],
-    direction: null,
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
+import { createTextTemplate } from './util/chat-fixture';
+
+const systemP = createTextTemplate([[{ text: 'systemP' }]]);
+
+const userP = createTextTemplate([
+  [
+    { text: 'userP' },
+    { label: 'userInput', value: ['userInput'], type: 'custom' },
+  ],
+]);
 describe('chat', () => {
   it('hello', async () => {
     class ChatService {

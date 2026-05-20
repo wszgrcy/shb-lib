@@ -6,45 +6,14 @@ import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 import { TEXT_NODE_DEFINE } from '../inline/node/text/text.node.define';
 import { CustomNode } from '../share/type';
+import { createTextTemplate } from './util/chat-fixture';
 
-const textNodeValue = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            type: 'variable',
-            version: 1,
-            item: {
-              label: 'default1',
-              value: ['default1'],
-            },
-          },
-          {
-            type: 'variable',
-            version: 1,
-            item: {
-              label: 'default2',
-              value: ['default2'],
-            },
-          },
-        ],
-        direction: null,
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-        textFormat: 0,
-        textStyle: '',
-      },
-    ],
-    direction: null,
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
+const textNodeValue = createTextTemplate([
+  [
+    { label: 'default1', value: ['default1'] },
+    { label: 'default2', value: ['default2'] },
+  ],
+]);
 
 describe('iteration', () => {
   it('hello', async () => {
@@ -108,7 +77,7 @@ describe('iteration', () => {
 
     const result = service.parse({
       flow: {
-        nodes: [iterationNode , iterationStartNode, textNode2],
+        nodes: [iterationNode, iterationStartNode, textNode2],
         edges: [
           // iteration-start → textNode2: 传递 context (list 参数)
           {

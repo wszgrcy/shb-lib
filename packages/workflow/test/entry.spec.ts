@@ -6,47 +6,14 @@ import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 import { TEXT_NODE_DEFINE } from '../inline/node/text/text.node.define';
 import { CustomNode } from '../share';
+import { createTextTemplate } from './util/chat-fixture';
 
-const textNodeValue = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            type: 'variable',
-            version: 1,
-            item: {
-              label: 'default1',
-              value: ['default1'],
-              type: 'custom',
-            },
-          },
-          {
-            type: 'variable',
-            version: 1,
-            item: {
-              label: 'default2',
-              value: ['default2'],
-              type: 'custom',
-            },
-          },
-        ],
-        direction: null,
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-        textFormat: 0,
-        textStyle: '',
-      },
-    ],
-    direction: null,
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
+const textNodeValue = createTextTemplate([
+  [
+    { label: 'default1', value: ['default1'], type: 'custom' },
+    { label: 'default2', value: ['default2'], type: 'custom' },
+  ],
+]);
 
 describe('entry', () => {
   it('input-params output to text', async () => {

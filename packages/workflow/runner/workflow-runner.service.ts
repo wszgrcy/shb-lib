@@ -148,7 +148,9 @@ export class WorkflowRunnerContext {
               continue;
             }
             // todo指定出口
-            const result = await this.#runItem(inputNode, node);
+            const result = await this.#runItem(inputNode, node, {
+              outputName: input.outlet,
+            });
             set(inputObj, input.key, result);
             supportList.add(input.key.join('|'));
           }

@@ -45,7 +45,6 @@ export interface WorkflowNodeData {
   config?: {
     refList?: InputRefItem[];
     invalidList?: InputInvalidItem[];
-    contextList?: InputContextItem[];
     value?: Record<string, any>;
   };
   style?: Record<string, any>;
