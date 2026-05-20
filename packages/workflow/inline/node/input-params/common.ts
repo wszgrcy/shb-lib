@@ -5,7 +5,8 @@ export const NODE_COMMON: NodeComponentType = {
   type: 'input-params',
   label: `外界输入`,
   icon: { fontIcon: 'input' },
-  disableHead: true,
+  disableHead: false,
   disableConnect: true,
+  disableContext: true,
   color: 'primary',
 };
