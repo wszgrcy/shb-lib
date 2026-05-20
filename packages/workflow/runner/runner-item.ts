@@ -5,6 +5,7 @@ import {
   CurrentCallNodeToken,
   CurrentContextToken,
   CurrentNodeToken,
+  EnviromentParametersToken,
   ModelOptionsToken,
   NodeContextToken,
   NodeInputsToken,
@@ -25,7 +26,7 @@ export class NodeRunnerBase<
   protected node = inject(CurrentNodeToken);
   protected callNode =
     inject(CurrentCallNodeToken, { optional: true }) ?? undefined;
-  protected context = inject(CurrentContextToken);
+  protected runnerContext = inject(CurrentContextToken);
   protected injector = inject(Injector);
   protected emitter = inject(WorkflowEmitter);
   protected abortSignal = inject(AbortSignalToken);
@@ -35,12 +36,14 @@ export class NodeRunnerBase<
         ? v.InferOutput<TSchema>
         : undefined
     >(NodeInputsToken);
+  protected environmentContextData = inject(EnviromentParametersToken)!;
+
   async run(): RunnerResult {
     throw new Error('待实现');
   }
 
   #modelConfig = inject(ModelOptionsToken, { optional: true }) ?? undefined;
-  context$$ = computed(() => this.injector.get(NodeContextToken)());
+  nodeContextData$$ = computed(() => this.injector.get(NodeContextToken)());
 
   mergeChatModel(input?: ModelInputConfig): Partial<ChatModelOptions> {
     const chatService = this.injector.get(ChatServiceToken);

@@ -26,7 +26,7 @@ export class IterationRunner extends NodeRunnerBase<
             .createContext(
               //迭代只有一个子流
               this.node.subFlowList![0].flow!,
-              this.context,
+              this.runnerContext,
               this.injector,
             )
             .run(),
