@@ -29,7 +29,7 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     const config = nodeResult;
     const examples = config.examples;
     const list = nodeResult.value;
-    const { list: historyList, metadataList } = this.chatParse(list);
+    const { list: historyList, metadataList } = await this.chatParse(list);
     const schema = config.jsonSchema;
     if (schema) {
       config.parseBy ??= 'json';

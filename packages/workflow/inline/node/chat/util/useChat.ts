@@ -5,13 +5,17 @@ import type {
   ChatMessageListOutputType,
 } from '@shenghuabi/openai';
 import { ChatMetadata } from '../../../../share/type';
-import { SerializeContextOptions, serializeWithContext } from '../../../../util/serialize-text-template';
+import {
+  SerializeContextOptions,
+  serializeWithContext,
+} from '../../../../util/serialize-text-template';
 
 export function useChat() {
-  const context = inject(NodeContextToken);
+  const contextProvider = inject(NodeContextToken);
   const environmentContext = inject(EnviromentParametersToken)!;
-  return (list: ChatMessageListInputType) => {
+  return async (list: ChatMessageListInputType) => {
     const metadataList: ChatMetadata[] = [];
+    const context = await contextProvider();
     const serializeOptions:SerializeContextOptions = {
       context,
       environmentContext,

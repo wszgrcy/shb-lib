@@ -10,8 +10,9 @@ export class TextareaRunner extends NodeRunnerBase<typeof TEXT_NODE_DEFINE> {
   override async run() {
     return async () => {
       let metadataList: ChatMetadata[] | undefined;
+      const context = await this.context$$();
       const value = serializeWithContext(this.inputs.value, {
-        context: this.getContext(),
+        context,
         environmentContext: this.environmentContext,
         onMetadata(metadata) {
           metadataList = metadata;

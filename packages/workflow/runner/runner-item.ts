@@ -1,4 +1,4 @@
-import { inject, Injector } from 'static-injector';
+import { computed, inject, Injector } from 'static-injector';
 import {
   AbortSignalToken,
   ChatServiceToken,
@@ -40,9 +40,8 @@ export class NodeRunnerBase<
   }
 
   #modelConfig = inject(ModelOptionsToken, { optional: true }) ?? undefined;
-  getContext() {
-    return this.injector.get(NodeContextToken);
-  }
+  context$$ = computed(() => this.injector.get(NodeContextToken)());
+
   mergeChatModel(input?: ModelInputConfig): Partial<ChatModelOptions> {
     const chatService = this.injector.get(ChatServiceToken);
     let presetConfig = {};

@@ -92,7 +92,7 @@ export class WorkflowRunnerContext {
   async #createNodeRunner(
     item: ParsedNode,
     inputParams: Record<string, any>,
-    contextData?: Record<string, any>,
+    contextFactory?: () => Promise<Record<string, any>>,
     callNode?: ParsedNode,
   ) {
     const define = await this.#getNodeRunner(item.type);
@@ -107,7 +107,7 @@ export class WorkflowRunnerContext {
         ].filter(Boolean),
         { provide: CurrentContextToken, useValue: this },
         { provide: NodeInputsToken, useValue: inputParams },
-        { provide: NodeContextToken, useValue: contextData },
+        { provide: NodeContextToken, useValue: contextFactory },
       ],
       parent: this.#injector,
     }).get(define as any as typeof NodeRunnerBase);
@@ -177,25 +177,29 @@ export class WorkflowRunnerContext {
           throw new Error(v.summarize(result.issues));
         }
       }
-      let contextData: Record<string, any> = {};
-      if (node.context.length) {
-        for (const contextItem of node.context) {
-          const inputNode = this.getNodeById(contextItem.id);
-          const result = await this.#runItem(inputNode, node, {
-            outputName: contextItem.output,
-          });
-          if (contextItem.rest) {
-            contextData = { ...contextData, ...result };
-          } else {
-            contextData[contextItem.output] = result;
+      // 延迟计算上下文，只有在节点实际使用时才会请求
+      const contextFactory = async (): Promise<Record<string, any>> => {
+        let contextData: Record<string, any> = {};
+        if (node.context.length) {
+          for (const contextItem of node.context) {
+            const inputNode = this.getNodeById(contextItem.id);
+            const result = await this.#runItem(inputNode, node, {
+              outputName: contextItem.output,
+            });
+            if (contextItem.rest) {
+              contextData = { ...contextData, ...result };
+            } else {
+              contextData[contextItem.output] = result;
+            }
           }
         }
-      }
+        return contextData;
+      };
 
       const nodeRunner = await this.#createNodeRunner(
         node,
         inputObjResoved,
-        contextData,
+        contextFactory,
         callNode,
       );
       const outputList = node.outputs;
