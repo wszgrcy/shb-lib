@@ -112,8 +112,9 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     return async (id: string) => {
       if (id === RUNNER_ORIGIN_OUTPUT[0].id) {
         return streamData.value;
-      }
-      if (id === 'format') {
+      } else if (id === 'historyList') {
+        return historyList;
+      } else if (id === 'format') {
         let value: any;
         switch (config.parseBy) {
           case 'markdown':

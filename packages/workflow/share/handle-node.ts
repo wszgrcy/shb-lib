@@ -67,6 +67,10 @@ export interface WorkflowNodeData {
 /** 工作流定义 */
 export interface WorkflowData {
   flow: ReactFlowJsonObject<Node<WorkflowNodeData>>;
+  options?: {
+    /** input-patams负责修改 */
+    editorInput?: boolean;
+  };
   version: number;
 }
 

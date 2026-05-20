@@ -20,10 +20,22 @@ export const InputParams_NODE_DEFINE = v.pipe(
             field.context['getUsageOutputs'](value).then((list: any[]) => {
               field.context.setOutputHandle(1, list);
             });
-            field.context['usageChange'](value)
+            field.context['usageChange'](value);
           });
       }),
       v.title('输入类型'),
+    ),
+    editorInput: v.pipe(
+      v.optional(v.boolean()),
+      v.title('编辑器输入'),
+      valueChange((fn) => {
+        fn().subscribe(({ list: [value], field }) => {
+          if (value === undefined) {
+            return;
+          }
+          field.context['editorInputChange'](value);
+        });
+      }),
     ),
   }),
   actions.wrappers.patch(['div']),
