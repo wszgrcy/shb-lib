@@ -89,7 +89,7 @@ export const CHAT_NODE_DEFINE = v.pipe(
           ),
         ),
       ),
-      setComponent('div'),
+      setComponent('div-control'),
       actions.wrappers.patch(['use-ref']),
       v.title('JsonSchema')
     ),
