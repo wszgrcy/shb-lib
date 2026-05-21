@@ -18,6 +18,8 @@ export type InputContextItem = {
   contextKey: string;
   /** 键 */
   key: (string | number)[];
+  /** 可能的类型 */
+  kind?: 'image';
 };
 
 export type InputItem = InputRefItem | InputInvalidItem | InputContextItem;
