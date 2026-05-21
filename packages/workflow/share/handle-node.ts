@@ -11,11 +11,9 @@ export type InputRefItem = {
   /** 键 */
   key: (string | number)[];
 };
+/** 不连线,直接相当于访问出口的环境参数 */
 export type InputContextItem = {
-  /** 容器节点 id */
-  value: string;
-  /** 上下文中提供的 */
-  contextKey: string;
+  label: string;
   /** 键 */
   key: (string | number)[];
   /** 可能的类型 */
