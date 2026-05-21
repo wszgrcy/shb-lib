@@ -1,9 +1,5 @@
-import { actions, setComponent } from '@piying/view-angular-core';
 import * as v from 'valibot';
+import { TextareaTemplateDefine } from '../../../share/util/preset/textarea-template';
 export const TEXT_NODE_DEFINE = v.object({
-  value: v.pipe(
-    v.any(),
-    setComponent('textarea-template'),
-    actions.class.top('nodrag'),
-  ),
+  value: TextareaTemplateDefine
 });
