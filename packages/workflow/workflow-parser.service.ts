@@ -21,6 +21,8 @@ import {
   flatFilterHandleList,
   ResolvedWorkflow,
   WorkflowData,
+  WorkflowInvalidConfig,
+  WorkflowContextConfig,
   WorkflowNodeData,
 } from './share/handle-node';
 import { InlineNodeService } from './inline/inline.service';
@@ -34,25 +36,53 @@ export interface ResolvedWorkflowResult {
     nodeId?: string;
   };
   editorInput?: boolean;
+  /** 所有节点的无效配置统计,结构为{id: invalidList} */
+  invalidConfigList?: WorkflowInvalidConfig[];
+  /** 所有节点的上下文配置,扁平化去重后的列表 */
+  contextConfigList?: WorkflowContextConfig[];
 }
 type SubGroupList = Record<
   string,
   { key: string; startId?: string; nodeList: Node<WorkflowNodeData>[] }[]
 >;
+const ParserListToken = new InjectionToken<Node<WorkflowNodeData>[]>(
+  'ParserListToken',
+);
+const ParserSubObjectToken = new InjectionToken<SubGroupList>(
+  'ParserSubObjectToken',
+);
+const ParserDataToken = new InjectionToken<Pick<WorkflowData, 'flow'>>(
+  'ParserDataToken',
+);
+const ParentContextToken = new InjectionToken<WorkflowParserContext>(
+  'ParentContextToken',
+);
+const ParentNodeToken = new InjectionToken<Node<WorkflowNodeData>>(
+  'ParentNodeToken',
+);
+type DataCollectionObject = {
+  /** 共享的无效配置列表，用于跨层级累积 */
+  invalidConfigList: WorkflowInvalidConfig[];
+  /** 共享的上下文配置列表，用于跨层级累积 */
+  contextConfigList: WorkflowContextConfig[];
+};
+const ContextCollectionToken = new InjectionToken<DataCollectionObject>(
+  'ContextCollectionToken',
+);
+
 class WorkflowParserContext {
   // fixme 或许可以分离，单独调用，然后加上children查找，不过那样就太慢了
   #childUseNodeSet = new Set<string>();
 
-  constructor(
-    /** 主列表或者说某一级的列表 */
-    public list: Node<WorkflowNodeData>[],
-    private subObject: SubGroupList,
-    private data: Pick<WorkflowData, 'flow'>,
-    /** 父级节点 */
-    private parentNode?: Node<WorkflowNodeData>,
-    /** 父级上下文 */
-    private parent?: WorkflowParserContext,
-  ) {}
+  list = inject(ParserListToken);
+  private subObject = inject(ParserSubObjectToken);
+  private data = inject(ParserDataToken);
+  /** 父级节点 */
+
+  #parent = inject(ParentContextToken, { optional: true });
+  #parentNode = inject(ParentNodeToken, { optional: true });
+  #collection = inject(ContextCollectionToken);
+  #injector = inject(Injector);
   /** 只能子级在本级找不到节点时调用父级使用 */
   protected childUseDefine(
     id: string,
@@ -60,7 +90,7 @@ class WorkflowParserContext {
   ): Node<WorkflowNodeData> | undefined {
     const define = this.list.find((item) => item.id === id);
     if (!define) {
-      return this.parent?.childUseDefine(id, parentId);
+      return this.#parent?.childUseDefine(id, parentId);
     }
     if (id !== parentId) {
       this.#childUseNodeSet.add(id);
@@ -68,7 +98,7 @@ class WorkflowParserContext {
     return define;
   }
   #getParentNodeDefine(id: string) {
-    return this.parent?.childUseDefine(id, this.parentNode?.id);
+    return this.#parent?.childUseDefine(id, this.#parentNode?.id);
   }
   parseItem(): ResolvedWorkflowResult {
     const graph = new Graph({ multi: true });
@@ -129,13 +159,22 @@ class WorkflowParserContext {
         // 多出口
         for (let index = 0; index < this.subObject[node.id].length; index++) {
           const { key, startId, nodeList } = this.subObject[node.id][index];
-          const instance = new WorkflowParserContext(
-            nodeList,
-            this.subObject,
-            this.data,
-            node,
-            this,
-          );
+          const injector = createInjector({
+            providers: [
+              WorkflowParserContext,
+              { provide: ParserListToken, useValue: nodeList },
+              {
+                provide: ParentNodeToken,
+                useValue: node,
+              },
+              {
+                provide: ParentContextToken,
+                useValue: this,
+              },
+            ],
+            parent: this.#injector,
+          });
+          const instance = injector.get(WorkflowParserContext);
           const result = instance.parseItem();
           if (result.error) {
             return { error: { ...result.error } };
@@ -148,6 +187,21 @@ class WorkflowParserContext {
             startId: startId,
           });
         }
+      }
+      if (node.data.config?.invalidList?.length) {
+        this.#collection.invalidConfigList.push({
+          id: node.id,
+          list: node.data.config.invalidList,
+        });
+      }
+      // 收集上下文配置
+      if (node.data.config?.contextGroup) {
+        const contextItems = Object.values(
+          node.data.config.contextGroup,
+        ).flat();
+        this.#collection.contextConfigList.push(
+          ...uniqBy(contextItems, (a) => a.key.join('|')),
+        );
       }
     }
     const outList: string[] = [];
@@ -356,12 +410,38 @@ export class WorkflowParserService {
         },
       };
     }
-    const instance = new WorkflowParserContext(
-      result.list,
-      result.subObjectGroup,
-      { ...data, flow: { ...data.flow, edges: result.edges } },
+    const collection = {
+      invalidConfigList: [],
+      contextConfigList: [],
+    } as DataCollectionObject;
+    const injector2 = createInjector({
+      providers: [
+        WorkflowParserContext,
+        { provide: ParserListToken, useValue: result.list },
+        { provide: ParserSubObjectToken, useValue: result.subObjectGroup },
+        {
+          provide: ParserDataToken,
+          useValue: { ...data, flow: { ...data.flow, edges: result.edges } },
+        },
+        {
+          provide: ContextCollectionToken,
+          useValue: collection,
+        },
+      ],
+      parent: injector,
+    });
+    const instance = injector2.get(WorkflowParserContext);
+
+    const result2 = instance.parseItem();
+    const uniqueContextList = uniqBy(collection.contextConfigList, (item) =>
+      JSON.stringify(item.key),
     );
-    return { ...instance.parseItem(), editorInput: data.options?.editorInput };
+    return {
+      ...result2,
+      editorInput: data.options?.editorInput,
+      invalidConfigList: collection.invalidConfigList,
+      contextConfigList: uniqueContextList,
+    };
   }
 }
 // 改成多出口,但是需要看看多出口有什么隐藏的问题

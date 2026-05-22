@@ -87,6 +87,14 @@ export interface ParsedNode {
   outputs: HandleNode[];
   subFlowList?: { key: any; flow: ResolvedWorkflow; startId?: string }[];
 }
+/** 无效配置项,用于错误提示 */
+export interface WorkflowInvalidConfig {
+  id: string;
+  list: InputInvalidItem[];
+}
+/** 上下文配置,扁平化所有节点的 contextGroup */
+export type WorkflowContextConfig = InputContextItem;
+
 export interface ResolvedWorkflow {
   nodes: Record<string, ParsedNode>;
   /** 出口 */
