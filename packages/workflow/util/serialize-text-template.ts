@@ -1,6 +1,9 @@
 import { get } from 'es-toolkit/compat';
-import { serializeTemplate } from '@shenghuabi/lexical-textarea/variable-serialization';
 import type { ChatMetadata } from '../share/type';
+import {
+  SimplifiedState,
+  serializeSimplifiedState,
+} from '@shenghuabi/lexical-textarea';
 
 export interface SerializeContextOptions {
   /** 节点上下文 */
@@ -18,12 +21,12 @@ export interface SerializeContextOptions {
  * @returns 序列化后的字符串
  */
 export function serializeLexicalTextarea(
-  input: unknown,
+  input: SimplifiedState,
   options: SerializeContextOptions,
 ): string {
   const { context, environmentContext, onMetadata } = options;
 
-  return serializeTemplate(input as any, (item) => {
+  return serializeSimplifiedState(input, (item) => {
     if (item.type === 'custom') {
       return get(environmentContext, item.value);
     }

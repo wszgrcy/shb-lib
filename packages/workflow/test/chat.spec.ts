@@ -8,16 +8,19 @@ import { ChatServiceToken } from '../token';
 import { LogFactoryToken, LogService } from '@cyia/external-call';
 import { WORKFLOW_MODULE } from '../module';
 import { CustomNode } from '../share';
-import { createTextTemplate } from './util/chat-fixture';
+import { SimplifiedState } from '@shenghuabi/lexical-textarea';
 
-const systemP = createTextTemplate([[{ text: 'systemP' }]]);
+const systemP: SimplifiedState = [[{ text: 'systemP', type: 'text' }]];
 
-const userP = createTextTemplate([
+const userP: SimplifiedState = [
   [
-    { text: 'userP' },
-    { label: 'userInput', value: ['userInput'], type: 'custom' },
+    { text: 'userP', type: 'text' },
+    {
+      item: { label: 'userInput', value: ['userInput'], type: 'custom' },
+      type: 'variable',
+    },
   ],
-]);
+];
 describe('chat', () => {
   it.only('hello', async () => {
     class ChatService {
@@ -89,7 +92,7 @@ describe('chat', () => {
         viewport: { x: 0, y: 0, zoom: 0 },
       },
     });
-    expect(result.editorInput).not.ok
+    expect(result.editorInput).not.ok;
     expect(result.data?.end).eq('1');
     const result2 = await injector
       .get(WorkflowExecService)

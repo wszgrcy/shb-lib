@@ -6,14 +6,14 @@ import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 import { TEXT_NODE_DEFINE } from '../inline/node/text/text.node.define';
 import { CustomNode } from '../share/type';
-import { createTextTemplate } from './util/chat-fixture';
+import { SimplifiedState } from '@shenghuabi/lexical-textarea';
 
-const textNodeValue = createTextTemplate([
+const textNodeValue = [
   [
-    { label: 'default1', value: ['default1'] },
-    { label: 'default2', value: ['default2'] },
+    { type: 'variable', item: { label: 'default1', value: ['default1'] } },
+    { type: 'variable', item: { label: 'default2', value: ['default2'] } },
   ],
-]);
+] as SimplifiedState;
 
 describe('iteration', () => {
   it('hello', async () => {

@@ -39,8 +39,8 @@ importers:
         specifier: ^2.9.3
         version: 2.9.3(@hyperjump/browser@1.3.1)(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))
       '@shenghuabi/lexical-textarea':
-        specifier: 1.0.5
-        version: 1.0.5(@lexical/history@0.44.0)(@lexical/react@0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30))(@lexical/rich-text@0.44.0)(fast-equals@6.0.0)(lexical@0.44.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        specifier: 1.0.6
+        version: 1.0.6(@lexical/history@0.44.0)(@lexical/react@0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30))(@lexical/rich-text@0.44.0)(fast-equals@6.0.0)(lexical@0.44.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@xyflow/react':
         specifier: ^12.10.2
         version: 12.10.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -408,8 +408,8 @@ importers:
         specifier: ^2.9.3
         version: 2.9.3(@hyperjump/browser@1.3.1)(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))
       '@shenghuabi/lexical-textarea':
-        specifier: 1.0.5
-        version: 1.0.5(@lexical/history@0.44.0)(@lexical/react@0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30))(@lexical/rich-text@0.44.0)(fast-equals@6.0.0)(lexical@0.44.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        specifier: 1.0.6
+        version: 1.0.6(@lexical/history@0.44.0)(@lexical/react@0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30))(@lexical/rich-text@0.44.0)(fast-equals@6.0.0)(lexical@0.44.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@shenghuabi/openai':
         specifier: workspace:*
         version: link:../openai
@@ -1298,8 +1298,8 @@ packages:
     peerDependencies:
       selderee: ~0.12.0
 
-  '@shenghuabi/lexical-textarea@1.0.5':
-    resolution: {integrity: sha512-UokABTdyH3SNE2ic4nzPf/aoepWwgcQ3ieC74UZcyiAjT6ws+Hdaalhp2cWUa/XsciQXqHYP3PxEXZj9JJ6a4A==}
+  '@shenghuabi/lexical-textarea@1.0.6':
+    resolution: {integrity: sha512-JOFvpzQyjYnLRXNpyJgz565f7pya2uBGBHJ2mmuD09ZUTRfZwByJJ0fo/2Sdc74yVghSMrZ/jxmdjKi1GJk6LQ==}
     peerDependencies:
       '@lexical/history': ^0.44.0
       '@lexical/react': ^0.44.0
@@ -3972,7 +3972,7 @@ snapshots:
       domhandler: 5.0.3
       selderee: 0.12.0
 
-  '@shenghuabi/lexical-textarea@1.0.5(@lexical/history@0.44.0)(@lexical/react@0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30))(@lexical/rich-text@0.44.0)(fast-equals@6.0.0)(lexical@0.44.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@shenghuabi/lexical-textarea@1.0.6(@lexical/history@0.44.0)(@lexical/react@0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30))(@lexical/rich-text@0.44.0)(fast-equals@6.0.0)(lexical@0.44.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@lexical/history': 0.44.0
       '@lexical/react': 0.44.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(yjs@13.6.30)

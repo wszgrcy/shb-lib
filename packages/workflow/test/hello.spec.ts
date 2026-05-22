@@ -6,10 +6,11 @@ import * as v from 'valibot';
 import { WorkflowExecService } from '../workflow-exec.service';
 import { WORKFLOW_MODULE } from '../module';
 import { CustomNode } from '../share';
-import { createTextTemplate } from './util/chat-fixture';
 import { InlineNodeService } from '../inline/inline.service';
 import { TextInputTestConfig } from './util/text-input/main';
-const systemP = createTextTemplate([[{ text: '123' }]]);
+import { SimplifiedState } from '@shenghuabi/lexical-textarea';
+
+const systemP = [[{ text: '123', type: 'text' }]] as SimplifiedState;
 describe('hello', () => {
   it('hello', async () => {
     const injector = createRootInjector({

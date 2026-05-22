@@ -8,41 +8,16 @@ import { WORKFLOW_MODULE } from '../module';
 import { InlineNodeService } from '../inline/inline.service';
 import { TextMainConfig } from '../inline/node/text/main';
 import { WorkflowPluginService } from '../plugin/plugin.service';
-const systemP = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            detail: 0,
-            format: 0,
-            mode: 'normal',
-            style: '',
-            text: '123',
-            type: 'text',
-            version: 1,
-          },
-        ],
-        direction: null,
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-        textFormat: 0,
-        textStyle: '',
-      },
-    ],
-    direction: null,
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
+import { SimplifiedState } from '@shenghuabi/lexical-textarea';
+
 const textNode = {
   id: '1',
   data: {
-    config: { value: v.parse(TEXT_NODE_DEFINE, { value: systemP }) },
+    config: {
+      value: v.parse(TEXT_NODE_DEFINE, {
+        value: [[{ type: 'text', text: '123' }]] as SimplifiedState,
+      }),
+    },
     handle: {
       output: [
         [
