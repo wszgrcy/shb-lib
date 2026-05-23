@@ -191,6 +191,7 @@ class WorkflowParserContext {
       if (node.data.config?.invalidList?.length) {
         this.#collection.invalidConfigList.push({
           id: node.id,
+          type: node.type!,
           list: node.data.config.invalidList,
         });
       }

@@ -1,4 +1,4 @@
-import { ChatInput2, ChatInputType } from './type';
+import { ChatInputType } from './type';
 import { WorkflowNodeType } from './workflow.const';
 import type { Node, ReactFlowJsonObject } from '@xyflow/react';
 export type InputInvalidItem = { key: (string | number)[] };
@@ -90,6 +90,7 @@ export interface ParsedNode {
 /** 无效配置项,用于错误提示 */
 export interface WorkflowInvalidConfig {
   id: string;
+  type: string;
   list: InputInvalidItem[];
 }
 /** 上下文配置,扁平化所有节点的 contextGroup */
@@ -99,5 +100,4 @@ export interface ResolvedWorkflow {
   nodes: Record<string, ParsedNode>;
   /** 出口 */
   end: string;
-  inputList: ChatInput2[];
 }
