@@ -8,7 +8,6 @@ export const NODE_COMMON: NodeComponentType = {
   label: `对话`,
   icon: { fontIcon: 'chat' },
   disableHead: false,
-  disableConnect: false,
   color: 'accent',
   help: [
     `- 点击输入框左侧图标可以切换或添加新行`,

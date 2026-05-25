@@ -6,7 +6,6 @@ export const NODE_COMMON: NodeComponentType = {
   label: `外界输入`,
   icon: { fontIcon: 'input' },
   disableHead: false,
-  disableConnect: true,
   disableContext: true,
   color: 'primary',
 };

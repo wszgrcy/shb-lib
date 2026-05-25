@@ -5,5 +5,4 @@ export const NODE_COMMON: NodeComponentType = {
   label: ``,
   icon: { fontIcon: 'text_snippet' },
   disableHead: false,
-  disableConnect: false,
 };

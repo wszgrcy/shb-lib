@@ -51,7 +51,6 @@ export const NodeDefine = v.object({
     ),
   ),
   disableHead: v.optional(v.boolean(), false),
-  disableConnect: v.optional(v.boolean(), false),
   disableContext: v.optional(v.boolean()),
   /** 出口表示分支 */
   nodeMode: v.optional(v.picklist(['condition', 'default'])),
