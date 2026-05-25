@@ -60,7 +60,7 @@ export interface WorkflowNodeData {
     resizable?: boolean;
   };
   title?: string;
-  outputName?: string;
+  outputHandleId?: string;
   /** 在工作流中禁止使用 @internal */
   excludeUsage?: boolean;
   [name: string]: any;

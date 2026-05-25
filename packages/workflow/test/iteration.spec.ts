@@ -16,7 +16,7 @@ const textNodeValue = [
 ] as SimplifiedState;
 
 describe('iteration', () => {
-  it.only('hello', async () => {
+  it('hello', async () => {
     const injector = createRootInjector({
       providers: [...WORKFLOW_MODULE.provider],
     });

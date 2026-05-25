@@ -116,7 +116,7 @@ export class WorkflowRunnerContext {
   async #runItem(
     node: ParsedNode,
     callNode?: ParsedNode,
-    input?: { outputName?: string },
+    input?: { outputHandleId?: string },
   ): OutputResult {
     try {
       if (this.#abort?.aborted) {
@@ -149,7 +149,7 @@ export class WorkflowRunnerContext {
             }
             // todo指定出口
             const result = await this.#runItem(inputNode, node, {
-              outputName: input.outlet,
+              outputHandleId: input.outlet,
             });
             set(inputObj, input.key, result);
             supportList.add(input.key.join('|'));
@@ -184,7 +184,7 @@ export class WorkflowRunnerContext {
           for (const contextItem of node.context) {
             const inputNode = this.getNodeById(contextItem.id);
             const result = await this.#runItem(inputNode, node, {
-              outputName: contextItem.handleId,
+              outputHandleId: contextItem.handleId,
             });
             if (contextItem.rest) {
               const value = contextData[contextItem.id] ?? {};
@@ -206,19 +206,19 @@ export class WorkflowRunnerContext {
       );
       const outputList = node.outputs;
       /** 指定出口/最后一个指定/默认第一个 */
-      const outputName =
-        input?.outputName ?? node.data.outputName ?? outputList[0]?.name;
+      const outputHandleId =
+        input?.outputHandleId ?? node.data.outputHandleId ?? outputList[0]?.name;
       let dataResult = this.#getCallCache(node.id);
       if (dataResult === undefined) {
         const res = await nodeRunner.run();
         dataResult = { result: res };
         this.#callCache.set(node.id, res);
       }
-      const outputKey = `${node.id}|${outputName}`;
+      const outputKey = `${node.id}|${outputHandleId}`;
       const outputResult = this.#getOuputCache(outputKey);
       let returnData;
       if (outputResult === undefined) {
-        const outputValue = await dataResult.result(outputName!);
+        const outputValue = await dataResult.result(outputHandleId!);
         this.#outputCache.set(outputKey, outputValue);
         returnData = outputValue;
       } else {

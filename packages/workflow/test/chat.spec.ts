@@ -100,7 +100,7 @@ describe('chat', () => {
         environmentParameters: { userInput: 'inputValue' },
       });
     expect(result2).eq('0123456789');
-    textNode.data.outputName = 'historyList';
+    textNode.data.outputHandleId = 'historyList';
     const result3 = await injector
       .get(WorkflowExecService)
       .runParse(result.data!, {
