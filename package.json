@@ -1,6 +1,6 @@
 {
   "name": "cyia-template",
-  "version": "1.1.22",
+  "version": "1.1.23",
   "private": true,
   "packageManager": "pnpm@10.4.1",
   "repository": {
@@ -79,7 +79,6 @@
     "ipull": "3.9.3",
     "is-relative": "^1.0.0",
     "jsonc-parser": "^3.3.1",
-    "liquidjs": "^10.25.7",
     "magic-string": "^0.30.21",
     "marked": "^18.0.3",
     "node-wav": "0.0.2",
