@@ -119,17 +119,24 @@ class WorkflowParserContext {
         if (linkedEdge.target !== node.id) {
           continue;
         }
-        if (linkedEdge.targetHandle === '[context]') {
-          contextData.push({
-            id: linkedEdge.source,
-            output: linkedEdge.sourceHandle!,
-            rest: linkedEdge.sourceHandle!.includes('[rest]'),
-          });
-        }
         /** 找到连接的输入节点 */
         const linkedNode = inputNodes.find(
           (item) => item.id === linkedEdge.source,
         )!;
+
+        if (linkedEdge.targetHandle === '[context]') {
+          const sourceHandle = flatFilterHandleList(
+            linkedNode.data.handle?.output,
+          ).find((item) => item.id === linkedEdge.sourceHandle);
+          if (sourceHandle?.type !== 'connect') {
+            contextData.push({
+              id: linkedEdge.source,
+              handleId: linkedEdge.sourceHandle!,
+              output: sourceHandle!.name!,
+              rest: linkedEdge.sourceHandle!.includes('[rest]'),
+            });
+          }
+        }
 
         //这个节点只能是当前或者说是它的祖先提供,不能是其他的地方的
         if (!graph.hasNode(linkedNode.id)) {

@@ -7,16 +7,16 @@ import { WORKFLOW_MODULE } from '../module';
 import { TEXT_NODE_DEFINE } from '../inline/node/text/text.node.define';
 import { CustomNode } from '../share/type';
 import { SimplifiedState } from '@shenghuabi/lexical-textarea';
-
+// id,key
 const textNodeValue = [
   [
-    { type: 'variable', item: { label: 'default1', value: ['default1'] } },
-    { type: 'variable', item: { label: 'default2', value: ['default2'] } },
+    { type: 'variable', item: { label: 'default1', value: ['4', 'default1'] } },
+    { type: 'variable', item: { label: 'default2', value: ['4', 'default2'] } },
   ],
 ] as SimplifiedState;
 
 describe('iteration', () => {
-  it('hello', async () => {
+  it.only('hello', async () => {
     const injector = createRootInjector({
       providers: [...WORKFLOW_MODULE.provider],
     });
@@ -53,7 +53,7 @@ describe('iteration', () => {
                 name: 'index',
                 label: '',
               },
-              { id: 'index[rest]', type: 'rest', name: 'index', label: '' },
+              // { id: 'index[rest]', type: 'rest', name: 'index', label: '' },
             ],
           ],
         },

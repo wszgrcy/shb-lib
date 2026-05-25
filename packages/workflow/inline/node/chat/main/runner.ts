@@ -11,7 +11,6 @@ import { createAssistantMessage } from '@shenghuabi/openai';
 
 import { LogService } from '@cyia/external-call';
 import { NodeRunnerBase } from '../../../../runner/runner-item';
-import { TemplateFormatService } from '../../../../template-format.service';
 import { AbortSignalToken, ChatServiceToken } from '../../../../token';
 import { createLLMData } from '../../../../share/type2';
 import { jsonParse, yamlParse, markdownParse } from '@cyia/util';
@@ -19,7 +18,6 @@ import { useChat } from '../../../../util/useChat';
 import { RUNNER_ORIGIN_OUTPUT } from '../../../../share/common/const';
 
 export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
-  #format = inject(TemplateFormatService);
   #chatService = inject(ChatServiceToken);
   #abort = inject(AbortSignalToken);
   #channel = inject(LogService).getToken('chat');

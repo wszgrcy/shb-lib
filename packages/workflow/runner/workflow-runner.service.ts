@@ -179,17 +179,19 @@ export class WorkflowRunnerContext {
       }
       // 延迟计算上下文，只有在节点实际使用时才会请求
       const contextFactory = async (): Promise<Record<string, any>> => {
-        let contextData: Record<string, any> = {};
+        const contextData: Record<string, any> = {};
         if (node.context.length) {
           for (const contextItem of node.context) {
             const inputNode = this.getNodeById(contextItem.id);
             const result = await this.#runItem(inputNode, node, {
-              outputName: contextItem.output,
+              outputName: contextItem.handleId,
             });
             if (contextItem.rest) {
-              contextData = { ...contextData, ...result };
+              const value = contextData[contextItem.id] ?? {};
+              contextData[contextItem.id] = { ...value, ...result };
             } else {
-              contextData[contextItem.output] = result;
+              contextData[contextItem.id] ??= {};
+              contextData[contextItem.id][contextItem.output] = result;
             }
           }
         }
