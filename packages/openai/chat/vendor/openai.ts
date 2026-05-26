@@ -42,7 +42,7 @@ export class OpenAIChat {
   async *stream(input: ChatBodyInput, options?: ChatRequestOptions) {
     const input2 = {
       ...input,
-      messages: v.parse(ChatMessageListDefine, input.messages),
+      messages: input.messages,
       model: this.options.model,
       stream: true,
       max_tokens: this.options.max_tokens,
