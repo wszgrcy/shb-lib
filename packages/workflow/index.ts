@@ -15,3 +15,4 @@ export * from './workflow-file.service';
 export * from './util/serialize-text-template';
 export * from './util/useChat';
 export * from './runner/single-node-runner.service';
+export * as NodeMainObj from './inline/node/index.node'
