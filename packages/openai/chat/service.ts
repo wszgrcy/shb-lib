@@ -41,7 +41,7 @@ export class ChatProviderService {
     const chatHistory = this.#chatHistory;
 
     const fn = async function* (...args: Parameters<OpenAIChat['stream']>) {
-      const result = instance.stream(args[0], {
+      const result = instance.stream(args[0] as any, {
         ...args[1],
         tryPull: openAIOptions().tryPull,
         pullModel: openAIOptions().pullModel,
@@ -94,7 +94,7 @@ export class ChatProviderService {
         lastMessage.thinkContent = lastEmit.thinkContent;
       }
       chatHistory.save(
-        [...args[0].messages, lastMessage],
+        [...args[0].messages, lastMessage as any],
         { ...args[0], messages: undefined },
         options,
       );

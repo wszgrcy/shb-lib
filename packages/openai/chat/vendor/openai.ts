@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 import { ChatMessageListDefine } from '../message.define';
-import { ChatBodyInput, ChatRequestOptions, ChatToolBodyInput } from '../type';
+import { ChatRequestOptions, ChatToolBodyInput } from '../type';
 import * as v from 'valibot';
 import type { Stream } from 'openai/streaming.mjs';
 import { ChatCompletionCreateParamsStreaming } from 'openai/resources/index.mjs';
@@ -39,7 +39,21 @@ export class OpenAIChat {
         throw error;
       });
   }
-  async *stream(input: ChatBodyInput, options?: ChatRequestOptions) {
+  async *stream(
+    input: Omit<
+      ChatCompletionCreateParamsStreaming,
+      | 'model'
+      | 'stream'
+      | 'max_tokens'
+      | 'top_p'
+      | 'temperature'
+      | 'frequency_penalty'
+      | 'presence_penalty'
+      | 'seed'
+      | 'stop'
+    >,
+    options?: ChatRequestOptions,
+  ) {
     const input2 = {
       ...input,
       messages: input.messages,
