@@ -29,19 +29,19 @@
     ".": {
       "types": "./index.d.ts",
       "import": "./index.mjs",
-      "node": "./index.js",
+      "node": "./index.mjs",
       "require": "./index.js"
     },
     "./share": {
       "types": "./share/index.d.ts",
       "import": "./share/index.mjs",
-      "node": "./share/index.js",
+      "node": "./share/index.mjs",
       "require": "./share/index.js"
     },
     "./webview": {
       "types": "./webview/index.d.ts",
       "import": "./webview/index.mjs",
-      "node": "./webview/index.js",
+      "node": "./webview/index.mjs",
       "require": "./webview/index.js"
     }
   },
