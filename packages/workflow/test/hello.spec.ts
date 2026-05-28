@@ -9,7 +9,8 @@ import { CustomNode } from '../share';
 import { InlineNodeService } from '../inline/inline.service';
 import { TextInputTestConfig } from './util/text-input/main';
 import { SimplifiedState } from '@shenghuabi/lexical-textarea';
-
+import { serializeLexicalTextarea } from '../util/serialize-text-template';
+import type { ChatMetadata } from '../share/type';
 const systemP = [[{ text: '123', type: 'text' }]] as SimplifiedState;
 describe('hello', () => {
   it('hello', async () => {
@@ -266,5 +267,90 @@ describe('hello', () => {
     // 验证空配置列表
     expect(result.invalidConfigList).to.have.length(0);
     expect(result.contextConfigList).to.have.length(0);
+  });
+
+  describe('serializeLexicalTextarea', () => {
+    it('should handle array context values with strings and objects with ref', () => {
+      const metadataCollector: ChatMetadata[] = [];
+      const input = [
+        [{ type: 'variable' as const, item: { label: 'array', value: ['array'] } }],
+      ] as SimplifiedState;
+      const context = {
+        array: [
+          'string item 1',
+          { toString: () => 'object item', ref: { type: 'knowledge', knowledgeName: 'kn1', fileName: 'f1' } },
+          'string item 2',
+        ],
+      };
+
+      const result = serializeLexicalTextarea(input, {
+        context,
+        environmentContext: {},
+        onMetadata: (meta) => metadataCollector.push(...meta),
+      });
+
+      expect(result).to.eq('string item 1\nobject item\nstring item 2');
+      expect(metadataCollector).to.have.length(1);
+      expect(metadataCollector[0]!.type).to.eq('knowledge');
+    });
+
+    it('should handle array with multiple refs', () => {
+      const metadataCollector: ChatMetadata[] = [];
+      const input = [
+        [{ type: 'variable' as const, item: { label: 'array', value: ['array'] } }],
+      ] as SimplifiedState;
+      const context = {
+        array: [
+          { toString: () => 'obj1', ref: { type: 'dict', word: 'w1', content: 'c1' } },
+          { toString: () => 'obj2', ref: [{ type: 'url', title: 't1', url: 'http://x' }] },
+        ],
+      };
+
+      const result = serializeLexicalTextarea(input, {
+        context,
+        environmentContext: {},
+        onMetadata: (meta) => metadataCollector.push(...meta),
+      });
+
+      expect(result).to.eq('obj1\nobj2');
+      expect(metadataCollector).to.have.length(2);
+    });
+
+    it('should handle plain string as before', () => {
+      const metadataCollector: ChatMetadata[] = [];
+      const input = [
+        [{ type: 'variable' as const, item: { label: 'str', value: ['str'] } }],
+      ] as SimplifiedState;
+      const context = { str: 'plain string' };
+
+      const result = serializeLexicalTextarea(input, {
+        context,
+        environmentContext: {},
+        onMetadata: (meta) => metadataCollector.push(...meta),
+      });
+
+      expect(result).to.eq('plain string');
+      expect(metadataCollector).to.have.length(0);
+    });
+
+    it('should handle object with ref as before', () => {
+      const metadataCollector: ChatMetadata[] = [];
+      const input = [
+        [{ type: 'variable' as const, item: { label: 'obj', value: ['obj'] } }],
+      ] as SimplifiedState;
+      const context = {
+        obj: { toString: () => 'obj text', ref: { type: 'card', fileName: 'card1.md' } },
+      };
+
+      const result = serializeLexicalTextarea(input, {
+        context,
+        environmentContext: {},
+        onMetadata: (meta) => metadataCollector.push(...meta),
+      });
+
+      expect(result).to.eq('obj text');
+      expect(metadataCollector).to.have.length(1);
+      expect(metadataCollector[0]!.type).to.eq('card');
+    });
   });
 });

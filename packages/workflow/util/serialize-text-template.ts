@@ -29,17 +29,27 @@ export function serializeLexicalTextarea(
   }
   const { context, environmentContext, onMetadata } = options;
 
+  const resolve = (value: unknown): string => {
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (Array.isArray(value)) {
+      return value.map(resolve).join('\n');
+    }
+    if (value && typeof value === 'object') {
+      if ('ref' in value) {
+        onMetadata?.(Array.isArray(value.ref) ? value.ref : [value.ref]);
+      }
+      return `${value}`;
+    }
+    return `${value}`;
+  };
+
   return serializeSimplifiedState(input, (item) => {
     if (item.type === 'custom') {
       return get(environmentContext, item.value);
     }
     const result = get(context, item.value);
-    if (typeof result === 'string') {
-      return result;
-    }
-    if ('ref' in result) {
-      onMetadata?.(Array.isArray(result.ref) ? result.ref : [result.ref]);
-    }
-    return `${result}`;
+    return resolve(result).trim();
   }).trim();
 }
