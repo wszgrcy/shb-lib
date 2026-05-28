@@ -21,9 +21,12 @@ export interface SerializeContextOptions {
  * @returns 序列化后的字符串
  */
 export function serializeLexicalTextarea(
-  input: SimplifiedState,
+  input: SimplifiedState | string,
   options: SerializeContextOptions,
 ): string {
+  if (typeof input === 'string') {
+    return input;
+  }
   const { context, environmentContext, onMetadata } = options;
 
   return serializeSimplifiedState(input, (item) => {
