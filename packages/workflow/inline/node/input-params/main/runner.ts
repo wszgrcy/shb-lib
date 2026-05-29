@@ -1,7 +1,7 @@
 import { inject } from 'static-injector';
 import { NodeRunnerBase } from '../../../../runner/runner-item';
 import { EnviromentParametersToken } from '../../../../token';
-import { RUNNER_ORIGIN_OUTPUT } from '@shenghuabi/workflow/share';
+import { RUNNER_ORIGIN_OUTPUT } from '../../../../share/common/const';
 export class InputParamsRunner extends NodeRunnerBase {
   #env = inject(EnviromentParametersToken);
   override async run() {
