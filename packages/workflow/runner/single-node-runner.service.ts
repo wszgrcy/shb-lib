@@ -92,6 +92,6 @@ export class SingleNodeRunnerService {
 
     const runnerResult = await nodeInjector.get(RunnerClass).run();
 
-    return await runnerResult(options?.outputId ?? 'default');
+    return await runnerResult(options?.outputId ?? '[default]');
   }
 }
