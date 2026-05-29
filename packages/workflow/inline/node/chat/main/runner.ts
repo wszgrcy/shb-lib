@@ -95,8 +95,10 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     const endRef = this.#chatService.getMetadataEndRef(
       streamData.extra!.references,
     );
+    let rawContent = '';
     for await (const item of result) {
       const value = endRef ? item.content + endRef : item.content;
+      rawContent += item.content;
       streamData.value = value;
       streamData.extra = { ...streamData.extra, ...item, content: value };
 
@@ -119,10 +121,10 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
             value = markdownParse(resultContent);
             break;
           case 'json':
-            value = jsonParse(resultContent);
+            value = jsonParse(rawContent);
             break;
           case 'yaml':
-            value = yamlParse(resultContent);
+            value = yamlParse(rawContent);
             break;
           default:
             value = resultContent;

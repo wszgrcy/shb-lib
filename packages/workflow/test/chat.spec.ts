@@ -109,6 +109,106 @@ describe('chat', () => {
     expect(result3.length).eq(3);
     expect(result3[2].content[0].text).eq('0123456789');
   });
+  it('jsonSchema', async () => {
+    class ChatService {
+      chat(config: any) {
+        return {
+          stream: async function* (data: any) {
+            // 验证 json_schema 被正确传递到 stream
+            expect(data.response_format).to.deep.equal({
+              type: 'json_schema',
+              json_schema: {
+                name: 'testSchema',
+                schema: {
+                  type: 'object',
+                  properties: { a: { type: 'string' } },
+                },
+              },
+            });
+            // mock 输出 JSON 字符串（增量内容）
+            const jsonStr = '{"a":"xxxxx"}';
+            for (let i = 0; i < jsonStr.length; i++) {
+              yield { content: jsonStr[i] };
+            }
+          },
+        };
+      }
+      getMetadataEndRef() {
+        return '';
+      }
+    }
+    const injector = createRootInjector({
+      providers: [
+        ...WORKFLOW_MODULE.provider,
+        { provide: ChatServiceToken, useClass: ChatService },
+        {
+          provide: LogFactoryToken,
+          useValue: (value: string) => ({
+            info: console.info,
+            warn: console.warn,
+            error: console.error,
+          }),
+        },
+        LogService,
+      ],
+    });
+    const service = injector.get(WorkflowParserService);
+    const textNode: CustomNode = {
+      id: '1',
+      data: {
+        config: {
+          value: v.parse(CHAT_NODE_DEFINE, {
+            value: [
+              { role: 'system', content: [{ type: 'text', text: systemP }] },
+              {
+                role: 'user',
+                content: [{ type: 'text', text: userP }],
+              },
+            ],
+            jsonSchema: {
+              name: 'testSchema',
+              schema: {
+                type: 'object',
+                properties: {
+                  a: { type: 'string' },
+                },
+              },
+            } as any,
+          }),
+        },
+        handle: {
+          output: [
+            [
+              {
+                id: '2',
+                label: '输出',
+                name: '[default]',
+              },
+            ],
+          ],
+        },
+        outputHandleId: 'format',
+      },
+      position: { x: 0, y: 0 },
+      type: 'chat',
+    };
+    const result = service.parse({
+      flow: {
+        nodes: [textNode],
+        edges: [],
+        viewport: { x: 0, y: 0, zoom: 0 },
+      },
+    });
+    // format 输出应该解析 rawContent
+    // textNode.data.outputHandleId = 'format';
+    const result2 = await injector
+      .get(WorkflowExecService)
+      .runParse(result.data!, {
+        environmentParameters: { userInput: 'inputValue' },
+      });
+    console.log('result2:', result2);
+    expect(result2).to.deep.equal({ a: 'xxxxx' });
+  });
   it('agentChat', async () => {
     class ChatService {
       chat(config: any) {
