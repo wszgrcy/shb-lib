@@ -125,11 +125,9 @@ describe('chat', () => {
                 },
               },
             });
-            // mock 输出 JSON 字符串（增量内容）
+            // mock 输出 JSON 字符串（完整内容）
             const jsonStr = '{"a":"xxxxx"}';
-            for (let i = 0; i < jsonStr.length; i++) {
-              yield { content: jsonStr[i] };
-            }
+            yield { content: jsonStr };
           },
         };
       }

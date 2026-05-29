@@ -98,7 +98,7 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     let rawContent = '';
     for await (const item of result) {
       const value = endRef ? item.content + endRef : item.content;
-      rawContent += item.content;
+      rawContent = item.content;
       streamData.value = value;
       streamData.extra = { ...streamData.extra, ...item, content: value };
 
