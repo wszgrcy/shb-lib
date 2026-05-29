@@ -1,4 +1,8 @@
-import { NodeComponentType } from '../../../share';
+import {
+  NodeComponentType,
+  RUNNER_ORIGIN_OUTPUT,
+  RUNNER_REST_OUTPUT,
+} from '../../../share';
 
 export const NODE_COMMON: NodeComponentType = {
   priority: -999,
@@ -8,4 +12,5 @@ export const NODE_COMMON: NodeComponentType = {
   disableHead: false,
   disableContext: true,
   color: 'primary',
+  outputs: [[...RUNNER_ORIGIN_OUTPUT, ...RUNNER_REST_OUTPUT]],
 };
