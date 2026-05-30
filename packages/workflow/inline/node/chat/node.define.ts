@@ -77,6 +77,8 @@ export const CHAT_NODE_DEFINE = v.pipe(
     value: v.pipe(
       v.custom<ChatMessageListInputType>(Boolean),
       setComponent('prompt-list'),
+      v.title('对话模板'),
+      actions.wrappers.patch(['label']),
     ),
     jsonSchema: v.pipe(
       v.optional(
