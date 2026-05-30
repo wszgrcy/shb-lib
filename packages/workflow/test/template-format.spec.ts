@@ -380,4 +380,191 @@ describe('unparse', () => {
       expect(result).to.eq('Hello World');
     });
   });
+
+  describe('parseMultimodalContent', () => {
+    it('should parse text content with handlebars variables and return SimplifiedState as list', () => {
+      const content = [{ type: 'text', text: 'Hello {{name}}' }];
+      const result = service.parseMultimodalContent(content);
+
+      expect(result).to.have.length(1);
+      expect(result[0].type).to.eq('text');
+      // text 字段是 parsed.list，即 SimplifiedState（双层数组 [[nodes]]）
+      const list = (result[0] as any).text;
+      expect(list).to.not.be.null;
+      expect(list).to.be.an('array');
+      expect(list).to.have.length(1); // 一个段落
+      const nodes = list[0];
+      expect(nodes).to.have.length(2); // Hello (text) + {{name}} (variable)
+      const variables = nodes.filter((n: any) => n.type === 'variable');
+      expect(variables).to.have.length(1);
+      expect(variables[0].item.label).to.eq('name');
+    });
+
+    it('should parse image_url content and return SimplifiedState as list', () => {
+      const content = [{ type: 'image_url', image_url: { url: '{{image_template}}' } }];
+      const result = service.parseMultimodalContent(content);
+
+      expect(result).to.have.length(1);
+      expect(result[0].type).to.eq('image_url');
+      const list = (result[0] as any).image_url.url;
+      expect(list).to.not.be.null;
+      expect(list).to.be.an('array');
+      expect(list).to.have.length(1); // 一个段落
+      expect(list[0][0].item.label).to.eq('image_template');
+    });
+
+    it('should handle mixed text and image content', () => {
+      const content = [
+        { type: 'text', text: 'Hello {{name}}' },
+        { type: 'image_url', image_url: { url: '{{img}}' } },
+        { type: 'text', text: 'World {{age}}' },
+      ];
+      const result = service.parseMultimodalContent(content);
+
+      expect(result).to.have.length(3);
+      // Text node should have parsed SimplifiedState (双层数组)
+      expect(result[0].type).to.eq('text');
+      expect((result[0] as any).text).to.be.an('array');
+      expect((result[0] as any).text[0]).to.have.length.greaterThan(0);
+      // Image node should have parsed url (双层数组)
+      expect(result[1].type).to.eq('image_url');
+      expect((result[1] as any).image_url.url).to.be.an('array');
+      // Another text node
+      expect(result[2].type).to.eq('text');
+    });
+
+    it('should return undefined for invalid handlebars in text', () => {
+      const content = [{ type: 'text', text: '{{invalid' }];
+      const result = service.parseMultimodalContent(content);
+
+      expect(result).to.have.length(1);
+      expect(result[0].type).to.eq('text');
+      expect((result[0] as { type: 'text'; text?: SimplifiedState }).text).to.be.undefined;
+    });
+
+    it('should handle empty text content (no variables)', () => {
+      const content = [{ type: 'text', text: 'Hello world' }];
+      const result = service.parseMultimodalContent(content);
+
+      expect(result).to.have.length(1);
+      expect(result[0].type).to.eq('text');
+      // No variables but still valid - should return parsed list with only text nodes (双层数组)
+      expect((result[0] as any).text).to.be.an('array');
+      expect((result[0] as any).text[0]).to.have.length(1); // 只有文本节点
+    });
+  });
+
+  describe('parseConversationTemplate', () => {
+    it('should parse conversation template with role and content', () => {
+      const templates = [
+        { role: 'user', content: [{ type: 'text', text: 'Hello {{name}}' }] },
+        { role: 'assistant', content: [{ type: 'text', text: 'Hi there!' }] },
+      ];
+      const result = service.parseConversationTemplate(templates);
+
+      expect(result).to.have.length(2);
+      expect(result[0].role).to.eq('user');
+      expect(result[1].role).to.eq('assistant');
+      // User content should have parsed variables
+      expect((result[0] as any).content[0].text).to.not.be.null;
+      // Assistant content should also be parsed
+      expect((result[1] as any).content[0].text).to.not.be.null;
+    });
+
+    it('should parse conversation template with mixed content types', () => {
+      const templates = [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Check {{item}}' },
+            { type: 'image_url', image_url: { url: '{{img_url}}' } },
+          ],
+        },
+      ];
+      const result = service.parseConversationTemplate(templates);
+
+      expect(result).to.have.length(1);
+      expect(result[0].role).to.eq('user');
+      expect(result[0].content).to.have.length(2);
+      expect(result[0].content[0].type).to.eq('text');
+      expect(result[0].content[1].type).to.eq('image_url');
+      // Both should be parsed
+      const textNode = result[0].content[0] as { type: 'text'; text?: SimplifiedState };
+      const imgNode = result[0].content[1] as { type: 'image_url'; image_url: { url?: SimplifiedState } };
+      expect(textNode.text).to.not.be.undefined;
+      expect(imgNode.image_url.url).to.not.be.undefined;
+    });
+
+    it('should handle empty templates array', () => {
+      const result = service.parseConversationTemplate([]);
+      expect(result).to.deep.eq([]);
+    });
+
+    it('should handle undefined template input', () => {
+      const result = service.parseConversationTemplate(undefined);
+      expect(result).to.deep.eq([]);
+    });
+
+    // 真实业务场景测试用例
+    it('should parse conversation with system and user roles (case 1)', () => {
+      const input = [
+        { role: 'system', content: [{ type: 'text', text: '请将输入的内容进行语义反转,并保持语言表达的自然流畅' }] },
+        { role: 'user', content: [{ type: 'text', text: '{{selection}}' }] },
+      ];
+      const result = service.parseConversationTemplate(input);
+
+      expect(result).to.have.length(2);
+      expect(result[0].role).to.eq('system');
+      expect(result[1].role).to.eq('user');
+
+      // System content: pure text, no variables
+      const systemText = result[0].content[0] as { type: 'text'; text?: SimplifiedState };
+      expect(systemText.text).to.have.length(1);
+      expect(systemText.text![0][0].type).to.eq('text');
+      expect((systemText.text![0][0] as { type: 'text'; text: string }).text).to.eq('请将输入的内容进行语义反转,并保持语言表达的自然流畅');
+
+      // User content: has variable {{selection}}
+      const userText = result[1].content[0] as { type: 'text'; text?: SimplifiedState };
+      expect(userText.text).to.have.length(1);
+      const varNode = userText.text![0][0] as { type: 'variable'; item: { label: string; value: string[]; type: string } };
+      expect(varNode.type).to.eq('variable');
+      expect(varNode.item.label).to.eq('selection');
+      expect(varNode.item.value).to.deep.eq(['selection']);
+    });
+
+    it('should parse conversation with mixed text and image_url (case 2)', () => {
+      const input = [
+        { role: 'system', content: [{ type: 'text', text: '请将输入的内容进行语义反转,并保持语言表达的自然流畅' }] },
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: '{{selection}}' },
+            { type: 'image_url', image_url: { url: '{{ttt}}' } },
+          ],
+        },
+      ];
+      const result = service.parseConversationTemplate(input);
+
+      expect(result).to.have.length(2);
+      expect(result[0].role).to.eq('system');
+      expect(result[1].role).to.eq('user');
+
+      // System content: pure text
+      const systemText = result[0].content[0] as { type: 'text'; text?: SimplifiedState };
+      expect(systemText.text).to.have.length(1);
+      expect((systemText.text![0][0] as { type: 'text'; text: string }).text).to.eq('请将输入的内容进行语义反转,并保持语言表达的自然流畅');
+
+      // User content: text variable + image_url variable
+      expect(result[1].content).to.have.length(2);
+      const userTextNode = result[1].content[0] as { type: 'text'; text?: SimplifiedState };
+      const varNode2 = userTextNode.text![0][0] as { type: 'variable'; item: { label: string } };
+      expect(varNode2.type).to.eq('variable');
+      expect(varNode2.item.label).to.eq('selection');
+
+      const imageUrlNode = result[1].content[1] as { type: 'image_url'; image_url: { url?: SimplifiedState } };
+      const imgVarNode = imageUrlNode.image_url.url![0][0] as { type: 'variable'; item: { label: string } };
+      expect(imgVarNode.type).to.eq('variable');
+      expect(imgVarNode.item.label).to.eq('ttt');
+    });
+  });
 });
