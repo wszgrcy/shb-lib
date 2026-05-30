@@ -119,9 +119,9 @@ export const EmoType3Define = v.pipe(
         v.pipe(emoVectorItemDefine, v.title('惊喜'), ...TopLabel),
         v.pipe(emoVectorItemDefine, v.title('平静'), ...TopLabel),
       ]),
-      actions.wrappers.patch(['div']),
-      actions.class.top('grid gap-4 grid-cols-2'),
+      // actions.wrappers.patch(['div']),
       actions.wrappers.set(['alert-valid']),
+      actions.class.top('grid gap-4 grid-cols-2'),
       actions.props.patch({
         validPosition: 'bottom',
       }),
