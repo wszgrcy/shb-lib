@@ -207,7 +207,7 @@ export class WorkflowRunnerContext {
       const outputList = node.outputs;
       /** 指定出口/最后一个指定/默认第一个 */
       const outputHandleId =
-        input?.outputHandleId ?? node.data.outputHandleId ?? outputList[0]?.name;
+        input?.outputHandleId ?? node.data.outputHandleId ?? outputList[0]?.id;
       let dataResult = this.#getCallCache(node.id);
       if (dataResult === undefined) {
         const res = await nodeRunner.run();

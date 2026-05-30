@@ -2,6 +2,7 @@ import { inject } from 'static-injector';
 import { TemplateFormatService } from '../template-format.service';
 import { WorkflowParserService } from '../workflow-parser.service';
 import { ChatMessageListInputType } from '@shenghuabi/openai/define';
+import { RUNNER_ORIGIN_OUTPUT } from '../share';
 /** 对话使用 */
 export class ContextBuildService {
   template = inject(TemplateFormatService);
@@ -16,7 +17,7 @@ export class ContextBuildService {
           output: [
             [
               {
-                id: '1',
+                id: RUNNER_ORIGIN_OUTPUT[0].id,
                 label: '',
                 value: 'default',
               },

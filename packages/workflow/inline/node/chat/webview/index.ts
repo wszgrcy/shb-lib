@@ -11,7 +11,9 @@ export const ChatWebviewConfig: WebviewNodeConfig = {
       transform: {
         resizable: true,
       },
-      value: [getSystemTemplate()],
+      config: {
+        value: [getSystemTemplate()],
+      },
     },
     width: 300,
   }),

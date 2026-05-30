@@ -74,7 +74,7 @@ describe('chat', () => {
           output: [
             [
               {
-                id: '2',
+                id: '[default]',
                 label: '输出',
                 name: '[default]',
               },
@@ -108,6 +108,115 @@ describe('chat', () => {
       });
     expect(result3.length).eq(3);
     expect(result3[2].content[0].text).eq('0123456789');
+  });
+
+  it('默认输出outputId', async () => {
+    class ChatService {
+      chat(config: any) {
+        return {
+          stream: async function* (data: any) {
+            let content = '';
+            for (let i = 0; i < 10; i++) {
+              content += `${i}`;
+              yield { content: content, delta: `${i}` };
+            }
+          },
+        };
+      }
+      getMetadataEndRef() {
+        return '';
+      }
+    }
+    const injector = createRootInjector({
+      providers: [
+        ...WORKFLOW_MODULE.provider,
+        { provide: ChatServiceToken, useClass: ChatService },
+        {
+          provide: LogFactoryToken,
+          useValue: (value: string) => ({
+            info: console.info,
+            warn: console.warn,
+            error: console.error,
+          }),
+        },
+        LogService,
+      ],
+    });
+
+    const result2 = await injector.get(WorkflowExecService).runParse(
+      {
+        nodes: {
+          '8447135a-19ce-4e64-be0a-b6aa87b441bc': {
+            data: {
+              handle: {
+                output: [
+                  [
+                    { id: '[default]', label: '默认', name: 'default' },
+                    { id: '[rest]', label: '展开', name: 'rest' },
+                  ],
+                  [{ label: '选中内容', name: 'selection', id: 'selection' }],
+                ],
+              },
+              config: {
+                refList: [],
+                value: { type: '' },
+                invalidList: [],
+              },
+              title: '外界输入',
+            },
+            outputs: [
+              { id: '[default]', label: '默认', name: 'default' },
+              { id: '[rest]', label: '展开', name: 'rest' },
+              { label: '选中内容', name: 'selection', id: 'selection' },
+            ],
+            type: 'input-params',
+            id: '8447135a-19ce-4e64-be0a-b6aa87b441bc',
+            context: [],
+          },
+          'ded5022b-11f8-41e2-9f01-ca9076687671': {
+            data: {
+              handle: {
+                output: [
+                  [{ id: '[default]', label: '默认', name: 'default' }],
+                  [{ id: 'format', label: '格式化', name: 'format' }],
+                ],
+              },
+              config: {
+                value: {
+                  value: [],
+                },
+                refList: [],
+                invalidList: [],
+                contextGroup: { value: [] },
+              },
+              title: '对话',
+            },
+            outputs: [
+              { id: '[default]', label: '默认', name: 'default' },
+              { id: 'format', label: '格式化', name: 'format' },
+            ],
+            type: 'chat',
+            id: 'ded5022b-11f8-41e2-9f01-ca9076687671',
+            context: [
+              {
+                id: '8447135a-19ce-4e64-be0a-b6aa87b441bc',
+                handleId: 'selection',
+                output: 'selection',
+                rest: false,
+              },
+            ],
+          },
+        },
+        end: 'ded5022b-11f8-41e2-9f01-ca9076687671',
+      } as any,
+      {
+        environmentParameters: {
+          selection: '',
+        },
+      },
+    );
+    console.log(result2);
+    expect(result2).eq('0123456789');
   });
   it('jsonSchema', async () => {
     class ChatService {
