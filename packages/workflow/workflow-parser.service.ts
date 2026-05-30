@@ -104,9 +104,10 @@ class WorkflowParserContext {
     const graph = new Graph({ multi: true });
     const { nodes, edges } = this.data.flow;
     const nodeData: ResolvedWorkflow = { nodes: {}, end: undefined } as any;
-
-    for (const node of this.list) {
+    this.list.forEach((node) => {
       graph.addNode(node.id);
+    });
+    for (const node of this.list) {
       const handle = {
         output: flatFilterHandleList(node.data.handle?.output),
       };
@@ -313,8 +314,7 @@ class WorkflowPreParser {
         i--;
         continue;
       }
-      if (node.type === 'input-params') {
-      } else if (isBlock(node)) {
+      if (isBlock(node)) {
         this.#nodeGroup.add(node);
       } else if (node.type === WorkflowNodeType.iterationStart) {
         this.#nodeGroup.addContainerStart(node);
