@@ -1,4 +1,4 @@
-import { get } from 'es-toolkit/compat';
+import { get, toPath } from 'es-toolkit/compat';
 import type { ChatMetadata } from '../share/type';
 import {
   SimplifiedState,
@@ -49,7 +49,7 @@ export function serializeLexicalTextarea(
     if (item.type === 'custom') {
       return get(environmentContext, item.value);
     }
-    const result = get(context, item.value);
+    const result = get(context, [...item.value, ...toPath(item.suffix ?? [])]);
     return resolve(result).trim();
   }).trim();
 }

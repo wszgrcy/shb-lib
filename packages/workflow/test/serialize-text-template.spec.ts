@@ -63,7 +63,12 @@ describe('serializeLexicalTextarea', () => {
 
   it('should resolve nested array (2 levels)', () => {
     const result = serializeLexicalTextarea(varInput('matrix'), {
-      context: { matrix: [['a', 'b'], ['c', 'd']] },
+      context: {
+        matrix: [
+          ['a', 'b'],
+          ['c', 'd'],
+        ],
+      },
       environmentContext: {},
     });
     expect(result).eq('a\nb\nc\nd');
@@ -79,7 +84,11 @@ describe('serializeLexicalTextarea', () => {
 
   it('should resolve mixed array with objects containing ref', () => {
     const metadata: ChatMetadata[] = [];
-    const obj1 = createRefObj('obj1', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
+    const obj1 = createRefObj('obj1', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
     const items = ['hello', obj1, 42];
     const result = serializeLexicalTextarea(varInput('items'), {
       context: { items },
@@ -93,7 +102,11 @@ describe('serializeLexicalTextarea', () => {
 
   it('should resolve nested array with objects containing ref', () => {
     const metadata: ChatMetadata[] = [];
-    const obj1 = createRefObj('obj1', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
+    const obj1 = createRefObj('obj1', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
     const items = [['a', obj1], ['b']];
     const result = serializeLexicalTextarea(varInput('items'), {
       context: { items },
@@ -107,8 +120,16 @@ describe('serializeLexicalTextarea', () => {
   it('should handle ref array in object', () => {
     const metadata: ChatMetadata[] = [];
     const refObjs = [
-      createRefObj('a', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } }),
-      createRefObj('b', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } }),
+      createRefObj('a', {
+        type: 'dict',
+        description: 'test',
+        reference: { type: 'dict', word: 'w', content: 'c' },
+      }),
+      createRefObj('b', {
+        type: 'dict',
+        description: 'test',
+        reference: { type: 'dict', word: 'w', content: 'c' },
+      }),
     ];
     serializeLexicalTextarea(varInput('item'), {
       context: { item: refObjs },
@@ -151,13 +172,19 @@ describe('serializeLexicalTextarea', () => {
     expect(result).eq('123');
   });
 
- it('should recursively handle deeply nested object with ref in array', () => {
+  it('should recursively handle deeply nested object with ref in array', () => {
     const metadata: ChatMetadata[] = [];
-    const objX = createRefObj('x', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
-    const objY = createRefObj('y', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
-    const deep = [
-      [objX, ['nested', objY]],
-    ];
+    const objX = createRefObj('x', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
+    const objY = createRefObj('y', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
+    const deep = [[objX, ['nested', objY]]];
     const result = serializeLexicalTextarea(varInput('deep'), {
       context: { deep },
       environmentContext: {},
@@ -210,10 +237,16 @@ describe('serializeLexicalTextarea', () => {
   it('should handle multiple paragraphs with newlines between', () => {
     const input = [
       [
-        { type: 'variable' as const, item: { label: 'a', value: ['a'], type: undefined } },
+        {
+          type: 'variable' as const,
+          item: { label: 'a', value: ['a'], type: undefined },
+        },
       ],
       [
-        { type: 'variable' as const, item: { label: 'b', value: ['b'], type: undefined } },
+        {
+          type: 'variable' as const,
+          item: { label: 'b', value: ['b'], type: undefined },
+        },
       ],
     ] as SimplifiedState;
     const result = serializeLexicalTextarea(input, {
@@ -223,9 +256,13 @@ describe('serializeLexicalTextarea', () => {
     expect(result).eq('line1\nline2');
   });
 
- it('should resolve object (not array) with ref', () => {
+  it('should resolve object (not array) with ref', () => {
     const metadata: ChatMetadata[] = [];
-    const obj = createRefObj('single', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
+    const obj = createRefObj('single', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
     const result = serializeLexicalTextarea(varInput('obj'), {
       context: { obj },
       environmentContext: {},
@@ -245,8 +282,16 @@ describe('serializeLexicalTextarea', () => {
 
   it('should handle deeply nested arrays with mixed types', () => {
     const metadata: ChatMetadata[] = [];
-    const objB = createRefObj('b', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
-    const objD = createRefObj('d', { type: 'dict', description: 'test', reference: { type: 'dict', word: 'w', content: 'c' } });
+    const objB = createRefObj('b', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
+    const objD = createRefObj('d', {
+      type: 'dict',
+      description: 'test',
+      reference: { type: 'dict', word: 'w', content: 'c' },
+    });
     const data = ['a', objB, [['c'], objD], 'e'];
     const result = serializeLexicalTextarea(varInput('data'), {
       context: { data },
@@ -255,5 +300,97 @@ describe('serializeLexicalTextarea', () => {
     });
     expect(result).eq('a\nb\nc\nd\ne');
     expect(metadata.length).to.be.gte(2);
+  });
+
+  describe('suffix property', () => {
+    it('should resolve suffix as additional path segment after value', () => {
+      const input = [
+        [
+          {
+            type: 'variable' as const,
+            item: { label: 'a.b', value: ['a'], suffix: 'b', type: undefined },
+          },
+        ],
+      ] as SimplifiedState;
+      const result = serializeLexicalTextarea(input, {
+        context: { a: { b: 'suffix-result' } },
+        environmentContext: {},
+      });
+      expect(result).eq('suffix-result');
+    });
+
+    it('should resolve suffix with nested path as string', () => {
+      const input = [
+        [
+          {
+            type: 'variable' as const,
+            item: {
+              label: 'a.b.c',
+              value: ['a'],
+              suffix: 'b.c',
+              type: undefined,
+            },
+          },
+        ],
+      ] as SimplifiedState;
+      const result = serializeLexicalTextarea(input, {
+        context: { a: { b: { c: 'nested-suffix' } } },
+        environmentContext: {},
+      });
+      expect(result).eq('nested-suffix');
+    });
+
+    it('should handle suffix with undefined result', () => {
+      const input = [
+        [
+          {
+            type: 'variable' as const,
+            item: { label: 'a.x', value: ['a'], suffix: 'x', type: undefined },
+          },
+        ],
+      ] as SimplifiedState;
+      const result = serializeLexicalTextarea(input, {
+        context: { a: {} },
+        environmentContext: {},
+      });
+      expect(result).eq('undefined');
+    });
+
+    it('should handle empty suffix same as no suffix', () => {
+      const input = [
+        [
+          {
+            type: 'variable' as const,
+            item: { label: 'a', value: ['a'], type: undefined },
+          },
+        ],
+      ] as SimplifiedState;
+      const result = serializeLexicalTextarea(input, {
+        context: { a: 'direct-value' },
+        environmentContext: {},
+      });
+      expect(result).eq('direct-value');
+    });
+
+    it('should concatenate suffix with value path', () => {
+      const input = [
+        [
+          {
+            type: 'variable' as const,
+            item: {
+              label: 'config.api.key',
+              value: ['config', 'api'],
+              suffix: 'key',
+              type: undefined,
+            },
+          },
+        ],
+      ] as SimplifiedState;
+      const result = serializeLexicalTextarea(input, {
+        context: { config: { api: { key: 'secret123' } } },
+        environmentContext: {},
+      });
+      expect(result).eq('secret123');
+    });
   });
 });
