@@ -222,7 +222,10 @@ export class LlamaSwapService extends ExternalCallBaseService {
           ([key, value]) => `${key}=${value}`,
         );
       }
-      const cmdOptions = this.#configToCmdOptions(config, commonConfig.customArgs);
+      const cmdOptions = this.#configToCmdOptions(
+        config,
+        commonConfig.customArgs,
+      );
       let exec;
       if (typeof commonConfig.exec === 'string') {
         exec = commonConfig.exec;
@@ -357,7 +360,10 @@ export class LlamaSwapService extends ExternalCallBaseService {
       {
         prefix: 'ggml-org/llama.cpp',
         version: version,
-        fileName: llamaFileNameByVersion(version, device) + '.zip',
+        fileName:
+          llamaFileNameByVersion(version, device) + process.platform === 'win32'
+            ? '.zip'
+            : '.tar.gz',
       },
       {
         output: path.join(this.llamaDir$$(), dirName),
