@@ -38,6 +38,10 @@ export const LlamaServerSwapItemDefine = v.object({
     v.optional(v.string()),
     v.description('正常情况下无需配置会自动生成'),
   ),
+  customArgs: v.pipe(
+    v.optional(v.array(v.string())),
+    v.description('自定义命令行参数,会在最后拼接到命令中'),
+  ),
 });
 
 export type LlamaServerSwapItemType = v.InferOutput<
