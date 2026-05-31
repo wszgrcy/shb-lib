@@ -2,6 +2,7 @@ import * as v from 'valibot';
 import { CommonDefine } from './common.define';
 import { ExampleSpecificDefine } from './example-specific.define';
 import { SamplingDefine } from './sampling.define';
+import { actions, setComponent } from '@piying/view-angular-core';
 
 export const LlamaServerDefine = v.object({
   common: v.optional(CommonDefine),
@@ -41,6 +42,12 @@ export const LlamaServerSwapItemDefine = v.object({
   customArgs: v.pipe(
     v.optional(v.array(v.string())),
     v.description('自定义命令行参数,会在最后拼接到命令中'),
+    setComponent('chip-input-list'),
+    actions.inputs.set({
+      editable: true,
+      addOnBlur: true,
+      getCompletionList: undefined,
+    }),
   ),
 });
 
