@@ -24,18 +24,14 @@ export const InputParams_NODE_DEFINE = v.pipe(
       }),
       v.title('输入类型'),
     ),
-    editorInput: v.pipe(
-      v.optional(v.boolean()),
-      v.title('编辑器输入'),
-      valueChange((fn) => {
-        fn().subscribe(({ list: [value], field }) => {
-          if (value === undefined) {
-            return;
-          }
-          field.context['editorInputChange'](value);
-        });
-      }),
-    ),
+    editorInput: v.pipe(v.optional(v.boolean()), v.title('编辑器输入')),
+  }),
+  valueChange((fn, field) => {
+    fn()
+      .pipe(filter(() => field.form.root.dirty || field.form.root.touched))
+      .subscribe(({ field }) => {
+        field.context['inputParamsChange'](field.form.root.value);
+      });
   }),
   actions.wrappers.patch(['div']),
   actions.class.top('grid auto-rows-auto gap-2'),
