@@ -3,7 +3,6 @@ export * from './chat/message.define';
 export * from './chat/util/create';
 export * from './chat/type/history';
 export * from './chat/type';
-export * from './chat/chat.history.service';
 export * from './chat/module';
 export * from './chat/chat'
 export * from './chat/util/get-custom-provider'
