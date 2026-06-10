@@ -442,7 +442,8 @@ export const ModelSchema = v.pipe(
     input: v.pipe(
       v.optional(InputSchema, ['text', 'image']),
       asControl(),
-      actions.inputs.set({ multiple: true }),
+      setComponent('picklist'),
+      actions.inputs.set({ multiple: true, options: ['text', 'image'] }),
       v.title('输入类型'),
       v.description('支持的输入模态类型'),
     ),
@@ -486,7 +487,6 @@ export type ModelOutput = v.InferOutput<typeof ModelSchema>;
 // --- ImagesModel schema ---
 
 /** Output array for image models: ("text" | "image")[] */
-export const OutputSchema = InputSchema; // same structure
 
 export const ModelConfigDefine = v.pipe(
   v.object({
