@@ -4,7 +4,7 @@ import { getModel, Model } from '@earendil-works/pi-ai';
 import { KnownProviderDefine } from '../provider.define';
 import { hideWhen } from '@piying/view-angular-core';
 import { map } from 'rxjs';
-getModel;
+
 function getCustomProvider<
   T extends 'openai-completions' | 'openai-responses' | 'anthropic-messages',
 >(

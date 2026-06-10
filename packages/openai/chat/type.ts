@@ -50,9 +50,9 @@ export type ChatToolBodyInput = ChatBodyInput & {
 export interface OpenAIConfig {
   tryPull?: () => boolean;
   pullModel?: (name: string) => Promise<any>;
-  captureException: (error: any) => any;
-  history: {
-    dir: string;
-    enable: boolean;
-  };
+  // captureException: (error: any) => any;
+  // history: {
+  //   dir: string;
+  //   enable: boolean;
+  // };
 }

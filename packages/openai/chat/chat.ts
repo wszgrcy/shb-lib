@@ -6,14 +6,17 @@ import {
 import type OpenAI from 'openai';
 import { SystemChatMessageType } from './message.define';
 import { deepClone } from '@cyia/util';
+import { Injector } from 'static-injector';
+import { OpenAIConfigToken } from './token';
 
-export function createChat(input: ModelConfigInputType) {
+export function createChatStream(input: ModelConfigInputType) {
   const result = getModelConfig(input);
   return (
     context: Context,
     options?: StreamOptions,
     extra?: {
       response_format?: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming['response_format'];
+      injector?: Injector;
     },
   ) => {
     context.messages = deepClone(context.messages);
@@ -26,20 +29,52 @@ export function createChat(input: ModelConfigInputType) {
       context.messages.splice(sysIndex, 1);
       context.systemPrompt = item.content[0].text;
     }
-    return stream(result.model, context, {
-      ...options,
-      apiKey: options?.apiKey ?? result.config.apiKey,
-      onPayload(payload, model) {
-        payload = options?.onPayload?.(payload, model) ?? payload;
-        // todo 这里只对openai厂商适配了json参数
-        if (model.api === 'openai-completions') {
-          return {
-            ...(payload as any),
-            response_format: extra?.response_format,
-          };
+    const createStream = () =>
+      stream(result.model, context, {
+        ...options,
+        apiKey: options?.apiKey ?? result.config.apiKey,
+        onPayload(payload, model) {
+          payload = options?.onPayload?.(payload, model) ?? payload;
+          if (model.api === 'openai-completions') {
+            return {
+              ...(payload as any),
+              response_format: extra?.response_format,
+            };
+          }
+          return payload;
+        },
+      });
+
+    let currentStream = createStream();
+    const config = extra?.injector?.get(OpenAIConfigToken);
+    return (async function* () {
+      let hasRetry = false;
+      while (true) {
+        let retry = false;
+        for await (const item of currentStream) {
+          if (item.type === 'error') {
+            if (
+              item.error.errorMessage?.includes('404') &&
+              item.error.errorMessage?.includes(
+                'no router for requested model',
+              ) &&
+              !hasRetry
+            ) {
+              if (config?.().tryPull?.()) {
+                await config().pullModel?.(input.model);
+                retry = true;
+                break;
+              }
+            }
+          }
+          yield item;
         }
-        return payload;
-      },
-    });
+        if (!retry || hasRetry) {
+          break;
+        }
+        hasRetry = true;
+        currentStream = createStream();
+      }
+    })();
   };
 }

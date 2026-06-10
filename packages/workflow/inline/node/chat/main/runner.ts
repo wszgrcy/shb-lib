@@ -2,7 +2,7 @@ import { inject } from 'static-injector';
 
 import { parse } from 'yaml';
 
-import { ChatMessageListOutputType, createChat } from '@shenghuabi/openai';
+import { ChatMessageListOutputType, createChatStream } from '@shenghuabi/openai';
 
 import { uniqBy } from 'es-toolkit';
 
@@ -61,7 +61,7 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
     }
     this.#channel?.info('节点对话配置', config.llm);
     const modelConfig = this.mergeChatModel(config.llm);
-    const chat2 = createChat(modelConfig);
+    const chat2 = createChatStream(modelConfig);
 
     const result = chat2(
       { messages: historyList as any },

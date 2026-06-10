@@ -5,7 +5,6 @@ import {
   Context,
   StreamOptions,
   FauxResponseStep,
-  RegisterFauxProviderOptions,
 } from '@earendil-works/pi-ai';
 
 /**
@@ -28,9 +27,18 @@ export function createDynamicResponse(
   };
 }
 
+/** Options for registerFauxProvider. */
+export interface MockProviderOptions {
+  api?: string;
+  provider?: string;
+  tokensPerSecond?: number;
+}
+
+
+
 /**
  * Register a faux mock provider and return a ready-to-use model with cleanup.
- *
+ * 
  * @example
  * ```ts
  * const { model, setResponses, unregister } = registerMockProvider();
@@ -39,16 +47,14 @@ export function createDynamicResponse(
  * unregister(); // clean up when done
  * ```
  */
-export function registerMockProvider(options?: RegisterFauxProviderOptions) {
-  const registration = registerFauxProvider({
-    tokensPerSecond: 9999,
-    ...options,
-  });
+export function registerMockProvider(
+  options?: MockProviderOptions,
+) {
+  const registration = registerFauxProvider(options);
 
   return {
     model: registration.getModel(),
-    setResponses: (responses: FauxResponseStep[]) =>
-      registration.setResponses(responses),
+    setResponses: (responses: FauxResponseStep[]) => registration.setResponses(responses),
     unregister: () => registration.unregister(),
   };
 }
