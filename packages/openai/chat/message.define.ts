@@ -10,7 +10,6 @@ export type ChatCompletionContentPartStrType = v.InferOutput<
 export const ChatCompletionContentPartImage = v.object({
   image_url: v.object({
     url: v.string(),
-    detail: v.optional(v.picklist(['auto', 'low', 'high'])),
   }),
   type: v.optional(v.literal('image_url'), 'image_url'),
 });
@@ -53,6 +52,10 @@ export type AssistantChatMessageType = v.InferOutput<
 
 export const ChatMessageItemDefine = v.union([
   SystemChatMessage,
+  UserChatMessage,
+  AssistantChatMessage,
+]);
+export const ChatMessageCommonItemDefine = v.union([
   UserChatMessage,
   AssistantChatMessage,
 ]);
