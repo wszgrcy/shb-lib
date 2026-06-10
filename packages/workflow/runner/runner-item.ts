@@ -1,7 +1,6 @@
 import { computed, inject, Injector } from 'static-injector';
 import {
   AbortSignalToken,
-  ChatServiceToken,
   CurrentCallNodeToken,
   CurrentContextToken,
   CurrentNodeToken,
@@ -16,10 +15,9 @@ import * as v from 'valibot';
 import { WorkflowEmitter } from '../share';
 
 import { isEmptyInput } from '@cyia/util';
-import { ChatModelOptions } from '@shenghuabi/openai';
 import { omitBy } from 'es-toolkit';
 import { defaultsDeep } from 'es-toolkit/compat';
-import { ModelInputConfig } from '../share/common';
+import { ModelConfigInputType } from '@shenghuabi/openai';
 export class NodeRunnerBase<
   TSchema extends v.BaseSchema<any, any, any> | undefined = undefined,
 > {
@@ -45,24 +43,12 @@ export class NodeRunnerBase<
   #modelConfig = inject(ModelOptionsToken, { optional: true }) ?? undefined;
   nodeContextData$$ = computed(() => this.injector.get(NodeContextToken)());
 
-  mergeChatModel(input?: ModelInputConfig): Partial<ChatModelOptions> {
-    const chatService = this.injector.get(ChatServiceToken);
-    let presetConfig = {};
-    if (input?.name) {
-      presetConfig = chatService.getModelConfig(input.name) ?? {};
-    }
-    return input
-      ? defaultsDeep(
-          omitBy(
-            {
-              model: input.model,
-              baseURL: input?.baseURL,
-            },
-            isEmptyInput,
-          ),
-          omitBy(presetConfig, isEmptyInput),
-          omitBy(this.#modelConfig ?? {}, isEmptyInput),
-        )
-      : (this.#modelConfig ?? {});
+  mergeChatModel(input?: ModelConfigInputType): ModelConfigInputType {
+    return defaultsDeep(
+      // 直接输入的
+      omitBy(input ?? {}, isEmptyInput),
+      // 对话上下文
+      omitBy(this.#modelConfig ?? {}, isEmptyInput),
+    );
   }
 }

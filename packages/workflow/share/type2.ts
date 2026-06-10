@@ -1,5 +1,4 @@
 import { v4 } from 'uuid';
-import type { ChatMessageListOutputType } from '@shenghuabi/openai';
 import * as v from 'valibot';
 import { ChatMetadata } from './type';
 import { InputInvalidItem } from './handle-node';
@@ -35,11 +34,7 @@ export const LLMDataDefine = v.object({
   value: v.string(),
   extra: v.object({
     ...extraData.entries,
-    content: v.string(),
-    thinkContent: v.optional(v.string()),
-    isThinking: v.optional(v.boolean()),
-    delta: v.string(),
-    historyList: v.custom<ChatMessageListOutputType>(Boolean),
+    // event: v.any(),
   }),
 });
 export type LLMWorkflowData = v.InferOutput<typeof LLMDataDefine>;

@@ -88,12 +88,13 @@
     "rxjs": "^7.8.2",
     "semver": "^7.7.4",
     "srt-parser-2": "^1.2.3",
-    "static-injector": "^6.3.1",
+    "static-injector": "^6.4.0",
     "tar": "^7.5.14",
     "uuid": "^13.0.2",
     "valibot": "^1.4.0",
     "yaml": "^2.8.4",
     "yauzl": "^3.3.0",
-    "yazl": "^3.3.1"
+    "yazl": "^3.3.1",
+    "@earendil-works/pi-ai": "0.79.0"
   }
 }

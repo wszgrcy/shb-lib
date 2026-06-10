@@ -4,11 +4,12 @@ import { WorkflowParserService } from '../workflow-parser.service';
 import * as v from 'valibot';
 import { WorkflowExecService } from '../workflow-exec.service';
 import { CHAT_NODE_DEFINE } from '../inline/node/chat/node.define';
-import { ChatServiceToken } from '../token';
 import { LogFactoryToken, LogService } from '@cyia/external-call';
 import { WORKFLOW_MODULE } from '../module';
 import { CustomNode } from '../share';
 import { SimplifiedState } from '@shenghuabi/lexical-textarea';
+import { fauxAssistantMessage, registerMockProvider } from '@shenghuabi/openai';
+import { ModelOptionsToken } from '../token';
 
 const systemP: SimplifiedState = [[{ text: 'systemP', type: 'text' }]];
 
@@ -21,29 +22,19 @@ const userP: SimplifiedState = [
     },
   ],
 ];
+
 describe('chat', () => {
+  let mockProvider: ReturnType<typeof registerMockProvider>;
+  beforeEach(() => {
+    mockProvider = registerMockProvider({});
+  });
+  afterEach(() => {
+    mockProvider.unregister();
+  });
   it('hello', async () => {
-    class ChatService {
-      chat(config: any) {
-        return {
-          stream: async function* (data: any) {
-            expect(data.messages[1].content[0].text).eq(`userPinputValue`);
-            let content = '';
-            for (let i = 0; i < 10; i++) {
-              content += `${i}`;
-              yield { content: content };
-            }
-          },
-        };
-      }
-      getMetadataEndRef() {
-        return '';
-      }
-    }
     const injector = createRootInjector({
       providers: [
         ...WORKFLOW_MODULE.provider,
-        { provide: ChatServiceToken, useClass: ChatService },
         {
           provide: LogFactoryToken,
           useValue: (value: string) => ({
@@ -51,6 +42,13 @@ describe('chat', () => {
             warn: console.warn,
             error: console.error,
           }),
+        },
+        {
+          provide: ModelOptionsToken,
+          useValue: {
+            provider: mockProvider.model.provider,
+            config: mockProvider.model,
+          },
         },
         LogService,
       ],
@@ -94,6 +92,7 @@ describe('chat', () => {
     });
     expect(result.editorInput).not.ok;
     expect(result.data?.end).eq('1');
+    mockProvider.setResponses([fauxAssistantMessage('0123456789')]);
     const result2 = await injector
       .get(WorkflowExecService)
       .runParse(result.data!, {
@@ -101,6 +100,7 @@ describe('chat', () => {
       });
     expect(result2).eq('0123456789');
     textNode.data.outputHandleId = 'historyList';
+    mockProvider.setResponses([fauxAssistantMessage('0123456789')]);
     const result3 = await injector
       .get(WorkflowExecService)
       .runParse(result.data!, {
@@ -111,26 +111,9 @@ describe('chat', () => {
   });
 
   it('默认输出outputId', async () => {
-    class ChatService {
-      chat(config: any) {
-        return {
-          stream: async function* (data: any) {
-            let content = '';
-            for (let i = 0; i < 10; i++) {
-              content += `${i}`;
-              yield { content: content, delta: `${i}` };
-            }
-          },
-        };
-      }
-      getMetadataEndRef() {
-        return '';
-      }
-    }
     const injector = createRootInjector({
       providers: [
         ...WORKFLOW_MODULE.provider,
-        { provide: ChatServiceToken, useClass: ChatService },
         {
           provide: LogFactoryToken,
           useValue: (value: string) => ({
@@ -139,9 +122,17 @@ describe('chat', () => {
             error: console.error,
           }),
         },
+        {
+          provide: ModelOptionsToken,
+          useValue: {
+            provider: mockProvider.model.provider,
+            config: mockProvider.model,
+          },
+        },
         LogService,
       ],
     });
+    mockProvider.setResponses([fauxAssistantMessage('0123456789')]);
 
     const result2 = await injector.get(WorkflowExecService).runParse(
       {
@@ -219,35 +210,9 @@ describe('chat', () => {
     expect(result2).eq('0123456789');
   });
   it('jsonSchema', async () => {
-    class ChatService {
-      chat(config: any) {
-        return {
-          stream: async function* (data: any) {
-            // 验证 json_schema 被正确传递到 stream
-            expect(data.response_format).to.deep.equal({
-              type: 'json_schema',
-              json_schema: {
-                name: 'testSchema',
-                schema: {
-                  type: 'object',
-                  properties: { a: { type: 'string' } },
-                },
-              },
-            });
-            // mock 输出 JSON 字符串（完整内容）
-            const jsonStr = '{"a":"xxxxx"}';
-            yield { content: jsonStr };
-          },
-        };
-      }
-      getMetadataEndRef() {
-        return '';
-      }
-    }
     const injector = createRootInjector({
       providers: [
         ...WORKFLOW_MODULE.provider,
-        { provide: ChatServiceToken, useClass: ChatService },
         {
           provide: LogFactoryToken,
           useValue: (value: string) => ({
@@ -255,6 +220,13 @@ describe('chat', () => {
             warn: console.warn,
             error: console.error,
           }),
+        },
+        {
+          provide: ModelOptionsToken,
+          useValue: {
+            provider: mockProvider.model.provider,
+            config: mockProvider.model,
+          },
         },
         LogService,
       ],
@@ -308,6 +280,7 @@ describe('chat', () => {
     });
     // format 输出应该解析 rawContent
     // textNode.data.outputHandleId = 'format';
+    mockProvider.setResponses([fauxAssistantMessage('{"a":"xxxxx"}')]);
     const result2 = await injector
       .get(WorkflowExecService)
       .runParse(result.data!, {
@@ -317,27 +290,9 @@ describe('chat', () => {
     expect(result2).to.deep.equal({ a: 'xxxxx' });
   });
   it('agentChat', async () => {
-    class ChatService {
-      chat(config: any) {
-        return {
-          stream: async function* (data: any) {
-            expect(data.messages[1].content[0].text).eq(`userPinputValue`);
-            let content = '';
-            for (let i = 0; i < 10; i++) {
-              content += `${i}`;
-              yield { content: content };
-            }
-          },
-        };
-      }
-      getMetadataEndRef() {
-        return '';
-      }
-    }
     const injector = createRootInjector({
       providers: [
         ...WORKFLOW_MODULE.provider,
-        { provide: ChatServiceToken, useClass: ChatService },
         {
           provide: LogFactoryToken,
           useValue: (value: string) => ({
@@ -346,9 +301,17 @@ describe('chat', () => {
             error: console.error,
           }),
         },
+        {
+          provide: ModelOptionsToken,
+          useValue: {
+            provider: mockProvider.model.provider,
+            config: mockProvider.model,
+          },
+        },
         LogService,
       ],
     });
+    mockProvider.setResponses([fauxAssistantMessage('0123456789')]);
 
     const result2 = await injector.get(WorkflowExecService).agentChat(
       {

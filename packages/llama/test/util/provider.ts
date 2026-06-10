@@ -14,7 +14,7 @@ export function getCommonProvider() {
     {
       provide: GITHUB_URL_TOKEN,
       useValue: computed(() =>
-        false ? 'github.com' : 'github-release.tbontop.top',
+        true ? 'github.com' : 'github-release.tbontop.top',
       ),
     },
     {

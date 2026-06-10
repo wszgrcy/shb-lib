@@ -4,7 +4,6 @@ import {
   computed,
   createRootInjector,
   effect,
-  signal,
 } from 'static-injector';
 import { expect } from 'chai';
 import { LlamaSwapService } from '../llama-swap.service';
@@ -12,12 +11,8 @@ import path from 'path';
 import * as fs from 'fs';
 import { LogFactoryToken, LogService } from '@cyia/external-call';
 import {
-  GITHUB_URL_TOKEN,
   HUGGINGFACE_TOKEN_TOKEN,
-  HUGGINGFACE_URL_TOKEN,
-  DownloadConfigToken,
 } from '@cyia/external-call';
-import { LLamaConfigToken } from '../token';
 import { getCommonProvider } from './util/provider';
 import { existsSync } from 'fs';
 describe('template', () => {

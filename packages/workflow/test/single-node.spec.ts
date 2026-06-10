@@ -4,36 +4,22 @@ import { WORKFLOW_MODULE } from '../module';
 import { SingleNodeRunnerService } from '../runner/single-node-runner.service';
 import { TextMainConfig } from '../inline/node/text/main/index';
 import { ChatMainConfig } from '../inline/node/chat/main/index';
-import { ChatServiceToken } from '../token';
 import { WorkflowParserService } from '../workflow-parser.service';
 import { LogFactoryToken, LogService } from '@cyia/external-call';
 import * as v from 'valibot';
+import { fauxAssistantMessage, registerMockProvider } from '@shenghuabi/openai';
+import { ModelOptionsToken } from '../token';
 
 describe('SingleNodeRunnerService', () => {
-  let service: SingleNodeRunnerService;
-
-  before(() => {
+  let mockProvider: ReturnType<typeof registerMockProvider>;
+  beforeEach(() => {
+    mockProvider = registerMockProvider({});
     const injector = createRootInjector({
       providers: [
         SingleNodeRunnerService,
         ...WORKFLOW_MODULE.provider,
         // Mock chat API to return deterministic results
-        {
-          provide: ChatServiceToken,
-          useValue: {
-            chat: () => ({
-              stream: async function* () {
-                let content = '';
-                for (let i = 0; i < 5; i++) {
-                  content += `${i}`;
-                  yield { content };
-                }
-              },
-            }),
-            getMetadataEndRef: () => '',
-            getModelConfig: () => ({}),
-          },
-        },
+
         {
           provide: LogFactoryToken,
           useValue: () => ({
@@ -42,6 +28,13 @@ describe('SingleNodeRunnerService', () => {
             error: () => {},
           }),
         },
+        {
+          provide: ModelOptionsToken,
+          useValue: {
+            provider: mockProvider.model.provider,
+            config: mockProvider.model,
+          },
+        },
         LogService,
       ],
     });
@@ -49,6 +42,10 @@ describe('SingleNodeRunnerService', () => {
     injector.get(WorkflowParserService);
     service = injector.get(SingleNodeRunnerService);
   });
+  afterEach(() => {
+    mockProvider.unregister();
+  });
+  let service: SingleNodeRunnerService;
 
   describe('textarea node', () => {
     it('should return plain text', async () => {
@@ -91,30 +88,12 @@ describe('SingleNodeRunnerService', () => {
   describe('chat node', () => {
     it('should return streamed content', async () => {
       const input = v.parse(ChatMainConfig.configDefine, {
-        value: [
-          { role: 'user', content: [{ type: 'text', text: 'Hi' }] },
-        ],
+        value: [{ role: 'user', content: [{ type: 'text', text: 'Hi' }] }],
       });
+      mockProvider.setResponses([fauxAssistantMessage('01234')]);
 
       const result = await service.run(ChatMainConfig, input, {
-        providers: [
-          {
-            provide: ChatServiceToken,
-            useValue: {
-              chat: () => ({
-                stream: async function* () {
-                  let content = '';
-                  for (let i = 0; i < 5; i++) {
-                    content += `${i}`;
-                    yield { content };
-                  }
-                },
-              }),
-              getMetadataEndRef: () => '',
-              getModelConfig: () => ({}),
-            },
-          },
-        ],
+        providers: [],
       });
 
       // Mock streams 0, 01, 012, 0123, 01234 -> final is '01234'
@@ -123,27 +102,13 @@ describe('SingleNodeRunnerService', () => {
 
     it('should return historyList output', async () => {
       const input = v.parse(ChatMainConfig.configDefine, {
-        value: [
-          { role: 'user', content: [{ type: 'text', text: 'Hi' }] },
-        ],
+        value: [{ role: 'user', content: [{ type: 'text', text: 'Hi' }] }],
       });
+      mockProvider.setResponses([fauxAssistantMessage('0123456789')]);
 
       const historyList = await service.run(ChatMainConfig, input, {
         outputId: 'historyList',
-        providers: [
-          {
-            provide: ChatServiceToken,
-            useValue: {
-              chat: () => ({
-                stream: async function* () {
-                  yield { content: 'Hello' };
-                },
-              }),
-              getMetadataEndRef: () => '',
-              getModelConfig: () => ({}),
-            },
-          },
-        ],
+        providers: [],
       });
 
       expect(Array.isArray(historyList)).to.be.true;

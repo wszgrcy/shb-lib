@@ -361,9 +361,8 @@ export class LlamaSwapService extends ExternalCallBaseService {
         prefix: 'ggml-org/llama.cpp',
         version: version,
         fileName:
-          llamaFileNameByVersion(version, device) + process.platform === 'win32'
-            ? '.zip'
-            : '.tar.gz',
+          llamaFileNameByVersion(version, device) +
+          (process.platform === 'win32' ? '.zip' : '.tar.gz'),
       },
       {
         output: path.join(this.llamaDir$$(), dirName),

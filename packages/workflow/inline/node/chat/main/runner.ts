@@ -2,7 +2,7 @@ import { inject } from 'static-injector';
 
 import { parse } from 'yaml';
 
-import { ChatMessageListOutputType } from '@shenghuabi/openai';
+import { ChatMessageListOutputType, createChat } from '@shenghuabi/openai';
 
 import { uniqBy } from 'es-toolkit';
 
@@ -11,14 +11,13 @@ import { createAssistantMessage } from '@shenghuabi/openai';
 
 import { LogService } from '@cyia/external-call';
 import { NodeRunnerBase } from '../../../../runner/runner-item';
-import { AbortSignalToken, ChatServiceToken } from '../../../../token';
+import { AbortSignalToken } from '../../../../token';
 import { createLLMData } from '../../../../share/type2';
 import { jsonParse, yamlParse, markdownParse } from '@cyia/util';
 import { useChat } from '../../../../util/useChat';
 import { RUNNER_ORIGIN_OUTPUT } from '../../../../share/common/const';
 
 export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
-  #chatService = inject(ChatServiceToken);
   #abort = inject(AbortSignalToken);
   #channel = inject(LogService).getToken('chat');
   chatParse = useChat();
@@ -61,14 +60,15 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
       historyList.splice(index, 0, ...(examplesTemplate as any[]));
     }
     this.#channel?.info('节点对话配置', config.llm);
-    const llm = await this.#chatService.chat(this.mergeChatModel(config.llm));
+    const modelConfig = this.mergeChatModel(config.llm);
+    const chat2 = createChat(modelConfig);
 
-    // doc 用于调试
-    // console.log(historyList);
-    // 调用位置
-    const result = await llm.stream(
+    const result = chat2(
+      { messages: historyList as any },
       {
-        messages: historyList,
+        signal: this.#abort,
+      },
+      {
         response_format:
           config.responseFormat === 'json_schema'
             ? { type: 'json_schema', json_schema: config.jsonSchema }
@@ -76,7 +76,6 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
               ? { type: 'json_object' }
               : undefined,
       },
-      { signal: this.#abort },
     );
 
     const streamData = createLLMData({
@@ -87,27 +86,28 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
           metadataList,
           (item) => item.type + item.description + item.tooltip || '',
         ),
-        historyList: [],
-        delta: '',
-        content: '',
       },
     });
-    const endRef = this.#chatService.getMetadataEndRef(
-      streamData.extra!.references,
-    );
-    let rawContent = '';
+    let rawContent!: string;
     for await (const item of result) {
-      const value = endRef ? item.content + endRef : item.content;
-      rawContent = item.content;
-      streamData.value = value;
-      streamData.extra = { ...streamData.extra, ...item, content: value };
-
       this.emitter.send(streamData);
+      switch (item.type) {
+        case 'text_delta': {
+          if (item.partial.content[0].type === 'text') {
+            streamData.value = item.partial.content[0].text;
+          }
+          break;
+        }
+        case 'done': {
+          rawContent = item.message.content.findLast(
+            (item) => item.type === 'text',
+          )!.text;
+          break;
+        }
+      }
     }
-    const resultContent = streamData.value;
-    streamData.extra.delta = '';
-    historyList.push(createAssistantMessage(resultContent));
-    streamData.extra.historyList = historyList;
+
+    historyList.push(createAssistantMessage(rawContent));
     this.emitter.send(streamData);
     return async (id: string) => {
       if (id === undefined || id === RUNNER_ORIGIN_OUTPUT[0].id) {
@@ -118,8 +118,9 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
         let value: any;
         switch (config.parseBy) {
           case 'markdown':
-            value = markdownParse(resultContent);
+            value = markdownParse(rawContent);
             break;
+          // todo 格式化内容
           case 'json':
             value = jsonParse(rawContent);
             break;
@@ -127,7 +128,7 @@ export class LlmRunner extends NodeRunnerBase<typeof CHAT_NODE_DEFINE> {
             value = yamlParse(rawContent);
             break;
           default:
-            value = resultContent;
+            value = rawContent;
             break;
         }
         if (typeof value === 'undefined') {
