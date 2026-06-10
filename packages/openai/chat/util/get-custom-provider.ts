@@ -149,16 +149,18 @@ export const OpenAICompletionsCompatSchema = v.pipe(
       ),
       openRouterRouting: v.optional(
         v.pipe(
-          v.unknown(),
+          v.any(),
           v.title('OpenRouter 路由'),
           v.description('自定义 OpenRouter 的路由配置'),
+          renderConfig({ hidden: true }),
         ),
       ),
       vercelGatewayRouting: v.optional(
         v.pipe(
-          v.unknown(),
+          v.any(),
           v.title('Vercel Gateway 路由'),
           v.description('自定义 Vercel AI Gateway 的路由配置'),
+          renderConfig({ hidden: true }),
         ),
       ),
       zaiToolStream: v.optional(
@@ -180,6 +182,7 @@ export const OpenAICompletionsCompatSchema = v.pipe(
           v.literal('anthropic'),
           v.title('缓存控制格式'),
           v.description('指定缓存控制的语法格式'),
+          renderConfig({ hidden: true }),
         ),
       ),
       sendSessionAffinityHeaders: v.optional(
