@@ -2,7 +2,7 @@ import * as v from 'valibot';
 
 import { getModel, Model } from '@earendil-works/pi-ai';
 import { KnownProviderDefine } from '../provider.define';
-import { hideWhen } from '@piying/view-angular-core';
+import { hideWhen, renderConfig } from '@piying/view-angular-core';
 import { map } from 'rxjs';
 
 function getCustomProvider<
@@ -319,6 +319,7 @@ const HeadersSchema = v.pipe(
   v.record(v.string(), v.string()),
   v.title('自定义请求头'),
   v.description('额外的 HTTP 请求头键值对配置'),
+  renderConfig({ hidden: true }),
 );
 
 // --- Model schema (non-generic) ---
