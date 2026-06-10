@@ -2,7 +2,12 @@ import * as v from 'valibot';
 
 import { getModel, Model } from '@earendil-works/pi-ai';
 import { KnownProviderDefine } from '../provider.define';
-import { hideWhen, renderConfig } from '@piying/view-angular-core';
+import {
+  hideWhen,
+  renderConfig,
+  setAlias,
+  setComponent,
+} from '@piying/view-angular-core';
 import { map } from 'rxjs';
 
 function getCustomProvider<
@@ -290,10 +295,41 @@ export const AnthropicMessagesCompatSchema = v.pipe(
 // Generic compat schema (union of all compat types)
 export const CompatSchema = v.pipe(
   v.union([
-    OpenAICompletionsCompatSchema,
-    OpenAIResponsesCompatSchema,
-    AnthropicMessagesCompatSchema,
+    v.pipe(
+      OpenAICompletionsCompatSchema,
+      hideWhen({
+        disabled: true,
+        listen(fn, field) {
+          return fn({ list: [['#provider']] }).pipe(
+            map((item) => item.list[0] !== 'openai-completions'),
+          );
+        },
+      }),
+    ),
+    v.pipe(
+      OpenAIResponsesCompatSchema,
+      hideWhen({
+        disabled: true,
+        listen(fn, field) {
+          return fn({ list: [['#provider']] }).pipe(
+            map((item) => item.list[0] !== 'openai-responses'),
+          );
+        },
+      }),
+    ),
+    v.pipe(
+      AnthropicMessagesCompatSchema,
+      hideWhen({
+        disabled: true,
+        listen(fn, field) {
+          return fn({ list: [['#provider']] }).pipe(
+            map((item) => item.list[0] !== 'anthropic-messages'),
+          );
+        },
+      }),
+    ),
   ]),
+  setComponent('object'),
   v.title('兼容配置'),
   v.description(
     '模型 API 兼容性覆写选项，支持 OpenAI Completions、OpenAI Responses、Anthropic Messages 三种格式',
@@ -447,7 +483,7 @@ export const OutputSchema = InputSchema; // same structure
 
 export const ModelConfigDefine = v.pipe(
   v.object({
-    provider: KnownProviderDefine,
+    provider: v.pipe(KnownProviderDefine, setAlias('provider')),
     model: v.pipe(v.string(), v.title('模型名')),
     name: v.pipe(
       v.optional(v.string()),
