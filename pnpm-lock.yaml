@@ -12,23 +12,23 @@ importers:
         specifier: ^0.60.0
         version: 0.60.0
       '@cyia/bundle-file':
-        specifier: ^1.5.2
-        version: 1.5.2(@types/yauzl@2.10.3)(@types/yazl@3.3.1)(rxjs@7.8.2)(uuid@13.0.2)
+        specifier: ^1.5.7
+        version: 1.5.7(rxjs@7.8.2)
       '@cyia/code-util':
         specifier: ^2.8.1
         version: 2.8.1(@angular/core@21.2.12(rxjs@7.8.2))
       '@cyia/dl':
-        specifier: ^1.5.2
-        version: 1.5.2
+        specifier: ^1.5.7
+        version: 1.5.7
       '@cyia/external-call':
-        specifier: ^1.5.2
-        version: 1.5.2(execa@9.6.1)(semver@7.7.4)(static-injector@6.4.0(rxjs@7.8.2))(valibot@1.4.0(typescript@6.0.3))
+        specifier: ^1.5.7
+        version: 1.5.7(static-injector@6.4.0(rxjs@7.8.2))(valibot@1.4.0(typescript@6.0.3))
       '@cyia/util':
-        specifier: ^1.5.2
-        version: 1.5.2
+        specifier: ^1.5.7
+        version: 1.5.7
       '@cyia/vfs2':
-        specifier: ^1.5.2
-        version: 1.5.2
+        specifier: ^1.5.7
+        version: 1.5.7
       '@earendil-works/pi-ai':
         specifier: 0.79.0
         version: 0.79.0(ws@8.21.0)(zod@4.4.3)
@@ -620,11 +620,17 @@ packages:
       '@types/yazl': ^3.3.0
       uuid: ^13.0.0
 
+  '@cyia/bundle-file@1.5.7':
+    resolution: {integrity: sha512-bLuVakng9HK/iMkiauJMKmjUfFmlmhRKgs08YXrH/sAoVFw6PJ5UcGuildR3YHCWAmfmvqG2dvcC4KVgmXQrCQ==}
+
   '@cyia/code-util@2.8.1':
     resolution: {integrity: sha512-KP3rc+7SD0bDxwqSwocuRY4SATtw+Jd0yoPgjlr0rk+Sc4ck6BZxkt/UvRjz4lxYV5bGhuQGCUqd3vRaYIwe+w==}
 
   '@cyia/dl@1.5.2':
     resolution: {integrity: sha512-A9UMlzndgaxjbo/N7vToZ+qsQG2AaKdzba5w1CMTfMWqmGJa0m+F8en7nupbo+FiKEmIu39XyMRXQYU/+GcyyQ==}
+
+  '@cyia/dl@1.5.7':
+    resolution: {integrity: sha512-gq+/hL7pCCEx35jok+izHHdgMVS9INwLLlhTPaP4ojTHxElgvPnLxqCLFmyheiNbmK5jWhXIpkw/Sczdl9Gw2A==}
 
   '@cyia/external-call@1.5.2':
     resolution: {integrity: sha512-bywnMPTUyecfyUxtHqGJxsEK4S0thRFncrO617D8KGBm8v0GifrP+hbUYpV0V0lM/OG7L3a7Gae9g6vv3cpvFA==}
@@ -634,17 +640,34 @@ packages:
       static-injector: ^6.1.2
       valibot: ^1.1.0
 
+  '@cyia/external-call@1.5.7':
+    resolution: {integrity: sha512-g6dAislDLFBbJ9yh5TlC2WuuMaSB51UBJPBW6gzdwDA0K0dQFqDsbb4hBfANYQ61uaXaNueacXKqEdeEyhS8Dw==}
+    peerDependencies:
+      static-injector: '>=6.1.2'
+      valibot: ^1.1.0
+
   '@cyia/util@1.5.2':
     resolution: {integrity: sha512-0awMU0G5rDGm869VykFsMMB7XPYF2tRSe3YFtRkgUOr401K1BdPAGr4kYvlxEOySDopmqWfGL4U6pdZW6OTbIQ==}
 
+  '@cyia/util@1.5.7':
+    resolution: {integrity: sha512-G74+EmMzEpDbIZ4KgQUcyz6YNxE9LvA+ebOQxHdsFpwp4iWOT3fwSYcHM2IfE4PbbPcudUTE1O1BUlDLQ01Ezg==}
+
   '@cyia/vfs2@1.5.2':
     resolution: {integrity: sha512-GLRzxoVhrLNTrEJ4f3PR/jmRn6u6AXvV4EgdS4AOsfjG0jLNdiOgYecK368dSCac36u15HfmFnvPkeLVOBUUNg==}
+
+  '@cyia/vfs2@1.5.7':
+    resolution: {integrity: sha512-kbwnjRJQdKgD3XOEJ+PrsBjW/aC7lZmT1D4K5tieK7O6tWBMEIoof9/+hfxU1UCoBUhKXlXALtRlwML17nmumA==}
 
   '@cyia/zip@1.5.2':
     resolution: {integrity: sha512-+zRB/NuUDwMN+Puo2hClgae+WpfrHAyjw7aws4ROD9sJoz9TL89122X+UgZx9p5RnpHsqOHHA4lLryxQJP30EA==}
     peerDependencies:
       execa: ^9.5.3
       static-injector: ^6.1.2
+
+  '@cyia/zip@1.5.7':
+    resolution: {integrity: sha512-NIlDrhdyNvx+Mub5yeSsdNGcd8xBx8icDSUUqFRCmLBr3nP0AWr5K9NKYHpTOt83DCRfcYhp5jLhHxdCwobSoA==}
+    peerDependencies:
+      static-injector: '>=6.1.2'
 
   '@earendil-works/pi-ai@0.79.0':
     resolution: {integrity: sha512-D/2aDoe9vcCbqAztALQcKkdqXGuaQcqAzLm8LfUhNaorwoIHkwnaAuDVlo+OkF5clpEwS8Z1bk2o8NiSrwEdsA==}
@@ -3497,6 +3520,10 @@ packages:
     resolution: {integrity: sha512-PtGEvEP30p7sbIBJKUBjUnqgTVOyMURc4dLo9iNyAJnNIEz9pm88cCXF21w94Kg3k6RXkeZh5DHOGS0qEONvNQ==}
     engines: {node: '>=12'}
 
+  yauzl@3.4.0:
+    resolution: {integrity: sha512-jIH9yLR9wqr0wOS0TpBvo/g/2UgZH5qePVbjgRliiF0BYvOZyaBknKsF+x9Iht0O6sqgnB93rCICdOZFecJuDw==}
+    engines: {node: '>=12'}
+
   yazl@3.3.1:
     resolution: {integrity: sha512-BbETDVWG+VcMUle37k5Fqp//7SDOK2/1+T7X8TD96M3D9G8jK5VLUdQVdVjGi8im7FGkazX7kk5hkU8X4L5Bng==}
 
@@ -3827,6 +3854,16 @@ snapshots:
     transitivePeerDependencies:
       - rxjs
 
+  '@cyia/bundle-file@1.5.7(rxjs@7.8.2)':
+    dependencies:
+      '@cyia/vfs2': 1.5.7
+      static-injector: 6.4.0(rxjs@7.8.2)
+      uuid: 13.0.2
+      yauzl: 3.4.0
+      yazl: 3.3.1
+    transitivePeerDependencies:
+      - rxjs
+
   '@cyia/code-util@2.8.1(@angular/core@21.2.12(rxjs@7.8.2))':
     dependencies:
       '@angular/compiler': 17.3.5(@angular/core@21.2.12(rxjs@7.8.2))
@@ -3866,6 +3903,12 @@ snapshots:
       ipull: 3.9.3
       rxjs: 7.8.2
 
+  '@cyia/dl@1.5.7':
+    dependencies:
+      '@cyia/util': 1.5.7
+      ipull: 3.9.5
+      rxjs: 7.8.2
+
   '@cyia/external-call@1.5.2(execa@9.6.1)(semver@7.7.4)(static-injector@6.3.1(rxjs@7.8.2))(valibot@1.4.0(typescript@6.0.3))':
     dependencies:
       '@cyia/dl': 1.5.2
@@ -3880,13 +3923,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@cyia/external-call@1.5.2(execa@9.6.1)(semver@7.7.4)(static-injector@6.4.0(rxjs@7.8.2))(valibot@1.4.0(typescript@6.0.3))':
+  '@cyia/external-call@1.5.7(static-injector@6.4.0(rxjs@7.8.2))(valibot@1.4.0(typescript@6.0.3))':
     dependencies:
-      '@cyia/dl': 1.5.2
-      '@cyia/util': 1.5.2
-      '@cyia/vfs2': 1.5.2
-      '@cyia/zip': 1.5.2(execa@9.6.1)(static-injector@6.4.0(rxjs@7.8.2))
-      es-toolkit: 1.46.1
+      '@cyia/dl': 1.5.7
+      '@cyia/util': 1.5.7
+      '@cyia/vfs2': 1.5.7
+      '@cyia/zip': 1.5.7(static-injector@6.4.0(rxjs@7.8.2))
+      es-toolkit: 1.47.0
       execa: 9.6.1
       semver: 7.7.4
       static-injector: 6.4.0(rxjs@7.8.2)
@@ -3904,7 +3947,24 @@ snapshots:
       rfdc: 1.4.1
       yaml: 2.8.4
 
+  '@cyia/util@1.5.7':
+    dependencies:
+      dayjs: 1.11.20
+      es-toolkit: 1.47.0
+      jsonc-parser: 3.3.1
+      magic-string: 0.30.21
+      marked: 18.0.3
+      rfdc: 1.4.1
+      yaml: 2.8.4
+
   '@cyia/vfs2@1.5.2':
+    dependencies:
+      '@types/node': 22.19.17
+      is-relative: 1.0.0
+      normalize-path: 3.0.0
+      rxjs: 7.8.2
+
+  '@cyia/vfs2@1.5.7':
     dependencies:
       '@types/node': 22.19.17
       is-relative: 1.0.0
@@ -3924,9 +3984,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@cyia/zip@1.5.2(execa@9.6.1)(static-injector@6.4.0(rxjs@7.8.2))':
+  '@cyia/zip@1.5.7(static-injector@6.4.0(rxjs@7.8.2))':
     dependencies:
-      '@cyia/vfs2': 1.5.2
+      '@cyia/vfs2': 1.5.7
       execa: 9.6.1
       extract-zip: 2.0.1
       fastq: 1.20.1
@@ -6834,6 +6894,10 @@ snapshots:
   yauzl@3.3.0:
     dependencies:
       buffer-crc32: 0.2.13
+      pend: 1.2.0
+
+  yauzl@3.4.0:
+    dependencies:
       pend: 1.2.0
 
   yazl@3.3.1:
