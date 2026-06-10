@@ -300,7 +300,7 @@ export const CompatSchema = v.pipe(
       hideWhen({
         disabled: true,
         listen(fn, field) {
-          return fn({ list: [['#provider']] }).pipe(
+          return fn({ list: [['@provider']] }).pipe(
             map((item) => item.list[0] !== 'openai-completions'),
           );
         },
@@ -311,7 +311,7 @@ export const CompatSchema = v.pipe(
       hideWhen({
         disabled: true,
         listen(fn, field) {
-          return fn({ list: [['#provider']] }).pipe(
+          return fn({ list: [['@provider']] }).pipe(
             map((item) => item.list[0] !== 'openai-responses'),
           );
         },
@@ -322,7 +322,7 @@ export const CompatSchema = v.pipe(
       hideWhen({
         disabled: true,
         listen(fn, field) {
-          return fn({ list: [['#provider']] }).pipe(
+          return fn({ list: [['@provider']] }).pipe(
             map((item) => item.list[0] !== 'anthropic-messages'),
           );
         },
