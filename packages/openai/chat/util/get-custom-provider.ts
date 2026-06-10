@@ -3,6 +3,8 @@ import * as v from 'valibot';
 import { getModel, Model } from '@earendil-works/pi-ai';
 import { KnownProviderDefine } from '../provider.define';
 import {
+  actions,
+  asControl,
   hideWhen,
   renderConfig,
   setAlias,
@@ -439,6 +441,8 @@ export const ModelSchema = v.pipe(
     // ),
     input: v.pipe(
       v.optional(InputSchema, ['text', 'image']),
+      asControl(),
+      actions.inputs.set({ multiple: true }),
       v.title('输入类型'),
       v.description('支持的输入模态类型'),
     ),
