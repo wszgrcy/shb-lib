@@ -302,6 +302,9 @@ export const CompatSchema = v.pipe(
   v.union([
     v.pipe(
       OpenAICompletionsCompatSchema,
+      actions.wrappers.patch([
+        { type: 'div', attributes: { class: 'grid gap-2' } },
+      ]),
       hideWhen({
         disabled: true,
         listen(fn, field) {
@@ -313,6 +316,9 @@ export const CompatSchema = v.pipe(
     ),
     v.pipe(
       OpenAIResponsesCompatSchema,
+      actions.wrappers.patch([
+        { type: 'div', attributes: { class: 'grid gap-2' } },
+      ]),
       hideWhen({
         disabled: true,
         listen(fn, field) {
@@ -324,6 +330,9 @@ export const CompatSchema = v.pipe(
     ),
     v.pipe(
       AnthropicMessagesCompatSchema,
+      actions.wrappers.patch([
+        { type: 'div', attributes: { class: 'grid gap-2' } },
+      ]),
       hideWhen({
         disabled: true,
         listen(fn, field) {
@@ -449,6 +458,7 @@ export const ModelSchema = v.pipe(
     ),
     cost: v.pipe(
       CostSchema,
+      renderConfig({ hidden: true }),
       v.title('费用配置'),
       v.description('模型 token 计价标准'),
     ),
