@@ -303,7 +303,7 @@ export const CompatSchema = v.pipe(
     v.pipe(
       OpenAICompletionsCompatSchema,
       actions.wrappers.patch([
-        { type: 'div', attributes: { class: 'grid gap-2' } },
+        { type: 'div', attributes: { class: 'grid gap-2 lg:grid-cols-3 grid-cols-2' } },
       ]),
       hideWhen({
         disabled: true,
@@ -317,7 +317,7 @@ export const CompatSchema = v.pipe(
     v.pipe(
       OpenAIResponsesCompatSchema,
       actions.wrappers.patch([
-        { type: 'div', attributes: { class: 'grid gap-2' } },
+        { type: 'div', attributes: { class: 'grid gap-2 lg:grid-cols-3 grid-cols-2' } },
       ]),
       hideWhen({
         disabled: true,
@@ -331,7 +331,7 @@ export const CompatSchema = v.pipe(
     v.pipe(
       AnthropicMessagesCompatSchema,
       actions.wrappers.patch([
-        { type: 'div', attributes: { class: 'grid gap-2' } },
+        { type: 'div', attributes: { class: 'grid gap-2 lg:grid-cols-3 grid-cols-2' } },
       ]),
       hideWhen({
         disabled: true,
