@@ -19,9 +19,10 @@ import { uniqBy } from 'es-toolkit';
 
 import {
   flatFilterHandleList,
-  HandleNode,
   ResolvedWorkflow,
   WorkflowData,
+  WorkflowInvalidConfig,
+  WorkflowContextConfig,
   WorkflowNodeData,
 } from './share/handle-node';
 import { InlineNodeService } from './inline/inline.service';
@@ -34,28 +35,54 @@ export interface ResolvedWorkflowResult {
     message?: string;
     nodeId?: string;
   };
-  manualInput?: boolean;
+  editorInput?: boolean;
+  /** 所有节点的无效配置统计,结构为{id: invalidList} */
+  invalidConfigList?: WorkflowInvalidConfig[];
+  /** 所有节点的上下文配置,扁平化去重后的列表 */
+  contextConfigList?: WorkflowContextConfig[];
 }
 type SubGroupList = Record<
   string,
   { key: string; startId?: string; nodeList: Node<WorkflowNodeData>[] }[]
 >;
+const ParserListToken = new InjectionToken<Node<WorkflowNodeData>[]>(
+  'ParserListToken',
+);
+const ParserSubObjectToken = new InjectionToken<SubGroupList>(
+  'ParserSubObjectToken',
+);
+const ParserDataToken = new InjectionToken<Pick<WorkflowData, 'flow'>>(
+  'ParserDataToken',
+);
+const ParentContextToken = new InjectionToken<WorkflowParserContext>(
+  'ParentContextToken',
+);
+const ParentNodeToken = new InjectionToken<Node<WorkflowNodeData>>(
+  'ParentNodeToken',
+);
+type DataCollectionObject = {
+  /** 共享的无效配置列表，用于跨层级累积 */
+  invalidConfigList: WorkflowInvalidConfig[];
+  /** 共享的上下文配置列表，用于跨层级累积 */
+  contextConfigList: WorkflowContextConfig[];
+};
+const ContextCollectionToken = new InjectionToken<DataCollectionObject>(
+  'ContextCollectionToken',
+);
+
 class WorkflowParserContext {
   // fixme 或许可以分离，单独调用，然后加上children查找，不过那样就太慢了
   #childUseNodeSet = new Set<string>();
 
-  constructor(
-    /** 主列表或者说某一级的列表 */
-    public list: Node<WorkflowNodeData>[],
-    private subObject: SubGroupList,
-    private data: Pick<WorkflowData, 'flow'>,
-    /** 父级节点 */
-    private parentNode?: Node<WorkflowNodeData>,
-    /** inputList 使用,全局统计 */
-    private userInputParams: HandleNode[] = [],
-    /** 父级上下文 */
-    private parent?: WorkflowParserContext,
-  ) {}
+  list = inject(ParserListToken);
+  private subObject = inject(ParserSubObjectToken);
+  private data = inject(ParserDataToken);
+  /** 父级节点 */
+
+  #parent = inject(ParentContextToken, { optional: true });
+  #parentNode = inject(ParentNodeToken, { optional: true });
+  #collection = inject(ContextCollectionToken);
+  #injector = inject(Injector);
   /** 只能子级在本级找不到节点时调用父级使用 */
   protected childUseDefine(
     id: string,
@@ -63,7 +90,7 @@ class WorkflowParserContext {
   ): Node<WorkflowNodeData> | undefined {
     const define = this.list.find((item) => item.id === id);
     if (!define) {
-      return this.parent?.childUseDefine(id, parentId);
+      return this.#parent?.childUseDefine(id, parentId);
     }
     if (id !== parentId) {
       this.#childUseNodeSet.add(id);
@@ -71,7 +98,7 @@ class WorkflowParserContext {
     return define;
   }
   #getParentNodeDefine(id: string) {
-    return this.parent?.childUseDefine(id, this.parentNode?.id);
+    return this.#parent?.childUseDefine(id, this.#parentNode?.id);
   }
   parseItem(): ResolvedWorkflowResult {
     const graph = new Graph({ multi: true });
@@ -88,87 +115,74 @@ class WorkflowParserContext {
       const cEdges = getConnectedEdges([node], edges);
       /** 输入连接点,可以理解为参数 */
       const inputNodes = getIncomers(node, nodes, cEdges);
-      /** 定义输入，大于等于边，因为可能有没连接的 */
-      const inputHandleList = flatFilterHandleList(node.data.handle?.input);
-      /** 保存的是handle和对应的nodeid? */
-      const inputParams = [];
-      // 其实就是找依赖,以及确定输入
-      for (const item of inputHandleList) {
-        const targetHandle = item.id;
-        /** 连接到当前节点的边 */
-        const linkedEdges = cEdges.filter(
-          (item) =>
-            item.targetHandle === targetHandle && item.target === node.id,
-        );
-        // 未来可以改成多个节点就变成数组?
-        if (linkedEdges.length > 1) {
-          return {
-            error: {
-              message: `${node.id}:不支持多个节点连接一个输入点`,
-              nodeId: node.id,
-            },
-          };
+      const contextData = [];
+      for (const linkedEdge of cEdges) {
+        if (linkedEdge.target !== node.id) {
+          continue;
         }
-        if (linkedEdges.length === 1) {
-          const linkedEdge = linkedEdges[0];
-          /** 找到连接的输入节点 */
-          const linkedNode = inputNodes.find(
-            (item) => item.id === linkedEdge.source,
-          )!;
-          const linkedOuput = flatFilterHandleList(
+        /** 找到连接的输入节点 */
+        const linkedNode = inputNodes.find(
+          (item) => item.id === linkedEdge.source,
+        )!;
+
+        if (linkedEdge.targetHandle === '[context]') {
+          const sourceHandle = flatFilterHandleList(
             linkedNode.data.handle?.output,
           ).find((item) => item.id === linkedEdge.sourceHandle);
-
-          inputParams.push({
-            ...item,
-            nodeId: linkedNode.id,
-            outputName: linkedOuput!.value,
-          });
-          //这个节点只能是当前或者说是它的祖先提供,不能是其他的地方的
-          if (!graph.hasNode(linkedNode.id)) {
-            // 只允许在父级查找
-            if (!this.#getParentNodeDefine(linkedNode.id)) {
-              return {
-                error: {
-                  message: `${linkedNode.id}:未找到连接节点,只能读取到当前及祖先范围内的节点`,
-                  nodeId: linkedNode.id,
-                },
-              };
-            }
-            graph.addNode(linkedNode.id);
+          if (sourceHandle?.type !== 'connect') {
+            contextData.push({
+              id: linkedEdge.source,
+              handleId: linkedEdge.sourceHandle!,
+              output: sourceHandle!.name!,
+              rest: linkedEdge.sourceHandle!.includes('[rest]'),
+            });
           }
-          graph.addEdge(linkedNode.id, node.id);
-        } else {
-          // 没有输入节点就需要统计
-          inputParams.push({ ...item });
-          // 过滤连接点
-          if (item.type) {
-            continue;
-          }
-          this.userInputParams.push(item);
         }
+
+        //这个节点只能是当前或者说是它的祖先提供,不能是其他的地方的
+        if (!graph.hasNode(linkedNode.id)) {
+          // 只允许在父级查找
+          if (!this.#getParentNodeDefine(linkedNode.id)) {
+            return {
+              error: {
+                message: `${linkedNode.id}:未找到连接节点,只能读取到当前及祖先范围内的节点`,
+                nodeId: linkedNode.id,
+              },
+            };
+          }
+          graph.addNode(linkedNode.id);
+        }
+        graph.addEdge(linkedNode.id, node.id);
       }
       nodeData.nodes[node.id] = {
         data: node.data,
-        //输入用
-        inputs: inputParams,
         outputs: handle.output,
         type: node.type! as any,
         id: node.id,
+        context: contextData,
+        parentId: node.parentId,
       };
       // 如果这个节点是一个块级节点
       if (this.subObject[node.id]) {
         // 多出口
         for (let index = 0; index < this.subObject[node.id].length; index++) {
           const { key, startId, nodeList } = this.subObject[node.id][index];
-          const instance = new WorkflowParserContext(
-            nodeList,
-            this.subObject,
-            this.data,
-            node,
-            this.userInputParams,
-            this,
-          );
+          const injector = createInjector({
+            providers: [
+              WorkflowParserContext,
+              { provide: ParserListToken, useValue: nodeList },
+              {
+                provide: ParentNodeToken,
+                useValue: node,
+              },
+              {
+                provide: ParentContextToken,
+                useValue: this,
+              },
+            ],
+            parent: this.#injector,
+          });
+          const instance = injector.get(WorkflowParserContext);
           const result = instance.parseItem();
           if (result.error) {
             return { error: { ...result.error } };
@@ -181,6 +195,22 @@ class WorkflowParserContext {
             startId: startId,
           });
         }
+      }
+      if (node.data.config?.invalidList?.length) {
+        this.#collection.invalidConfigList.push({
+          id: node.id,
+          type: node.type!,
+          list: node.data.config.invalidList,
+        });
+      }
+      // 收集上下文配置
+      if (node.data.config?.contextGroup) {
+        const contextItems = Object.values(
+          node.data.config.contextGroup,
+        ).flat();
+        this.#collection.contextConfigList.push(
+          ...uniqBy(contextItems, (a) => a.key.join('|')),
+        );
       }
     }
     const outList: string[] = [];
@@ -196,15 +226,7 @@ class WorkflowParserContext {
       return { error: { message: `可能出现循环依赖,没有出口` } };
     } else {
       nodeData.end = outList[0];
-      nodeData.inputList = uniqBy(
-        this.userInputParams,
-        (item) => `${item.inputType || 'string'}|${item.value}`,
-      ).map((item) => ({
-        inputType: item.inputType || 'string',
-        value: item.value,
-        label: item.label || item.value,
-        optional: item.optional,
-      }));
+
       return { data: nodeData };
     }
   }
@@ -284,7 +306,6 @@ class WorkflowPreParser {
         });
       }
     };
-    let manualInput = false;
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       if (node.data.excludeUsage) {
@@ -293,9 +314,7 @@ class WorkflowPreParser {
         i--;
         continue;
       }
-      if (node.type === 'input-params') {
-        manualInput ||= !!node.data.config?.['manualInput'];
-      } else if (isBlock(node)) {
+      if (isBlock(node)) {
         this.#nodeGroup.add(node);
       } else if (node.type === WorkflowNodeType.iterationStart) {
         this.#nodeGroup.addContainerStart(node);
@@ -342,7 +361,7 @@ class WorkflowPreParser {
               outputList.push({
                 nodeList: uniqBy(subNodeList, (item) => item.id),
                 startId: childNode.id,
-                key: outputHandle.value,
+                key: outputHandle.name!,
               });
             }
           }
@@ -359,7 +378,6 @@ class WorkflowPreParser {
     return {
       list: mainList,
       subObjectGroup,
-      manualInput,
       edges: edges.filter(
         (edge) =>
           !removedList.has(edge.source) && !removedList.has(edge.target),
@@ -372,7 +390,7 @@ export class WorkflowParserService {
   #injector = inject(Injector);
   #inlineNode = inject(InlineNodeService);
   constructor() {
-    this.#inlineNode.register(InlineNodeObj);
+    this.#inlineNode.register(InlineNodeObj as any);
   }
   /**
    * 1.如果出现孤立节点，那么需要判断是不是子级引用
@@ -382,7 +400,7 @@ export class WorkflowParserService {
    * 边有id,通过source 找到连接的节点
    *
    */
-  parse(data: Pick<WorkflowData, 'flow'>): ResolvedWorkflowResult {
+  parse(data: Pick<WorkflowData, 'flow' | 'options'>): ResolvedWorkflowResult {
     const injector = createInjector({
       providers: [
         WorkflowPreParser,
@@ -400,12 +418,38 @@ export class WorkflowParserService {
         },
       };
     }
-    const instance = new WorkflowParserContext(
-      result.list,
-      result.subObjectGroup,
-      { ...data, flow: { ...data.flow, edges: result.edges } },
+    const collection = {
+      invalidConfigList: [],
+      contextConfigList: [],
+    } as DataCollectionObject;
+    const injector2 = createInjector({
+      providers: [
+        WorkflowParserContext,
+        { provide: ParserListToken, useValue: result.list },
+        { provide: ParserSubObjectToken, useValue: result.subObjectGroup },
+        {
+          provide: ParserDataToken,
+          useValue: { ...data, flow: { ...data.flow, edges: result.edges } },
+        },
+        {
+          provide: ContextCollectionToken,
+          useValue: collection,
+        },
+      ],
+      parent: injector,
+    });
+    const instance = injector2.get(WorkflowParserContext);
+
+    const result2 = instance.parseItem();
+    const uniqueContextList = uniqBy(collection.contextConfigList, (item) =>
+      JSON.stringify(item.key),
     );
-    return { ...instance.parseItem(), manualInput: result.manualInput };
+    return {
+      ...result2,
+      editorInput: data.options?.editorInput,
+      invalidConfigList: collection.invalidConfigList,
+      contextConfigList: uniqueContextList,
+    };
   }
 }
 // 改成多出口,但是需要看看多出口有什么隐藏的问题

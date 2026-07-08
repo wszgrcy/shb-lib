@@ -119,9 +119,9 @@ export const EmoType3Define = v.pipe(
         v.pipe(emoVectorItemDefine, v.title('惊喜'), ...TopLabel),
         v.pipe(emoVectorItemDefine, v.title('平静'), ...TopLabel),
       ]),
-      actions.wrappers.patch(['div']),
-      actions.class.top('grid gap-4 grid-cols-2'),
+      // actions.wrappers.patch(['div']),
       actions.wrappers.set(['alert-valid']),
+      actions.class.top('grid gap-4 grid-cols-2'),
       actions.props.patch({
         validPosition: 'bottom',
       }),
@@ -222,12 +222,17 @@ const FileConfig = v.pipe(
           actions.inputs.patchAsync({
             clicked: (field) => async () => {
               const listFiled = field.get(['#', 'list'])!;
-              const result = await field.context['changeAudioList'](
+              const result = await field.context['resetAudioList'](
                 listFiled.form.control!.value,
               );
-              listFiled.form.control!.updateValue(result);
+              const result2 = await field.context['changeAudioList'](
+                result,
+              );
+              listFiled.form.control!.updateValue(result2);
             },
           }),
+          v.description('重新处理列表'),
+          actions.wrappers.patch(['tooltip']),
         ),
         __btn2: v.pipe(
           NFCSchema,
@@ -246,7 +251,7 @@ const FileConfig = v.pipe(
         __btn3: v.pipe(
           NFCSchema,
           setComponent('button'),
-          actions.inputs.patch({ content: '文本到语音' }),
+          actions.inputs.patch({ content: '文本到语音', color: 'primary' }),
           actions.inputs.patchAsync({
             clicked: (field) => () => field.context['apply'](),
           }),

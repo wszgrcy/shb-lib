@@ -1,15 +1,5 @@
 import { ChatMessageListOutputType } from './message.define';
 
-export interface ResolvedChatOptions {
-  model: string;
-  temperature: number;
-  topP: number;
-  maxTokens: number;
-  baseURL: string;
-  verbose: boolean;
-  apiKey: string;
-  vendor: string;
-}
 interface ResponseFormatText {
   type: 'text';
 }
@@ -56,19 +46,13 @@ export type RunnableToolFunctionWithParse = {
 export type ChatToolBodyInput = ChatBodyInput & {
   tools: RunnableToolFunctionWithParse[];
 };
-export interface ChatRequestOptions {
-  headers?: Record<string, string | null | undefined>;
-  signal?: AbortSignal | undefined;
-  tryPull?: (error: any) => boolean;
-  pullModel?: (name: string) => Promise<any>;
-}
 
 export interface OpenAIConfig {
   tryPull?: () => boolean;
   pullModel?: (name: string) => Promise<any>;
-  captureException: (error: any) => any;
-  history: {
-    dir: string;
-    enable: boolean;
-  };
+  // captureException: (error: any) => any;
+  // history: {
+  //   dir: string;
+  //   enable: boolean;
+  // };
 }

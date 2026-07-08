@@ -169,7 +169,7 @@ export class LlamaSwapService extends ExternalCallBaseService {
       this.start$.set(false);
     }
   }
-  #configToCmdOptions(config: LlamaServerType) {
+  #configToCmdOptions(config: LlamaServerType, customArgs?: string[]) {
     const list = [];
     // 去除远程参数,假如有本地的话
     let removeRemoteArgs = false;
@@ -199,6 +199,10 @@ export class LlamaSwapService extends ExternalCallBaseService {
         }
       }
     }
+    // 在最后拼接自定义参数
+    if (customArgs && customArgs.length > 0) {
+      list.push(...customArgs);
+    }
     return list;
   }
   async writeConfig(config: LlamaConfigInputType) {
@@ -218,7 +222,10 @@ export class LlamaSwapService extends ExternalCallBaseService {
           ([key, value]) => `${key}=${value}`,
         );
       }
-      const cmdOptions = this.#configToCmdOptions(config);
+      const cmdOptions = this.#configToCmdOptions(
+        config,
+        commonConfig.customArgs,
+      );
       let exec;
       if (typeof commonConfig.exec === 'string') {
         exec = commonConfig.exec;
@@ -353,7 +360,9 @@ export class LlamaSwapService extends ExternalCallBaseService {
       {
         prefix: 'ggml-org/llama.cpp',
         version: version,
-        fileName: llamaFileNameByVersion(version, device) + '.zip',
+        fileName:
+          llamaFileNameByVersion(version, device) +
+          (process.platform === 'win32' ? '.zip' : '.tar.gz'),
       },
       {
         output: path.join(this.llamaDir$$(), dirName),

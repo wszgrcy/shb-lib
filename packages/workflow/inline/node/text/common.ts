@@ -6,7 +6,6 @@ export const NODE_COMMON: NodeComponentType = {
   label: `文本模板`,
   icon: { fontIcon: 'text_snippet' },
   disableHead: false,
-  disableConnect: false,
   color: 'primary',
   help: `${HelpObj.templateVarLine}`,
   priority: -98,

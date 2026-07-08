@@ -34,7 +34,7 @@ export function getCommonProviders() {
     },
     {
       provide: GITHUB_URL_TOKEN,
-      useValue: signal('github-release.tbontop.top'),
+      useValue: signal('github.com'),
     },
     { provide: DownloadConfigToken, useValue: signal({}) },
     { provide: HUGGINGFACE_TOKEN_TOKEN, useValue: signal(undefined) },

@@ -1,8 +1,5 @@
-import { HelpObj } from '../../../share';
-import {
-  DEFAULT_CHAT_SCHEMA_KEY,
-  RUNNER_ORIGIN_OUTPUT_KEY,
-} from '../../../share';
+import { HelpObj, RUNNER_ORIGIN_OUTPUT } from '../../../share';
+
 import { NodeComponentType } from '../../../share';
 
 export const NODE_COMMON: NodeComponentType = {
@@ -11,7 +8,6 @@ export const NODE_COMMON: NodeComponentType = {
   label: `对话`,
   icon: { fontIcon: 'chat' },
   disableHead: false,
-  disableConnect: false,
   color: 'accent',
   help: [
     `- 点击输入框左侧图标可以切换或添加新行`,
@@ -30,16 +26,19 @@ export const NODE_COMMON: NodeComponentType = {
     '> 不清楚是否所有模型都遵循此规则,所以并没有限制输入',
   ].join('\n'),
   // config: defineConfig,
-  inputs: [
-    [],
-    [
-      {
-        label: 'JsonSchema',
-        value: DEFAULT_CHAT_SCHEMA_KEY,
-        inputType: 'schema',
-        optional: true,
-      },
-    ],
+  // inputs: [
+  //   [],
+  //   [
+  //     {
+  //       label: 'JsonSchema',
+  //       value: DEFAULT_CHAT_SCHEMA_KEY,
+  //       inputType: 'schema',
+  //       optional: true,
+  //     },
+  //   ],
+  // ],
+  outputs: [
+    RUNNER_ORIGIN_OUTPUT,
+    [{ id: 'format', label: '格式化', name: 'format' }],
   ],
-  outputs: [[{ label: '原始输出', value: RUNNER_ORIGIN_OUTPUT_KEY }]],
 };

@@ -21,27 +21,28 @@
     "@xyflow/react": "^12.10.2",
     "graphology": "^0.26.0",
     "handlebars": "^4.7.9",
-    "liquidjs": "^10.25.7",
-    "uuid": "^13.0.2"
+    "uuid": "^13.0.2",
+    "@shenghuabi/lexical-textarea": "1.0.11",
+    "es-toolkit": "~1.47.0"
   },
   "overrides": {},
   "exports": {
     ".": {
       "types": "./index.d.ts",
       "import": "./index.mjs",
-      "node": "./index.js",
+      "node": "./index.mjs",
       "require": "./index.js"
     },
     "./share": {
       "types": "./share/index.d.ts",
       "import": "./share/index.mjs",
-      "node": "./share/index.js",
+      "node": "./share/index.mjs",
       "require": "./share/index.js"
     },
     "./webview": {
       "types": "./webview/index.d.ts",
       "import": "./webview/index.mjs",
-      "node": "./webview/index.js",
+      "node": "./webview/index.mjs",
       "require": "./webview/index.js"
     }
   },

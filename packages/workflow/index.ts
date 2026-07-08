@@ -12,3 +12,7 @@ export * from './inline/inline.service';
 export * from './plugin/plugin.service';
 export * from './type/type';
 export * from './workflow-file.service';
+export * from './util/serialize-text-template';
+export * from './util/useChat';
+export * from './runner/single-node-runner.service';
+export * as NodeMainObj from './inline/node/index.node'

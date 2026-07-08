@@ -1,7 +1,9 @@
 import { NODE_COMMON } from '../common';
-import { TextareaRunner } from './textarea.runner';
+import { TEXT_NODE_DEFINE } from '../text.node.define';
+import { TextareaRunner } from './runner';
 
 export const TextMainConfig = {
   ...NODE_COMMON,
   runner: TextareaRunner,
+  configDefine: TEXT_NODE_DEFINE,
 } as const;

@@ -1,18 +1,37 @@
-import { ChatInput2, ChatInputType } from './type';
+import { ChatInputType } from './type';
 import { WorkflowNodeType } from './workflow.const';
 import type { Node, ReactFlowJsonObject } from '@xyflow/react';
+export type InputInvalidItem = { key: (string | number)[] };
 
-export interface HandleNode {
-  id: string;
-  /** 真正赋值使用 */
+export type InputRefItem = {
+  /** 上游节点 id */
   value: string;
-  /** 应该应用于tooltip显示,不应该被其他显示 */
+  /** 出口名 */
+  outlet?: string;
+  /** 键 */
+  key: (string | number)[];
+};
+/** 不连线,直接相当于访问出口的环境参数 */
+export type InputContextItem = {
   label: string;
-  type?: 'connect';
+  /** 键 */
+  key: (string | number)[];
+  /** 可能的类型 */
+  kind?: 'image';
+};
 
-  inputType?: ChatInputType;
-  /** 是否可选,用于某些不用传入的参数 */
-  optional?: boolean;
+export type InputItem = InputRefItem | InputInvalidItem | InputContextItem;
+// todo 优化
+export interface HandleNode {
+  /** 唯一,用来查询 */
+  id: string;
+  /** 一般表示key */
+  name?: string;
+  /** 应该应用于tooltip显示,不应该被其他显示 */
+  label?: string;
+  type?: 'connect' | (string & {});
+  /** todo */
+  validateType?: ChatInputType[];
 }
 /** 将handle节点全部拍平 */
 export function flatFilterHandleList(list: HandleNode[][] | undefined) {
@@ -21,21 +40,27 @@ export function flatFilterHandleList(list: HandleNode[][] | undefined) {
   }
   return list.flat().filter(Boolean) as HandleNode[];
 }
-/** 继承 handleNode */
-export type ResolvedInputNode = Omit<HandleNode, 'label'> & {
-  nodeId?: string;
-  outputName?: string;
-};
-export interface WorkflowNodeData {
-  value?: any;
 
+export interface WorkflowNodeData {
+  config?: {
+    refList?: InputRefItem[];
+    invalidList?: InputInvalidItem[];
+    contextGroup?: Record<string, InputContextItem[]>;
+    value?: Record<string, any>;
+  };
+  style?: Record<string, any>;
   handle?: {
-    input: HandleNode[][];
     output: HandleNode[][];
   };
-  config?: Record<string, any>;
+  minSize?: {
+    height: number;
+    width: number;
+  };
+  transform?: {
+    resizable?: boolean;
+  };
   title?: string;
-  outputName?: string;
+  outputHandleId?: string;
   /** 在工作流中禁止使用 @internal */
   excludeUsage?: boolean;
   [name: string]: any;
@@ -43,23 +68,36 @@ export interface WorkflowNodeData {
 /** 工作流定义 */
 export interface WorkflowData {
   flow: ReactFlowJsonObject<Node<WorkflowNodeData>>;
+  options?: {
+    /** input-patams负责修改 */
+    editorInput?: boolean;
+  };
   version: number;
 }
-export type RawWorkflowNode = Omit<Node<WorkflowNodeData>, 'position'>;
+
+/** 解析后runner使用 */
 export interface ParsedNode {
   id: string;
+  parentId?: string;
   type: WorkflowNodeType;
   // todo 因为加上Omit会导致类型不识别
   data: WorkflowNodeData;
-  /** 所有输入是都是需要节点连接的，如果没有节点连接会酌情处理 handleinput过来的 */
-  inputs: ResolvedInputNode[];
+  context: { id: string; handleId: string; output: string; rest: boolean }[];
   /** 可能是多出口 */
   outputs: HandleNode[];
   subFlowList?: { key: any; flow: ResolvedWorkflow; startId?: string }[];
 }
+/** 无效配置项,用于错误提示 */
+export interface WorkflowInvalidConfig {
+  id: string;
+  type: string;
+  list: InputInvalidItem[];
+}
+/** 上下文配置,扁平化所有节点的 contextGroup */
+export type WorkflowContextConfig = InputContextItem;
+
 export interface ResolvedWorkflow {
   nodes: Record<string, ParsedNode>;
   /** 出口 */
   end: string;
-  inputList: ChatInput2[];
 }

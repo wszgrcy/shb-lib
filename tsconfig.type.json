@@ -14,5 +14,8 @@
     "./packages/crunker/*.d.ts",
     "./packages/workflow/*.d.ts",
     "./packages/workflow/**/*.ts"
+  ],
+  "exclude": [
+    "./packages/workflow/**/*.spec.ts"
   ]
 }

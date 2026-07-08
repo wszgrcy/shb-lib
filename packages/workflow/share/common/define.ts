@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { HandleNode } from '../handle-node';
 export const HandleDefine = v.object({
   label: v.string(),
   value: v.string(),
@@ -42,10 +43,15 @@ export const NodeDefine = v.object({
   icon: v.optional(v.union([IconStr, IconSet])),
   color: v.optional(v.picklist(['primary', 'accent', 'warn'])),
   help: v.optional(v.string()),
-  inputs: v.optional(v.array(v.array(InputHandleDefine))),
-  outputs: v.optional(v.array(v.array(HandleDefine))),
+  outputs: v.optional(
+    v.array(
+      v.array(
+        v.custom<HandleNode>((a) => typeof a === 'object' && !!a && 'id' in a),
+      ),
+    ),
+  ),
   disableHead: v.optional(v.boolean(), false),
-  disableConnect: v.optional(v.boolean(), false),
+  disableContext: v.optional(v.boolean()),
   /** 出口表示分支 */
   nodeMode: v.optional(v.picklist(['condition', 'default'])),
 });

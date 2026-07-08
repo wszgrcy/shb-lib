@@ -1,5 +1,7 @@
 import type { Node } from '@xyflow/react';
-import type { HandleNode } from './handle-node';
+import type {
+  WorkflowNodeData,
+} from './handle-node';
 import type { Injector } from 'static-injector';
 import type * as v from 'valibot';
 import { WorkflowNodeConfigOutputType } from './common/define';
@@ -36,6 +38,12 @@ export interface ChatMetadata {
   tooltip?: string;
   reference?: ChatMetadataReference;
 }
+export type ChatDataRef = {
+  toString(): string;
+  ref: ChatMetadata | ChatMetadata[];
+};
+/** 对话插入数据 */
+export type ChatInsertData = string | ChatDataRef;
 export type ChatInputType = 'object' | 'string' | 'image' | 'schema';
 /** 准备 context/workflow 通用 */
 export type ChatInput2 = {
@@ -55,50 +63,18 @@ export interface Observer<TValue, TError> {
 }
 
 export type CustomNode<T extends Record<string, any> = Record<string, any>> =
-  Node<
-    {
-      value?: any;
-      style?: Record<string, any>;
-      handle?: {
-        /** 0 必须是连接点，否则空掉，1必须是value,否则空掉，之后随意 */
-        input: HandleNode[][];
-        output: HandleNode[][];
-      };
-
-      minSize?: {
-        height: number;
-        width: number;
-      };
-      transform?: {
-        resizable?: boolean;
-      };
-      title?: string;
-      config?: Record<string, any>;
-      /** 默认输出 */
-      outputName?: string;
-      /** 在工作流中禁止使用 */
-      excludeUsage?: boolean;
-      /** 用于前端部分 */
-      options?: {
-        /** 禁止自动打开配置 */
-        disableOpenConfig?: boolean;
-      };
-    } & T
-  >;
+  Node<WorkflowNodeData & T>;
 
 export type InitDataFunction = () => Partial<CustomNode>;
 export type NodeComponentType = {
   afterAdd?: (node: CustomNode, injector: Injector) => any;
   priority?: number;
+  configDefine?: v.BaseSchema<any, any, any>;
 } & WorkflowNodeConfigOutputType;
 
 // 单列?
 export type WebviewNodeConfig = NodeComponentType & {
-  displayConfig?: v.BaseSchema<any, any, any>;
-  config?: v.BaseSchema<any, any, any>;
-  initData: InitDataFunction;
-  //   config: NodeComponentType;
-  /** 非工作流中,模板上下文中使用 */
-  templateConfig?: v.BaseSchema<any, any, any>;
+  configDefine?: v.BaseSchema<any, any, any>;
+  initData?: InitDataFunction;
   component?: any;
 };

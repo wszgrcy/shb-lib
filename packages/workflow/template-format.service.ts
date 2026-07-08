@@ -1,16 +1,34 @@
 import hbs1 from 'handlebars';
 import { RootStaticInjectOptions } from 'static-injector';
 import { uniqBy } from 'es-toolkit';
-import { Liquid } from 'liquidjs';
-import { ChatInput2 } from './share';
-const engine = new Liquid({ jsTruthy: true });
-type hbsStat = hbs.AST.BlockStatement | hbs.AST.MustacheStatement;
+import type { SimplifiedState } from '@shenghuabi/lexical-textarea';
+
+/** 多模态内容节点 */
+type MultimodalNode =
+  | { type: 'text'; text?: SimplifiedState }
+  | { type: 'image_url'; image_url: { url?: SimplifiedState } };
+
+/** 对话消息内容节点（输入格式） */
+type ConversationContentNode = {
+  type: string;
+  text?: string;
+  image_url?: { url: string };
+};
+
+/** 解析后的对话模板项 */
+interface ParsedTemplateItem {
+  role: string;
+  content: MultimodalNode[];
+}
+
 export class TemplateFormatService extends RootStaticInjectOptions {
+  /** @deprecated */
   interpolate(input: string, value: Record<string, any>) {
     return hbs1.compile(input, { noEscape: true, preventIndent: true })(value, {
       allowProtoPropertiesByDefault: true,
     });
   }
+  /** @deprecated */
   entryInterpolate(
     payload: Record<string, any>,
     knowledge: string,
@@ -28,23 +46,72 @@ export class TemplateFormatService extends RootStaticInjectOptions {
   }
   /** 用于模板格式化 */
   parse(input: string) {
-    let list;
     try {
-      list = hbs1.parse(input).body;
-    } catch (error) {
+      const astBody = hbs1.parse(input).body;
+      const result = this.#getActionInputVariable(astBody, new Set());
+      // 使用原始顺序构建 SimplifiedState（保留文本和变量的完整结构）
+      return {
+        list: [result.nodes] as SimplifiedState,
+        error: false,
+      };
+    } catch {
       return { list: [], error: true };
     }
-    const result = this.#getActionInputVariable(list as any, new Set());
-    return {
-      list: [...result.set].map((item) => {
-        if (result.object.has(item)) {
-          return { inputType: 'object' as const, value: item };
-        }
-        return { inputType: 'string' as const, value: item };
-      }) as ChatInput2[],
-      error: false,
-    };
   }
+
+  /** 将 SimplifiedState 反向还原为 handlebars 模板字符串 */
+  unparse(simplified: SimplifiedState): string {
+    const paragraphs = simplified.map((paragraph) => {
+      let result = '';
+      for (const node of paragraph) {
+        if (node.type === 'text') {
+          result += node.text;
+        } else if (node.type === 'variable') {
+          const path = node.item.value.join('.');
+          result += `{{${path}}}`;
+        }
+      }
+      return result;
+    });
+    // 多段落之间用换行分隔
+    return paragraphs.join('\n');
+  }
+
+  /** 解析对话模板中的多模态内容（文本+图片） */
+  parseMultimodalContent(content: ConversationContentNode[]): MultimodalNode[] {
+    return content.map((data): MultimodalNode => {
+      if (data.type === 'text' && data.text) {
+        const parsed = this.parse(data.text);
+        return {
+          type: 'text',
+          text: parsed.error ? undefined : parsed.list,
+        };
+      } else if (data.type === 'image_url' && data.image_url?.url) {
+        const parsed = this.parse(data.image_url.url);
+        return {
+          type: 'image_url',
+          image_url: {
+            url: parsed.error ? undefined : parsed.list,
+          },
+        };
+      }
+      throw new Error(`未知类型-${JSON.stringify(data)}`);
+    });
+  }
+
+  /** 解析完整的对话模板列表（role + content） */
+  parseConversationTemplate(
+    templates:
+      | Array<{ role: string; content: ConversationContentNode[] }>
+      | undefined,
+  ): ParsedTemplateItem[] {
+    if (!templates) return [];
+    return templates.map((template) => ({
+      role: template.role,
+      content: this.parseMultimodalContent(template.content),
+    }));
+  }
+
   // 只有条件用,没太大用途
   async parserJs(input: string) {
     const { createCssSelectorForTs } =
@@ -64,69 +131,74 @@ export class TemplateFormatService extends RootStaticInjectOptions {
         })),
         error: false,
       };
-    } catch (error) {
+    } catch {
       return {
         error: true,
         list: [],
       };
     }
   }
-  async parserLiquid(input: string) {
-    try {
-      const result = engine.parse(input);
-      const varList = new Set<string>();
-      const proxyObj = new Proxy(
-        {},
-        {
-          getOwnPropertyDescriptor(target, p) {
-            return undefined;
-          },
-          has(target, p) {
-            varList.add(p as any);
-            return true;
-          },
-        },
-      );
-      await engine.render(result, proxyObj);
-      return {
-        list: [...varList].map((item) => ({
-          inputType: 'object' as const,
-          value: item,
-        })),
-        error: false,
-      };
-    } catch (error) {
-      return { error: true, list: [] };
-    }
-  }
-  #getActionInputVariable(body: hbsStat[], nowSet: Set<string>) {
+
+  #getActionInputVariable(body: hbs.AST.Node[], nowSet: Set<string>) {
     const obj = {
       set: new Set<string>(),
       block: {} as Record<string, any>,
       object: new Set<string>(),
+      nodes: [] as SimplifiedState[number],
     };
     for (const item of body) {
-      if (item.type === 'MustacheStatement') {
-        if (item.path.type === 'PathExpression') {
-          const path = item.path as hbs.AST.PathExpression;
-          // 仅记录父级变量，也就是说允许传入对象，输入之类的
-          obj.set.add(path.parts[0]);
-          if (path.parts.length > 1) {
-            obj.object.add(path.parts[0]);
-          }
-        } else {
+      if ('type' in item && item.type === 'MustacheStatement') {
+        const ms = item as hbs.AST.MustacheStatement;
+        if (ms.path?.type === 'PathExpression') {
+          const path = ms.path as hbs.AST.PathExpression;
+          const parts = path.parts;
+          const label = parts[0];
+          obj.set.add(label);
+          obj.object.add(label);
+          // 添加变量节点，value 为完整路径
+          obj.nodes.push({
+            type: 'variable' as const,
+            item: {
+              label: label,
+              value: parts as (string | number)[],
+              type: 'custom',
+            },
+          });
+        } else if (ms.path?.type === 'ThisExpression') {
+          // {{this}} 等，直接作为变量
+          obj.nodes.push({
+            type: 'variable' as const,
+            item: {
+              label: 'this',
+              value: ['this'],
+              type: 'custom',
+            },
+          });
         }
-      } else {
-        //if (item.type === 'BlockStatement')
-        // if (item.path.original === 'if') {
-        //   const ifVar = item.params[0].original as string;
-        //   const result = getActionInputVariable(
-        //     item.program.body,
-        //     new Set([...nowSet, ...obj.set]) as any,
-        //   );
-        //   obj.block[ifVar] = result;
-        // }
-        // throw new Error(`不支持:${item.type}`);
+      } else if ('type' in item && item.type === 'ContentStatement') {
+        // handlebars ContentStatement -> 文本节点
+        const cs = item as hbs.AST.ContentStatement;
+        obj.nodes.push({
+          type: 'text' as const,
+          text: (cs.original ?? cs.value) as unknown as string,
+        });
+      } else if ('type' in item && item.type === 'CommentStatement') {
+        // 忽略注释
+        continue;
+      } else if ('type' in item && item.type === 'BlockStatement') {
+        // 递归处理块语句的子节点
+        const bs = item as hbs.AST.BlockStatement;
+        const blockResult = this.#getActionInputVariable(
+          bs.program.body,
+          new Set([...nowSet, ...obj.set]),
+        );
+        obj.nodes.push(...blockResult.nodes);
+      } else if (
+        'type' in item &&
+        (item.type === 'PartialStatement' || item.type === 'SubExpression')
+      ) {
+        // 忽略部分表达式
+        continue;
       }
     }
     return obj;
